@@ -1,21 +1,19 @@
 #include <iostream>
 #include <conio.h>
 #include <time.h>
-#include "Data.h"
 #include "Func.h"
 #include "Tank.h"
 #include "Map.h"
 #include "Game.h"
-#include "Draw.h"
 using namespace std;
 
 int main()
 {
 	//初始化
-
+	CGame game;
 	CMap map;
+	game.GameInit(map);
 
-	GameInit(map);
 	int time4Tank = 0;
 	int time4Bullet = 0;
 	int time4EnemyTank = 0;
@@ -168,18 +166,18 @@ int main()
 	//}
 
 	map.SetDefaultMap();
-	g_isRunning = 1;
+	game.g_isRunning = 1;
 
 	//边界及障碍
 	map.DrawBorder();
-	DrawGameHelp();
+	game.DrawGameHelp();
 	map.DrawBarr();
 
 	//主循环
-	while (g_isRunning)
+	while (game.g_isRunning)
 	{
 		//信息实时显示
-		DrawGameInfo(tank, enemyTank);
+		game.DrawGameInfo(tank, enemyTank);
 		//我方坦克线程
 		if (clock() - time4Tank >= 100)
 		{
@@ -212,7 +210,7 @@ int main()
 			}
 		}
 		//敌方坦克线程
-		if (clock() - time4EnemyTank >= g_levelEneTank)
+		if (clock() - time4EnemyTank >= game.g_levelEneTank)
 		{
 			for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 			{
@@ -225,7 +223,7 @@ int main()
 			}
 		}
 		//敌方子弹线程
-		if (clock() - time4EnemyBullet >= g_levelEneBul)
+		if (clock() - time4EnemyBullet >= game.g_levelEneBul)
 		{
 			for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 			{
@@ -250,7 +248,7 @@ int main()
 		//判断游戏结束
 		if (tank.blood == 0 || GetLiveEnemyAmount(enemyTank) == 0)
 		{
-			GameOver(enemyTank);
+			game.GameOver(enemyTank);
 			break;
 		}
 	}

@@ -1,5 +1,6 @@
 #pragma once
 #include "Tank.h"
+#include "Game.h"
 
 class CMap
 {

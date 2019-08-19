@@ -5,7 +5,7 @@
 #include <conio.h>
 #include <time.h>
 #include <string.h>
-#include "Data.h"
+#include "Game.h"
 #include "Func.h"
 #include "Tank.h"
 #include "Map.h"

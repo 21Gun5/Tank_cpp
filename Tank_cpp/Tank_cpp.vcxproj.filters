@@ -18,9 +18,6 @@
     <ClCompile Include="Func.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Data.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="TankMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -28,9 +25,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Draw.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Map.cpp">
@@ -44,16 +38,10 @@
     <ClInclude Include="Func.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Data.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Tank.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Draw.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Map.h">

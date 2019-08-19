@@ -5,10 +5,9 @@
 #include <conio.h>
 #include <time.h>
 #include <string.h>
-#include "Data.h"
+#include "Game.h"
 #include "Func.h"
 #include "Map.h"
-#include "Draw.h"
 
 char* CMap::ShowMapFile()
 {

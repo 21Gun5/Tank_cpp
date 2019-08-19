@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Func.h"
+
 class CTank;//解决相互包含问题
 class CMap;
 

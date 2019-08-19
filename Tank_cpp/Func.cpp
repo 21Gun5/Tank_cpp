@@ -1,6 +1,5 @@
 #include "Func.h"
-#include "Data.h"
-#include <Windows.h>
+
 #include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
