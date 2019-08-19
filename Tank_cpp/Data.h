@@ -24,7 +24,7 @@
 //坦克相关
 #define 我方坦克 0
 #define 敌方坦克 1
-#define ENEMY_TANK_AMOUNT 7//敌军数量
+#define ENEMY_TANK_AMOUNT 2//敌军数量
 //子弹状态
 #define 不存在 0
 #define 未赋值 1
@@ -59,6 +59,7 @@ typedef struct _BULLET
 	enum  direction dir;//方向
 	int state;			//子弹状态
 }BULLET, * PBULLET;
+
 //坦克结构体
 typedef struct _TANK
 {

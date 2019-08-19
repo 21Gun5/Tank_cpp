@@ -1,5 +1,8 @@
-﻿  Data.cpp
-  Func.cpp
+﻿  Bullet.cpp
+  Draw.cpp
+  Game.cpp
+  Map.cpp
   Tank.cpp
+  TankMain.cpp
   正在生成代码...
   Tank_cpp.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Tank_cpp.exe

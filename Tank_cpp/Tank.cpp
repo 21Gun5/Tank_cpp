@@ -1,263 +1,555 @@
+#include <Windows.h>
+#include <io.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
 #include <time.h>
+#include <string.h>
 #include "Data.h"
 #include "Func.h"
-#include <conio.h>
+#include "Tank.h"
+#include "Game.h"
 
-int main()
+//坦克相关
+void CTank::CleanTankTail(COORD oldCore, PCOORD oldBody)
 {
-	//初始化
-	GameInit();
-	int time4Tank = 0;
-	int time4Bullet = 0;
-	int time4EnemyTank = 0;
-	int time4EnemyBullet = 0;
-
-	//我方坦克
-	TANK tank = {
-		{MAP_X_WALL / 4, MAP_Y / 2},
-		{0},UP,3,true,我方坦克,
-		{{0},UP,不存在}
-	};
-	SetTankShape(&tank);//设置形态
-	//敌方坦克
-	TANK enemyTank[ENEMY_TANK_AMOUNT] = {
-		{{2, 2}, {0},DOWN ,2,true,敌方坦克,{{0},UP,不存在}},
-		{{MAP_X_WALL / 4, 2}, {0},UP,1,true,敌方坦克,{{0},UP,不存在} },
-		{{MAP_X_WALL / 2 - 2, 2}, {0},DOWN,2,true,敌方坦克,{{0},UP,不存在} },
-		{{2,  MAP_Y / 2}, {0},UP ,1,true,敌方坦克,{{0},UP,不存在}},
-		{{MAP_X_WALL / 2 - 2,  MAP_Y / 2}, {0},UP,1,true,敌方坦克,{{0},UP,不存在} },
-		{{2,  MAP_Y - 3}, {0},UP ,2,true,敌方坦克,{{0},UP,不存在}},
-		//{{MAP_X_WALL / 4, MAP_Y - 3} ,{0},UP ,2,true,敌方坦克,{{0},UP,不存在} },
-		{{MAP_X_WALL / 2 - 2,  MAP_Y - 3}, {0},UP,2,true,敌方坦克,{{0},UP,不存在} }
-	};
-	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++) { SetTankShape(&enemyTank[i]); }//设置形态
-
-	//流程控制
-	int indexForPlay = 0;		//菜单索引
-	bool IsSelectedPlay = 0;	//是否选择结束
-	while (true)
+	GotoxyAndPrint(oldCore.X, oldCore.Y, "  ");//中心点
+	for (int i = 0; i < 5; i++)//其他点
 	{
-		DrawMenu(menuPlay, _countof(menuPlay), indexForPlay);
-		int play = SelectMenu(_countof(menuPlay), &indexForPlay);
-		if (play == ENTER)
+		GotoxyAndPrint(oldBody[i].X, oldBody[i].Y, "  ");
+	}
+}
+
+void CTank::SetTankShape()
+{
+	if (this->isAlive == false) return;
+	if (this->dir == UP)
+	{
+		this->body[0] = { this->core.X, this->core.Y - 1 };
+		this->body[1] = { this->core.X - 1, this->core.Y };
+		this->body[2] = { this->core.X + 1, this->core.Y };
+		this->body[3] = { this->core.X - 1, this->core.Y + 1 };
+		this->body[4] = { this->core.X + 1, this->core.Y + 1 };
+	}
+	else if (this->dir == DOWN)
+	{
+		this->body[0] = { this->core.X, this->core.Y + 1 };
+		this->body[1] = { this->core.X - 1, this->core.Y };
+		this->body[2] = { this->core.X + 1, this->core.Y };
+		this->body[3] = { this->core.X - 1, this->core.Y - 1 };
+		this->body[4] = { this->core.X + 1, this->core.Y - 1 };
+	}
+	else if (this->dir == LEFT)
+	{
+		this->body[0] = { this->core.X - 1, this->core.Y };
+		this->body[1] = { this->core.X , this->core.Y + 1 };
+		this->body[2] = { this->core.X , this->core.Y - 1 };
+		this->body[3] = { this->core.X + 1, this->core.Y + 1 };
+		this->body[4] = { this->core.X + 1, this->core.Y - 1 };
+	}
+	else if (this->dir == RIGHT)
+	{
+		this->body[0] = { this->core.X + 1, this->core.Y };
+		this->body[1] = { this->core.X , this->core.Y + 1 };
+		this->body[2] = { this->core.X , this->core.Y - 1 };
+		this->body[3] = { this->core.X - 1, this->core.Y + 1 };
+		this->body[4] = { this->core.X - 1, this->core.Y - 1 };
+	}
+}
+
+void CTank::ManipulateMyTank(CTank * penemytank)
+{
+	if (this->isAlive == false) return;
+	if (this->m_who == 我方坦克)
+	{
+		char ch = 0;
+		if (_kbhit())				//非阻塞函数 
 		{
-			switch (indexForPlay)
+			ch = _getch();			//无回显接受输入
+			switch (ch)
 			{
-			case 开始游戏:
-			{
-				int indexForWhoMap = 0;//菜单索引
-				bool IsSelectedWhoMap = 0; //选择的循环结束
-				while (true)
-				{
-					DrawMenu(menuWhoMap, _countof(menuWhoMap), indexForWhoMap);
-					int whoMap = SelectMenu(_countof(menuWhoMap), &indexForWhoMap);
-					if (whoMap == ENTER)
-					{
-						switch (indexForWhoMap)
-						{
-						case 系统默认:
-						{
-							int indexForLevel = 0;
-							bool IsSelectedLevel = 0;
-							while (true)
-							{
-								DrawMenu(menuLevel, _countof(menuLevel), indexForLevel);
-								int level = SelectMenu(_countof(menuLevel), &indexForLevel);
-								if (level == ENTER)
-								{
-									switch (indexForLevel)
-									{
-									case 简单:
-										g_levelEneTank = 300;
-										g_levelEneBul = 90;
-										IsSelectedLevel = 1;
-										break;
-									case 一般:
-										g_levelEneTank = 200;
-										g_levelEneBul = 70;
-										IsSelectedLevel = 1;
-										break;
-									case 困难:
-										g_levelEneTank = 100;
-										g_levelEneBul = 50;
-										IsSelectedLevel = 1;
-										break;
-									default:
-										break;
-									}
-								}
-								if (IsSelectedLevel == 1)
-									break;
-							}
-							SetDefaultMap();//使用默认的
-							IsSelectedPlay = 1;
-							IsSelectedWhoMap = 1;
-							g_isRunning = 1;//游戏运行
-							break;
-						}
-						case 玩家提供:
-						{
-							int indexForWhenMap = 0;//菜单索引
-							bool IsSelectedWhenMap = 0; //选择的循环结束
-							while (true)
-							{
-								DrawMenu(menuWhenMap, _countof(menuWhenMap), indexForWhenMap);
-								int whenMap = SelectMenu(_countof(menuWhenMap), &indexForWhenMap);
-								if (whenMap == ENTER)
-								{
-									switch (indexForWhenMap)
-									{
-									case 新建地图:
-										IsSelectedPlay = 1;
-										IsSelectedWhoMap = 1;
-										IsSelectedWhenMap = 1;
-										g_isRunning = 1;//要进入游戏了
-										CustomizeMap(&tank, enemyTank);//手动设置并直接使用
-										break;
-									case 已有地图:
-									{
-										IsSelectedPlay = 1;
-										IsSelectedWhoMap = 1;
-										IsSelectedWhenMap = 1;
-										g_isRunning = 1;//要进入游戏了
-										char* mapFile = ShowMapFile();
-										LoadMapFile(mapFile);//导入已有地图
-										break;
-									}
-									case 返回上页:
-									{
-										IsSelectedWhenMap = 1;
-										break;
-									}
-									default:
-										break;
-									}
-								}
-								if (IsSelectedWhenMap == 1)
-									break;
-							}
-							break;
-						}
-						case 返回上页:
-						{
-							IsSelectedWhoMap = 1;
-							break;
-						}
-						default:
-							break;
-						}
-					}
-					if (IsSelectedWhoMap == 1)
-						break;
-				}
+			case 'w':
+				if (!this->IsMyTankMeetOther(UP, penemytank))
+					this->core.Y--;
+				this->dir = UP;
 				break;
-			}
-			case 读取游戏:
-			{
-				IsSelectedPlay = 1;
-				char* gameFile = ShowGameFile();
-				LoadGame(&tank, enemyTank, gameFile);
+			case 's':
+				if (!this->IsMyTankMeetOther(DOWN, penemytank))
+					this->core.Y++;
+				this->dir = DOWN;
 				break;
-			}
-			case 退出游戏:
-				return 0;
+			case 'a':
+				if (!this->IsMyTankMeetOther(LEFT, penemytank))
+					this->core.X--;
+				this->dir = LEFT;
+				break;
+			case 'd':
+				if (!this->IsMyTankMeetOther(RIGHT, penemytank))
+					this->core.X++;
+				this->dir = RIGHT;
+				break;
+			case ' ':
+				if (this->bullet.state != 已赋值)
+					this->bullet.state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+				break;
+			case 'q':
+			//{
+			//	//暂停及恢复
+			//	mciSendString("pause bgm", NULL, 0, NULL);	//暂停bgm
+			//	setColor(12, 0);
+			//	GotoxyAndPrint(MAP_X / 2 - 14, 1, "       ");//先把较长的running清空
+			//	GotoxyAndPrint(MAP_X / 2 - 14, 1, "PAUSE");
+			//	GotoxyAndPrint(MAP_X / 2 - 14, 2, "1. 回到游戏");
+			//	GotoxyAndPrint(MAP_X / 2 - 14, 3, "2. 退出游戏");
+			//	char tmp;
+			//	do
+			//	{
+			//		tmp = _getch();	//利用阻塞函数暂停游戏
+			//	} while (!(tmp == '1' || tmp == '2' || tmp == '3'));//只有输入123才可
+			//	switch (tmp)
+			//	{
+			//	case '1'://恢复游戏
+			//	{
+			//		mciSendString("resume bgm", NULL, 0, NULL);//恢复bgm
+			//		GotoxyAndPrint(MAP_X / 2 - 14, 1, "RUNNING");
+			//		GotoxyAndPrint(MAP_X / 2 - 14, 2, "Q: 暂停游戏");
+			//		GotoxyAndPrint(MAP_X / 2 - 14, 3, "           ");
+			//		GotoxyAndPrint(MAP_X / 2 - 14, 4, "           ");
+			//		break;
+			//	}
+			//	case '2'://退出游戏
+			//	{
+			//		GotoxyAndPrint(MAP_X / 2 - 14, 1, "想如何退出?");
+			//		GotoxyAndPrint(MAP_X / 2 - 14, 2, "1. 保存退出");
+			//		GotoxyAndPrint(MAP_X / 2 - 14, 3, "2. 直接退出");
+			//		char op = _getch();
+			//		if (op == '1')		//保存退出
+			//		{
+			//			SaveGame(this, penemytank);
+			//			GameOver(penemytank);
+			//			g_isRunning = false;
+			//			break;
+			//		}
+			//		else if (op == '2')	//直接退出
+			//		{
+			//			GameOver(penemytank);
+			//			g_isRunning = false;
+			//			break;
+			//		}
+			//	}
+			//	default:
+			//		break;
+			//	}
+			//	break;
+			//}
+
 			default:
 				break;
 			}
 		}
-		if (IsSelectedPlay)//选择结束，进入游戏
-			break;
 	}
+	SetTankShape();//每次移动后都要重新设置形态
+}
 
-	//边界及障碍
-	DrawBorder();
-	DrawGameHelp();
-	DrawBarr();
-
-	//主循环
-	while (g_isRunning)
+bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank)
+{
+	switch (dir)
 	{
-		//信息实时显示
-		DrawGameInfo(&tank, enemyTank);
-		//我方坦克线程
-		if (clock() - time4Tank >= 100)
+	case UP:
+		//是否撞边界
+		if (this->core.Y <= 2)
 		{
-			time4Tank = clock();
-			COORD oldCore = tank.core;
-			COORD oldBody[5] = { tank.body[0],tank.body[1],tank.body[2],tank.body[3],tank.body[4] };
-			ManipulateMyTank(&tank, 我方坦克, enemyTank);
-			CleanTankTail(oldCore, oldBody);
-			DrawTank(&tank, 我方坦克);
+			return true;
 		}
-		//我方子弹线程
-		if (clock() - time4Bullet >= 50)
+		//是否撞障碍物
+		if ((g_MAP[this->core.X][this->core.Y - 2] == 土块障碍 ||
+			g_MAP[this->core.X - 1][this->core.Y - 2] == 土块障碍 ||
+			g_MAP[this->core.X + 1][this->core.Y - 2] == 土块障碍) ||
+			(g_MAP[this->core.X][this->core.Y - 2] == 石块障碍 ||
+			g_MAP[this->core.X - 1][this->core.Y - 2] == 石块障碍 ||
+			g_MAP[this->core.X + 1][this->core.Y - 2] == 石块障碍))
 		{
-			if (tank.bullet.state != 不存在)
+			return true;
+		}
+		//是否撞敌方坦克
+		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		{
+			if (penemytank[i].isAlive == false) continue;
+			if (
+				((this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X - 1) && (this->core.Y - penemytank[i].core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X - 2) && (this->core.Y - penemytank[i].core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X + 1) && (this->core.Y - penemytank[i].core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X + 2) && (this->core.Y - penemytank[i].core.Y == 3))
+				)//要==3,而非<=，只有在挨着的时候可被当，如果小于，虽没挨着敌坦1，但距离却小于2，被2干扰
 			{
-				//子弹赋值
-				if (tank.bullet.state == 未赋值)//==1未赋值状态
-				{
-					tank.bullet = { {tank.body[0].X, tank.body[0].Y}, tank.dir };
-					tank.bullet.state = 已赋值;
-					//g_isBulExist++;//==2已赋值状态
-				}
-				//子弹移动
-				time4Bullet = clock();
-				COORD oldBulCore = tank.bullet.core;
-				MoveBullet(&tank.bullet);
-				CleanBullet(oldBulCore);
-				DrawBullet(&tank.bullet, &tank);
-				IsMyBulMeetOther(&tank.bullet, enemyTank, &tank);
+				return true;
 			}
 		}
-		//敌方坦克线程
-		if (clock() - time4EnemyTank >= g_levelEneTank)
+		break;
+	case DOWN:
+		//是否撞边界
+		if (this->core.Y >= MAP_Y - 3)
 		{
-			for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+			return true;
+		}
+		//是否撞障碍物
+		if ((g_MAP[this->core.X][this->core.Y + 2] == 土块障碍 ||
+			g_MAP[this->core.X - 1][this->core.Y + 2] == 土块障碍 ||
+			g_MAP[this->core.X + 1][this->core.Y + 2] == 土块障碍) ||
+			(g_MAP[this->core.X][this->core.Y + 2] == 石块障碍 ||
+				g_MAP[this->core.X - 1][this->core.Y + 2] == 石块障碍 ||
+				g_MAP[this->core.X + 1][this->core.Y + 2] == 石块障碍))
+		{
+			return true;
+		}
+		//是否遇到我家泉水
+		if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
+		{
+			return true;
+		}
+		//是否撞敌方坦克
+		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		{
+			if (penemytank[i].isAlive == false) continue;
+			if (
+				((this->core.X == penemytank[i].core.X) && (penemytank[i].core.Y - this->core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X - 1) && (penemytank[i].core.Y - this->core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X - 2) && (penemytank[i].core.Y - this->core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X + 1) && (penemytank[i].core.Y - this->core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X + 2) && (penemytank[i].core.Y - this->core.Y == 3))
+				)
 			{
-				time4EnemyTank = clock();
-				COORD oldCore = enemyTank[i].core;
-				COORD oldBody[5] = { enemyTank[i].body[0],enemyTank[i].body[1],enemyTank[i].body[2],enemyTank[i].body[3],enemyTank[i].body[4] };
-				ManipulateEneTank(&enemyTank[i], 敌方坦克, &tank, enemyTank);
-				CleanTankTail(oldCore, oldBody);
-				DrawTank(&enemyTank[i], 敌方坦克);
+				return true;
 			}
 		}
-		//敌方子弹线程
-		if (clock() - time4EnemyBullet >= g_levelEneBul)
+		break;
+	case LEFT:
+		//是否撞边界
+		if (this->core.X <= 2)
 		{
-			for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+			return true;
+		}
+		//是否撞障碍物
+		if ((g_MAP[this->core.X - 2][this->core.Y] == 土块障碍 ||
+			g_MAP[this->core.X - 2][this->core.Y - 1] == 土块障碍 ||
+			g_MAP[this->core.X - 2][this->core.Y + 1] == 土块障碍) ||
+			(g_MAP[this->core.X - 2][this->core.Y] == 石块障碍 ||
+				g_MAP[this->core.X - 2][this->core.Y - 1] == 石块障碍 ||
+				g_MAP[this->core.X - 2][this->core.Y + 1] == 石块障碍))
+		{
+			return true;
+		}
+		//是否遇到我家泉水
+		if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
+		{
+			return true;
+		}
+		//是否撞敌方坦克
+		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		{
+			if (penemytank[i].isAlive == false) continue;
+			if (
+				((this->core.Y == penemytank[i].core.Y) && (this->core.X - penemytank[i].core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y - 1) && (this->core.X - penemytank[i].core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y - 2) && (this->core.X - penemytank[i].core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y + 1) && (this->core.X - penemytank[i].core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y + 2) && (this->core.X - penemytank[i].core.X == 3))
+				)
 			{
-				if (enemyTank[i].bullet.state != 不存在)
-				{
-					//子弹赋值
-					if (enemyTank[i].bullet.state == 未赋值)//==1未赋值状态
-					{
-						enemyTank[i].bullet = { {enemyTank[i].body[0].X, enemyTank[i].body[0].Y}, enemyTank[i].dir };
-						enemyTank[i].bullet.state = 已赋值;
-					}
-					//子弹移动
-					time4EnemyBullet = clock();
-					COORD oldBulCore = enemyTank[i].bullet.core;
-					MoveBullet(&enemyTank[i].bullet);
-					CleanBullet(oldBulCore);
-					DrawBullet(&enemyTank[i].bullet, &enemyTank[i]);
-					IsEneBulMeetOther(&enemyTank[i].bullet, enemyTank, &tank);
-				}
+				return true;
 			}
 		}
-		//判断游戏结束
-		if (tank.blood == 0 || GetLiveEnemyAmount(enemyTank) == 0)
+		break;
+	case RIGHT:
+		//是否撞边界
+		if (this->core.X >= MAP_X_WALL / 2 - 2)
 		{
-			GameOver(enemyTank);
+			return true;
+		}
+		//是否撞障碍物
+		if ((g_MAP[this->core.X + 2][this->core.Y] == 土块障碍 ||
+			g_MAP[this->core.X + 2][this->core.Y - 1] == 土块障碍 ||
+			g_MAP[this->core.X + 2][this->core.Y + 1] == 土块障碍) ||
+			(g_MAP[this->core.X + 2][this->core.Y] == 石块障碍 ||
+				g_MAP[this->core.X + 2][this->core.Y - 1] == 石块障碍 ||
+				g_MAP[this->core.X + 2][this->core.Y + 1] == 石块障碍))
+		{
+			return true;
+		}
+		//是否遇到我家泉水
+		if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
+		{
+			return true;
+		}
+		//是否撞敌方坦克
+		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		{
+			if (penemytank[i].isAlive == false) continue;
+			if (
+				((this->core.Y == penemytank[i].core.Y) && (penemytank[i].core.X - this->core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y - 1) && (penemytank[i].core.X - this->core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y - 2) && (penemytank[i].core.X - this->core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y + 1) && (penemytank[i].core.X - this->core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y + 2) && (penemytank[i].core.X - this->core.X == 3))
+				)
+			{
+				return true;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+void CTank::ManipulateEneTank(CTank pmytank, CTank* penemytank)
+{
+	if (this->isAlive == false) return;
+	if (this->m_who == 敌方坦克)
+	{
+		switch (rand() % 5)
+		{
+		case UP:
+			if (!this->IsEneTankMeetOther( UP, pmytank, penemytank))
+				this->core.Y--;
+			this->dir = UP;
+			break;
+		case DOWN:
+			if (!this->IsEneTankMeetOther( DOWN, pmytank, penemytank))
+				this->core.Y++;
+			this->dir = DOWN;
+			break;
+		case LEFT:
+			if (!this->IsEneTankMeetOther(LEFT, pmytank, penemytank))
+				this->core.X--;
+			this->dir = LEFT;
+			break;
+		case RIGHT:
+			if (!this->IsEneTankMeetOther(RIGHT, pmytank, penemytank))
+				this->core.X++;
+			this->dir = RIGHT;
+			break;
+		case 4:
+			if (this->bullet.state != 已赋值)
+				this->bullet.state = 未赋值;
+			break;
+		default:
 			break;
 		}
 	}
+	SetTankShape();//每次移动后都要重新设置形态
+}
 
-	//消耗多余字符
-	char ch = _getch();
-	ch = _getch();
+bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank)
+{
+	switch (dir)
+	{
+	case UP:
+		//是否撞边界
+		if (this->core.Y <= 2)
+		{
+			return true;
+		}
+		//是否撞障碍物
+		if ((g_MAP[this->core.X][this->core.Y - 2] == 土块障碍 ||
+			g_MAP[this->core.X - 1][this->core.Y - 2] == 土块障碍 ||
+			g_MAP[this->core.X + 1][this->core.Y - 2] == 土块障碍) ||
+			(g_MAP[this->core.X][this->core.Y - 2] == 石块障碍 ||
+				g_MAP[this->core.X - 1][this->core.Y - 2] == 石块障碍 ||
+				g_MAP[this->core.X + 1][this->core.Y - 2] == 石块障碍))
+		{
+			return true;
+		}
+		//是否撞我方坦克
+		if (
+			((this->core.X == pmytank.core.X - 0) && (this->core.Y - pmytank.core.Y == 3)) ||
+			((this->core.X == pmytank.core.X - 1) && (this->core.Y - pmytank.core.Y == 3)) ||
+			((this->core.X == pmytank.core.X - 2) && (this->core.Y - pmytank.core.Y == 3)) ||
+			((this->core.X == pmytank.core.X + 1) && (this->core.Y - pmytank.core.Y == 3)) ||
+			((this->core.X == pmytank.core.X + 2) && (this->core.Y - pmytank.core.Y == 3))
+			)//要==3,而非<=，只有在挨着的时候可被当，如果小于，虽没挨着敌坦1，但距离却小于2，被2干扰
+		{
+			return true;
+		}
+		//是否撞其他敌方坦克
+		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		{
+			if (this->core.X == penemytank[i].core.X && this->core.Y == penemytank[i].core.Y)//排除自己
+				continue;
+			if (
+				((this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X - 1) && (this->core.Y - penemytank[i].core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X - 2) && (this->core.Y - penemytank[i].core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X + 1) && (this->core.Y - penemytank[i].core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X + 2) && (this->core.Y - penemytank[i].core.Y == 3))
+				)//要==3,而非<=，只有在挨着的时候可被当，如果小于，虽没挨着敌坦1，但距离却小于2，被2干扰
+			{
+				return true;
+			}
+		}
+		break;
+	case DOWN:
+		//是否撞边界
+		if (this->core.Y >= MAP_Y - 3)
+		{
+			return true;
+		}
+		//是否撞障碍物
+		if ((g_MAP[this->core.X][this->core.Y + 2] == 土块障碍 ||
+			g_MAP[this->core.X - 1][this->core.Y + 2] == 土块障碍 ||
+			g_MAP[this->core.X + 1][this->core.Y + 2] == 土块障碍) ||
+			(g_MAP[this->core.X][this->core.Y + 2] == 石块障碍 ||
+				g_MAP[this->core.X - 1][this->core.Y + 2] == 石块障碍 ||
+				g_MAP[this->core.X + 1][this->core.Y + 2] == 石块障碍))
+		{
+			return true;
+		}
+		//是否遇到我家泉水
+		if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
+		{
+			return true;
+		}
+		//是否撞我方坦克
+		if (
+			((this->core.X == pmytank.core.X - 0) && (pmytank.core.Y - this->core.Y == 3)) ||
+			((this->core.X == pmytank.core.X - 1) && (pmytank.core.Y - this->core.Y == 3)) ||
+			((this->core.X == pmytank.core.X - 2) && (pmytank.core.Y - this->core.Y == 3)) ||
+			((this->core.X == pmytank.core.X + 1) && (pmytank.core.Y - this->core.Y == 3)) ||
+			((this->core.X == pmytank.core.X + 2) && (pmytank.core.Y - this->core.Y == 3))
+			)
+		{
+			return true;
+		}
+		//是否撞其他敌方坦克
+		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		{
+			if (this->core.X == penemytank[i].core.X && this->core.Y == penemytank[i].core.Y)//排除自己
+				continue;
+			if (
+				((this->core.X == penemytank[i].core.X) && (penemytank[i].core.Y - this->core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X - 1) && (penemytank[i].core.Y - this->core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X - 2) && (penemytank[i].core.Y - this->core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X + 1) && (penemytank[i].core.Y - this->core.Y == 3)) ||
+				((this->core.X == penemytank[i].core.X + 2) && (penemytank[i].core.Y - this->core.Y == 3))
+				)
+			{
+				return true;
+			}
+		}
+		break;
+	case LEFT:
+		//是否撞边界
+		if (this->core.X <= 2)
+		{
+			return true;
+		}
+		//是否撞障碍物
+		if ((g_MAP[this->core.X - 2][this->core.Y] == 土块障碍 ||
+			g_MAP[this->core.X - 2][this->core.Y - 1] == 土块障碍 ||
+			g_MAP[this->core.X - 2][this->core.Y + 1] == 土块障碍) ||
+			(g_MAP[this->core.X - 2][this->core.Y] == 石块障碍 ||
+				g_MAP[this->core.X - 2][this->core.Y - 1] == 石块障碍 ||
+				g_MAP[this->core.X - 2][this->core.Y + 1] == 石块障碍))
+		{
+			return true;
+		}
+		//是否遇到我家泉水
+		if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
+		{
+			return true;
+		}
+		//是否撞我方坦克
+		if (
+			((this->core.Y == pmytank.core.Y - 0) && (this->core.X - pmytank.core.X == 3)) ||
+			((this->core.Y == pmytank.core.Y - 1) && (this->core.X - pmytank.core.X == 3)) ||
+			((this->core.Y == pmytank.core.Y - 2) && (this->core.X - pmytank.core.X == 3)) ||
+			((this->core.Y == pmytank.core.Y + 1) && (this->core.X - pmytank.core.X == 3)) ||
+			((this->core.Y == pmytank.core.Y + 2) && (this->core.X - pmytank.core.X == 3))
+			)
+		{
+			return true;
+		}
+		//是否撞其他敌方坦克
+		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		{
+			if (this->core.X == penemytank[i].core.X && this->core.Y == penemytank[i].core.Y)//排除自己
+				continue;
+			if (
+				((this->core.Y == penemytank[i].core.Y) && (this->core.X - penemytank[i].core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y - 1) && (this->core.X - penemytank[i].core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y - 2) && (this->core.X - penemytank[i].core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y + 1) && (this->core.X - penemytank[i].core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y + 2) && (this->core.X - penemytank[i].core.X == 3))
+				)
+			{
+				return true;
+			}
+		}
+		break;
+	case RIGHT:
+		//是否撞边界
+		if (this->core.X >= MAP_X_WALL / 2 - 2)
+		{
+			return true;
+		}
+		//是否撞障碍物
+		if ((g_MAP[this->core.X + 2][this->core.Y] == 土块障碍 ||
+			g_MAP[this->core.X + 2][this->core.Y - 1] == 土块障碍 ||
+			g_MAP[this->core.X + 2][this->core.Y + 1] == 土块障碍) ||
+			(g_MAP[this->core.X + 2][this->core.Y] == 石块障碍 ||
+				g_MAP[this->core.X + 2][this->core.Y - 1] == 石块障碍 ||
+				g_MAP[this->core.X + 2][this->core.Y + 1] == 石块障碍))
+		{
+			return true;
+		}
+		//是否遇到我家泉水
+		if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
+		{
+			return true;
+		}
+		//是否撞我方坦克
+		if (
+			((this->core.Y == pmytank.core.Y - 0) && (pmytank.core.X - this->core.X == 3)) ||
+			((this->core.Y == pmytank.core.Y - 1) && (pmytank.core.X - this->core.X == 3)) ||
+			((this->core.Y == pmytank.core.Y - 2) && (pmytank.core.X - this->core.X == 3)) ||
+			((this->core.Y == pmytank.core.Y + 1) && (pmytank.core.X - this->core.X == 3)) ||
+			((this->core.Y == pmytank.core.Y + 2) && (pmytank.core.X - this->core.X == 3))
+			)
+		{
+			return true;
+		}
+		//是否撞其他敌方坦克
+		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		{
+			if (this->core.X == penemytank[i].core.X && this->core.Y == penemytank[i].core.Y)//排除自己
+				continue;
+			if (
+				((this->core.Y == penemytank[i].core.Y) && (penemytank[i].core.X - this->core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y - 1) && (penemytank[i].core.X - this->core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y - 2) && (penemytank[i].core.X - this->core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y + 1) && (penemytank[i].core.X - this->core.X == 3)) ||
+				((this->core.Y == penemytank[i].core.Y + 2) && (penemytank[i].core.X - this->core.X == 3))
+				)
+			{
+				return true;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	return false;
+}
 
-	return 0;
+int GetLiveEnemyAmount(PTANK penemytank)
+{
+	int count = 0;
+	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+	{
+		if (penemytank[i].isAlive == true)
+			count++;
+	}
+	return count;
 }
