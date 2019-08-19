@@ -37,7 +37,7 @@
 #define 我家泉水 4
 
 //全局变量
-extern int g_MAP[MAP_X][MAP_Y];	//地图数组
+//extern int g_MAP[MAP_X][MAP_Y];	//地图数组
 extern bool g_isRunning;		//是否运行
 extern int g_levelEneTank;		//敌坦速度
 extern int g_levelEneBul;		//敌弹速度

@@ -1,6 +1,7 @@
 #pragma once
 
 class CTank;//解决相互包含问题
+class CMap;
 
 class CBullet
 {
@@ -14,8 +15,10 @@ public:
 	void MoveBullet();	//移动子弹
 	void CleanBullet(COORD oldBulCore);	//清理旧子弹
 
-	void IsMyBulMeetOther(CTank tank, CTank * penemytank ); //我方子弹碰撞
+	void IsMyBulMeetOther(CTank tank, CTank * penemytank,CMap &map); //我方子弹碰撞
 
-	void IsEneBulMeetOther(CTank tank, CTank* penemytank);//敌方子弹碰撞
+	void IsEneBulMeetOther(CTank tank, CTank* penemytank,  CMap &map);//敌方子弹碰撞
+
+	void DrawBullet( CTank tank, CMap map);				//打印子弹
 };
 

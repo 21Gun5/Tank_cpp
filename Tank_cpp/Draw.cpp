@@ -21,37 +21,8 @@ void DrawLogo()
 	GotoxyAndPrint(MAP_X / 4 - 9, MAP_Y / 2 - 10, "     MM      8M   MM    MM    MM    MM `Mb. ");
 	GotoxyAndPrint(MAP_X / 4 - 9, MAP_Y / 2 - 9, "   .JMML.    `Moo9^Yo..JMML  JMML..JMML. YA.");
 }
-void DrawBarr()
-{
-	for (int x = 0; x < MAP_X_WALL; x++)
-	{
-		for (int y = 0; y < MAP_Y; y++)
-		{
-			if (g_MAP[x][y] == 石块障碍) GotoxyAndPrint(x, y, "■");
-			if (g_MAP[x][y] == 土块障碍) GotoxyAndPrint(x, y, "※");
-		}
-	}
-}
-void DrawBorder()
-{
-	system("cls");						//换页则清屏
-	for (int x = 0; x < MAP_X; x++)
-	{
-		for (int y = 0; y < MAP_Y; y++)
-		{
-			if (g_MAP[x][y] == 地图边界)
-			{
-				GotoxyAndPrint(x, y, "■");
-			}
-			if (g_MAP[x][y] == 我家泉水)
-			{
-				setColor(12, 0);
-				GotoxyAndPrint(x, y, "★");
-				setColor(7, 0);
-			}
-		}
-	}
-}
+
+
 void DrawGameHelp()
 {
 	setColor(12, 0);
@@ -63,78 +34,9 @@ void DrawGameHelp()
 	setColor(7, 0);
 }
 
-void DrawTank(CTank tank, int who)
-{
-	if (tank.isAlive == false) return;
-	if (who == 我方坦克)
-	{
-		setColor(10, 0);
-		GotoxyAndPrint(tank.core.X, tank.core.Y, "■");//中心点
-		for (int i = 0; i < 5; i++)//其他点
-		{
-			GotoxyAndPrint(tank.body[i].X, tank.body[i].Y, "■");
-		}
-		setColor(7, 0);
-	}
-	else if (who == 敌方坦克)
-	{
-		setColor(11, 0);//亮蓝色
-		if (tank.blood == 2)
-		{
-			GotoxyAndPrint(tank.core.X, tank.core.Y, "■");//中心点
-			for (int i = 0; i < 5; i++)//其他点
-				GotoxyAndPrint(tank.body[i].X, tank.body[i].Y, "■");//中心点
-		}
-		else if (tank.blood == 1)
-		{
-			GotoxyAndPrint(tank.core.X, tank.core.Y, "□");//中心点
-			for (int i = 0; i < 5; i++)//其他点
-				GotoxyAndPrint(tank.body[i].X, tank.body[i].Y, "□");
-		}
-		setColor(7, 0);
-	}
-}
 
-void DrawBullet(CBullet bullet, CTank tank)
-{
-	//碰到边界，换成边界的颜色，实现子弹消失的效果
-	if (bullet.core.X <= 0 ||
-		bullet.core.X >= MAP_X_WALL / 2 ||
-		bullet.core.Y <= 0 ||
-		bullet.core.Y >= MAP_Y - 1)
-	{
-		setColor(7, 0);
-	}
-	else
-	{
-		if (tank.m_who == 我方坦克)
-			setColor(10, 0);
-		else if (tank.m_who == 敌方坦克)
-			setColor(11, 0);
-	}
-	//碰到障碍，将子弹画为空格，实现子弹消失
-	if (g_MAP[bullet.core.X][bullet.core.Y] == 土块障碍)
-	{
-		GotoxyAndPrint(bullet.core.X, bullet.core.Y, "  ");
-	}
-	//碰到石块障碍物，，实现子弹消失的效果
-	else if (g_MAP[bullet.core.X][bullet.core.Y] == 石块障碍)
-	{
-		setColor(7, 0);
-	}
-	//碰到泉水，将子弹换成其颜色和形状，实现子弹消失
-	else if (g_MAP[bullet.core.X][bullet.core.Y] == 我家泉水)
-	{
-		setColor(12, 0);
-		GotoxyAndPrint(bullet.core.X, bullet.core.Y, "★");
-	}
-	//一般运动状态
-	else
-	{
-		GotoxyAndPrint(bullet.core.X, bullet.core.Y, "■");
-	}
-	setColor(7, 0);
-}
+
+
 
 void DrawGameInfo(CTank tank, CTank * penemytank)
 {

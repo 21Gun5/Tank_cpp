@@ -10,14 +10,11 @@
 #include "Tank.h"
 #include "Bullet.h"
 
-//子弹相关
-
 void CBullet::SetBullet(COORD cor, enum direction di)
 {
 	core = cor;
 	dir = di;
 }
-
 void CBullet::MoveBullet()
 {
 	switch (this->dir)
@@ -43,8 +40,7 @@ void CBullet::CleanBullet(COORD oldBulCore)
 	GotoxyAndPrint(oldBulCore.X, oldBulCore.Y, "  ");
 	//printf("  ");
 }
-
-void CBullet::IsMyBulMeetOther(CTank tank,CTank* penemytank)
+void CBullet::IsMyBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
 {
 	//遇边界
 	if (this->core.X <= 0 ||
@@ -55,18 +51,18 @@ void CBullet::IsMyBulMeetOther(CTank tank,CTank* penemytank)
 		this->state = 不存在;
 	}
 	//遇土块障碍
-	if (g_MAP[this->core.X][this->core.Y] == 土块障碍)
+	if (map.m_nArrMap[this->core.X][this->core.Y] == 土块障碍)
 	{
 		this->state = 不存在;
-		g_MAP[this->core.X][this->core.Y] = 空地;
+		map.m_nArrMap[this->core.X][this->core.Y] = 空地;
 	}
 	//遇石块障碍
-	if (g_MAP[this->core.X][this->core.Y] == 石块障碍)
+	if (map.m_nArrMap[this->core.X][this->core.Y] == 石块障碍)
 	{
 		this->state = 不存在;
 	}
 	//遇泉水
-	if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
+	if (map.m_nArrMap[this->core.X][this->core.Y] == 我家泉水)
 	{
 		this->state = 不存在;
 	}
@@ -157,11 +153,7 @@ void CBullet::IsMyBulMeetOther(CTank tank,CTank* penemytank)
 		}
 	}
 }
-
-
-
-
-void CBullet::IsEneBulMeetOther(CTank tank, CTank* penemytank)
+void CBullet::IsEneBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
 {
 	//遇边界
 	if (this->core.X <= 0 ||
@@ -172,18 +164,18 @@ void CBullet::IsEneBulMeetOther(CTank tank, CTank* penemytank)
 		this->state = 不存在;
 	}
 	//遇土块障碍
-	if (g_MAP[this->core.X][this->core.Y] == 土块障碍)
+	if (map.m_nArrMap[this->core.X][this->core.Y] == 土块障碍)
 	{
 		this->state = 不存在;
-		g_MAP[this->core.X][this->core.Y] = 空地;
+		map.m_nArrMap[this->core.X][this->core.Y] = 空地;
 	}
 	//遇石块障碍
-	if (g_MAP[this->core.X][this->core.Y] == 石块障碍)
+	if (map.m_nArrMap[this->core.X][this->core.Y] == 石块障碍)
 	{
 		this->state = 不存在;
 	}
 	//遇泉水
-	if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
+	if (map.m_nArrMap[this->core.X][this->core.Y] == 我家泉水)
 	{
 		this->state = 不存在;
 		tank.blood = 0;//泉水打到，我方坦克当场去世
@@ -324,4 +316,44 @@ void CBullet::IsEneBulMeetOther(CTank tank, CTank* penemytank)
 			break;
 		}
 	}
+}
+void CBullet::DrawBullet(CTank tank, CMap map)
+{
+	//碰到边界，换成边界的颜色，实现子弹消失的效果
+	if (this->core.X <= 0 ||
+		this->core.X >= MAP_X_WALL / 2 ||
+		this->core.Y <= 0 ||
+		this->core.Y >= MAP_Y - 1)
+	{
+		setColor(7, 0);
+	}
+	else
+	{
+		if (tank.m_who == 我方坦克)
+			setColor(10, 0);
+		else if (tank.m_who == 敌方坦克)
+			setColor(11, 0);
+	}
+	//碰到障碍，将子弹画为空格，实现子弹消失
+	if (map.m_nArrMap[this->core.X][this->core.Y] == 土块障碍)
+	{
+		GotoxyAndPrint(this->core.X, this->core.Y, "  ");
+	}
+	//碰到石块障碍物，，实现子弹消失的效果
+	else if (map.m_nArrMap[this->core.X][this->core.Y] == 石块障碍)
+	{
+		setColor(7, 0);
+	}
+	//碰到泉水，将子弹换成其颜色和形状，实现子弹消失
+	else if (map.m_nArrMap[this->core.X][this->core.Y] == 我家泉水)
+	{
+		setColor(12, 0);
+		GotoxyAndPrint(this->core.X, this->core.Y, "★");
+	}
+	//一般运动状态
+	else
+	{
+		GotoxyAndPrint(this->core.X, this->core.Y, "■");
+	}
+	setColor(7, 0);
 }

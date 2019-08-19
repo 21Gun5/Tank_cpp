@@ -11,7 +11,7 @@
 #include "Tank.h"
 
 //游戏相关
-void GameInit()
+void GameInit(CMap &map)
 {
 	//设置地图
 	for (int x = 0; x < MAP_X / 2; x++)
@@ -23,14 +23,14 @@ void GameInit()
 				y == 0 || y == MAP_Y - 1 ||							//两横边
 				(x > MAP_X_WALL / 2 && y == MAP_Y / 2))				//帮助信息与游戏信息分割线
 			{
-				g_MAP[x][y] = 地图边界;
+				map.m_nArrMap[x][y] = 地图边界;
 			}
 			if (x >= MAP_X_WALL / 4 - 2 && x <= MAP_X_WALL / 4 + 3 && y >= MAP_Y - 2 - 3 && y <= MAP_Y - 2)
 			{
 				if (x >= MAP_X_WALL / 4 && x <= MAP_X_WALL / 4 + 1 && y >= MAP_Y - 2 - 1 && y <= MAP_Y - 2)
-					g_MAP[x][y] = 我家泉水;
+					map.m_nArrMap[x][y] = 我家泉水;
 				else
-					g_MAP[x][y] = 土块障碍;
+					map.m_nArrMap[x][y] = 土块障碍;
 			}
 		}
 	}
@@ -43,6 +43,7 @@ void GameInit()
 	//mciSendString("open conf/BGM.mp3 alias bgm", NULL, 0, NULL);//打开文件
 	//mciSendString("play bgm repeat", NULL, 0, NULL);			  // 循环播放
 }
+
 //char* ShowGameFile()
 //{
 //	//遍历指定目录及后缀的文件名并存入数组
@@ -125,6 +126,7 @@ void GameOver(CTank * penemytank)
 //	}
 //	return 0;
 //}
+
 //void SaveGame(PTANK ptank, PTANK penemytank)
 //{
 //	//提示信息
@@ -185,6 +187,7 @@ void GameOver(CTank * penemytank)
 //	}
 //	fclose(pFile);
 //}
+
 //void LoadGame(PTANK ptank, PTANK penemytank, char* str)
 //{
 //	char* filename = (char*)malloc(40);

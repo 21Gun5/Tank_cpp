@@ -8,6 +8,7 @@
 #include "Data.h"
 #include "Func.h"
 #include "Tank.h"
+#include "Map.h"
 #include "Game.h"
 
 //Ì¹¿ËÏà¹Ø
@@ -57,7 +58,7 @@ void CTank::SetTankShape()
 	}
 }
 
-void CTank::ManipulateMyTank(CTank * penemytank)
+void CTank::ManipulateMyTank(CTank * penemytank,CMap map)
 {
 	if (this->isAlive == false) return;
 	if (this->m_who == ÎÒ·½Ì¹¿Ë)
@@ -69,22 +70,22 @@ void CTank::ManipulateMyTank(CTank * penemytank)
 			switch (ch)
 			{
 			case 'w':
-				if (!this->IsMyTankMeetOther(UP, penemytank))
+				if (!this->IsMyTankMeetOther(UP, penemytank,map))
 					this->core.Y--;
 				this->dir = UP;
 				break;
 			case 's':
-				if (!this->IsMyTankMeetOther(DOWN, penemytank))
+				if (!this->IsMyTankMeetOther(DOWN, penemytank, map))
 					this->core.Y++;
 				this->dir = DOWN;
 				break;
 			case 'a':
-				if (!this->IsMyTankMeetOther(LEFT, penemytank))
+				if (!this->IsMyTankMeetOther(LEFT, penemytank, map))
 					this->core.X--;
 				this->dir = LEFT;
 				break;
 			case 'd':
-				if (!this->IsMyTankMeetOther(RIGHT, penemytank))
+				if (!this->IsMyTankMeetOther(RIGHT, penemytank, map))
 					this->core.X++;
 				this->dir = RIGHT;
 				break;
@@ -151,7 +152,7 @@ void CTank::ManipulateMyTank(CTank * penemytank)
 	SetTankShape();//Ã¿´ÎÒÆ¶¯ºó¶¼ÒªÖØÐÂÉèÖÃÐÎÌ¬
 }
 
-bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank)
+bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank,CMap map)
 {
 	switch (dir)
 	{
@@ -162,12 +163,12 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank)
 			return true;
 		}
 		//ÊÇ·ñ×²ÕÏ°­Îï
-		if ((g_MAP[this->core.X][this->core.Y - 2] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X - 1][this->core.Y - 2] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X + 1][this->core.Y - 2] == ÍÁ¿éÕÏ°­) ||
-			(g_MAP[this->core.X][this->core.Y - 2] == Ê¯¿éÕÏ°­ ||
-			g_MAP[this->core.X - 1][this->core.Y - 2] == Ê¯¿éÕÏ°­ ||
-			g_MAP[this->core.X + 1][this->core.Y - 2] == Ê¯¿éÕÏ°­))
+		if ((map.m_nArrMap[this->core.X][this->core.Y - 2] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X - 1][this->core.Y - 2] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X + 1][this->core.Y - 2] == ÍÁ¿éÕÏ°­) ||
+			(map.m_nArrMap[this->core.X][this->core.Y - 2] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X - 1][this->core.Y - 2] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X + 1][this->core.Y - 2] == Ê¯¿éÕÏ°­))
 		{
 			return true;
 		}
@@ -194,17 +195,17 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank)
 			return true;
 		}
 		//ÊÇ·ñ×²ÕÏ°­Îï
-		if ((g_MAP[this->core.X][this->core.Y + 2] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X - 1][this->core.Y + 2] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X + 1][this->core.Y + 2] == ÍÁ¿éÕÏ°­) ||
-			(g_MAP[this->core.X][this->core.Y + 2] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X - 1][this->core.Y + 2] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X + 1][this->core.Y + 2] == Ê¯¿éÕÏ°­))
+		if ((map.m_nArrMap[this->core.X][this->core.Y + 2] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X - 1][this->core.Y + 2] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X + 1][this->core.Y + 2] == ÍÁ¿éÕÏ°­) ||
+			(map.m_nArrMap[this->core.X][this->core.Y + 2] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X - 1][this->core.Y + 2] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X + 1][this->core.Y + 2] == Ê¯¿éÕÏ°­))
 		{
 			return true;
 		}
 		//ÊÇ·ñÓöµ½ÎÒ¼ÒÈªË®
-		if (g_MAP[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
+		if (map.m_nArrMap[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
 		{
 			return true;
 		}
@@ -231,17 +232,17 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank)
 			return true;
 		}
 		//ÊÇ·ñ×²ÕÏ°­Îï
-		if ((g_MAP[this->core.X - 2][this->core.Y] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X - 2][this->core.Y - 1] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X - 2][this->core.Y + 1] == ÍÁ¿éÕÏ°­) ||
-			(g_MAP[this->core.X - 2][this->core.Y] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X - 2][this->core.Y - 1] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X - 2][this->core.Y + 1] == Ê¯¿éÕÏ°­))
+		if ((map.m_nArrMap[this->core.X - 2][this->core.Y] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X - 2][this->core.Y - 1] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X - 2][this->core.Y + 1] == ÍÁ¿éÕÏ°­) ||
+			(map.m_nArrMap[this->core.X - 2][this->core.Y] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X - 2][this->core.Y - 1] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X - 2][this->core.Y + 1] == Ê¯¿éÕÏ°­))
 		{
 			return true;
 		}
 		//ÊÇ·ñÓöµ½ÎÒ¼ÒÈªË®
-		if (g_MAP[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
+		if (map.m_nArrMap[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
 		{
 			return true;
 		}
@@ -268,17 +269,17 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank)
 			return true;
 		}
 		//ÊÇ·ñ×²ÕÏ°­Îï
-		if ((g_MAP[this->core.X + 2][this->core.Y] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X + 2][this->core.Y - 1] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X + 2][this->core.Y + 1] == ÍÁ¿éÕÏ°­) ||
-			(g_MAP[this->core.X + 2][this->core.Y] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X + 2][this->core.Y - 1] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X + 2][this->core.Y + 1] == Ê¯¿éÕÏ°­))
+		if ((map.m_nArrMap[this->core.X + 2][this->core.Y] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X + 2][this->core.Y - 1] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X + 2][this->core.Y + 1] == ÍÁ¿éÕÏ°­) ||
+			(map.m_nArrMap[this->core.X + 2][this->core.Y] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X + 2][this->core.Y - 1] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X + 2][this->core.Y + 1] == Ê¯¿éÕÏ°­))
 		{
 			return true;
 		}
 		//ÊÇ·ñÓöµ½ÎÒ¼ÒÈªË®
-		if (g_MAP[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
+		if (map.m_nArrMap[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
 		{
 			return true;
 		}
@@ -304,7 +305,7 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank)
 	return false;
 }
 
-void CTank::ManipulateEneTank(CTank pmytank, CTank* penemytank)
+void CTank::ManipulateEneTank(CTank pmytank, CTank* penemytank, CMap map)
 {
 	if (this->isAlive == false) return;
 	if (this->m_who == µÐ·½Ì¹¿Ë)
@@ -312,22 +313,22 @@ void CTank::ManipulateEneTank(CTank pmytank, CTank* penemytank)
 		switch (rand() % 5)
 		{
 		case UP:
-			if (!this->IsEneTankMeetOther( UP, pmytank, penemytank))
+			if (!this->IsEneTankMeetOther( UP, pmytank, penemytank,map))
 				this->core.Y--;
 			this->dir = UP;
 			break;
 		case DOWN:
-			if (!this->IsEneTankMeetOther( DOWN, pmytank, penemytank))
+			if (!this->IsEneTankMeetOther( DOWN, pmytank, penemytank,map))
 				this->core.Y++;
 			this->dir = DOWN;
 			break;
 		case LEFT:
-			if (!this->IsEneTankMeetOther(LEFT, pmytank, penemytank))
+			if (!this->IsEneTankMeetOther(LEFT, pmytank, penemytank,map))
 				this->core.X--;
 			this->dir = LEFT;
 			break;
 		case RIGHT:
-			if (!this->IsEneTankMeetOther(RIGHT, pmytank, penemytank))
+			if (!this->IsEneTankMeetOther(RIGHT, pmytank, penemytank,map))
 				this->core.X++;
 			this->dir = RIGHT;
 			break;
@@ -342,7 +343,7 @@ void CTank::ManipulateEneTank(CTank pmytank, CTank* penemytank)
 	SetTankShape();//Ã¿´ÎÒÆ¶¯ºó¶¼ÒªÖØÐÂÉèÖÃÐÎÌ¬
 }
 
-bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank)
+bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank, CMap map)
 {
 	switch (dir)
 	{
@@ -353,12 +354,12 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank)
 			return true;
 		}
 		//ÊÇ·ñ×²ÕÏ°­Îï
-		if ((g_MAP[this->core.X][this->core.Y - 2] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X - 1][this->core.Y - 2] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X + 1][this->core.Y - 2] == ÍÁ¿éÕÏ°­) ||
-			(g_MAP[this->core.X][this->core.Y - 2] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X - 1][this->core.Y - 2] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X + 1][this->core.Y - 2] == Ê¯¿éÕÏ°­))
+		if ((map.m_nArrMap[this->core.X][this->core.Y - 2] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X - 1][this->core.Y - 2] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X + 1][this->core.Y - 2] == ÍÁ¿éÕÏ°­) ||
+			(map.m_nArrMap[this->core.X][this->core.Y - 2] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X - 1][this->core.Y - 2] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X + 1][this->core.Y - 2] == Ê¯¿éÕÏ°­))
 		{
 			return true;
 		}
@@ -397,17 +398,17 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank)
 			return true;
 		}
 		//ÊÇ·ñ×²ÕÏ°­Îï
-		if ((g_MAP[this->core.X][this->core.Y + 2] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X - 1][this->core.Y + 2] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X + 1][this->core.Y + 2] == ÍÁ¿éÕÏ°­) ||
-			(g_MAP[this->core.X][this->core.Y + 2] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X - 1][this->core.Y + 2] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X + 1][this->core.Y + 2] == Ê¯¿éÕÏ°­))
+		if ((map.m_nArrMap[this->core.X][this->core.Y + 2] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X - 1][this->core.Y + 2] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X + 1][this->core.Y + 2] == ÍÁ¿éÕÏ°­) ||
+			(map.m_nArrMap[this->core.X][this->core.Y + 2] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X - 1][this->core.Y + 2] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X + 1][this->core.Y + 2] == Ê¯¿éÕÏ°­))
 		{
 			return true;
 		}
 		//ÊÇ·ñÓöµ½ÎÒ¼ÒÈªË®
-		if (g_MAP[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
+		if (map.m_nArrMap[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
 		{
 			return true;
 		}
@@ -446,17 +447,17 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank)
 			return true;
 		}
 		//ÊÇ·ñ×²ÕÏ°­Îï
-		if ((g_MAP[this->core.X - 2][this->core.Y] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X - 2][this->core.Y - 1] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X - 2][this->core.Y + 1] == ÍÁ¿éÕÏ°­) ||
-			(g_MAP[this->core.X - 2][this->core.Y] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X - 2][this->core.Y - 1] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X - 2][this->core.Y + 1] == Ê¯¿éÕÏ°­))
+		if ((map.m_nArrMap[this->core.X - 2][this->core.Y] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X - 2][this->core.Y - 1] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X - 2][this->core.Y + 1] == ÍÁ¿éÕÏ°­) ||
+			(map.m_nArrMap[this->core.X - 2][this->core.Y] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X - 2][this->core.Y - 1] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X - 2][this->core.Y + 1] == Ê¯¿éÕÏ°­))
 		{
 			return true;
 		}
 		//ÊÇ·ñÓöµ½ÎÒ¼ÒÈªË®
-		if (g_MAP[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
+		if (map.m_nArrMap[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
 		{
 			return true;
 		}
@@ -495,17 +496,17 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank)
 			return true;
 		}
 		//ÊÇ·ñ×²ÕÏ°­Îï
-		if ((g_MAP[this->core.X + 2][this->core.Y] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X + 2][this->core.Y - 1] == ÍÁ¿éÕÏ°­ ||
-			g_MAP[this->core.X + 2][this->core.Y + 1] == ÍÁ¿éÕÏ°­) ||
-			(g_MAP[this->core.X + 2][this->core.Y] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X + 2][this->core.Y - 1] == Ê¯¿éÕÏ°­ ||
-				g_MAP[this->core.X + 2][this->core.Y + 1] == Ê¯¿éÕÏ°­))
+		if ((map.m_nArrMap[this->core.X + 2][this->core.Y] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X + 2][this->core.Y - 1] == ÍÁ¿éÕÏ°­ ||
+			map.m_nArrMap[this->core.X + 2][this->core.Y + 1] == ÍÁ¿éÕÏ°­) ||
+			(map.m_nArrMap[this->core.X + 2][this->core.Y] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X + 2][this->core.Y - 1] == Ê¯¿éÕÏ°­ ||
+				map.m_nArrMap[this->core.X + 2][this->core.Y + 1] == Ê¯¿éÕÏ°­))
 		{
 			return true;
 		}
 		//ÊÇ·ñÓöµ½ÎÒ¼ÒÈªË®
-		if (g_MAP[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
+		if (map.m_nArrMap[this->core.X][this->core.Y] == ÎÒ¼ÒÈªË®)
 		{
 			return true;
 		}
@@ -541,6 +542,38 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank)
 		break;
 	}
 	return false;
+}
+
+void CTank::DrawTank()
+{
+	if (this->isAlive == false) return;
+	if (this->m_who == ÎÒ·½Ì¹¿Ë)
+	{
+		setColor(10, 0);
+		GotoxyAndPrint(this->core.X, this->core.Y, "¡ö");//ÖÐÐÄµã
+		for (int i = 0; i < 5; i++)//ÆäËûµã
+		{
+			GotoxyAndPrint(this->body[i].X, this->body[i].Y, "¡ö");
+		}
+		setColor(7, 0);
+	}
+	else if (this->m_who == µÐ·½Ì¹¿Ë)
+	{
+		setColor(11, 0);//ÁÁÀ¶É«
+		if (this->blood == 2)
+		{
+			GotoxyAndPrint(this->core.X, this->core.Y, "¡ö");//ÖÐÐÄµã
+			for (int i = 0; i < 5; i++)//ÆäËûµã
+				GotoxyAndPrint(this->body[i].X, this->body[i].Y, "¡ö");//ÖÐÐÄµã
+		}
+		else if (this->blood == 1)
+		{
+			GotoxyAndPrint(this->core.X, this->core.Y, "¡õ");//ÖÐÐÄµã
+			for (int i = 0; i < 5; i++)//ÆäËûµã
+				GotoxyAndPrint(this->body[i].X, this->body[i].Y, "¡õ");
+		}
+		setColor(7, 0);
+	}
 }
 
 int GetLiveEnemyAmount(CTank* penemytank)

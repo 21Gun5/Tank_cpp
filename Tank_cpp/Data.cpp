@@ -1,6 +1,6 @@
 #include "Data.h"
 
-int g_MAP[MAP_X][MAP_Y] = { ¿ÕµØ };
+//int g_MAP[MAP_X][MAP_Y] = { ¿ÕµØ };
 bool g_isRunning = false;
 int g_levelEneTank = 200;
 int g_levelEneBul = 70;
