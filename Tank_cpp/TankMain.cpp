@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 #include <time.h>
 #include "Data.h"
 #include "Func.h"
@@ -7,6 +8,7 @@
 #include "Game.h"
 #include "Draw.h"
 #include <conio.h>
+using namespace std;
 
 int main()
 {
@@ -25,6 +27,7 @@ int main()
 	{{2, 2} ,DOWN ,2,敌方坦克},
 	{{MAP_X_WALL / 4, 2},UP,1,敌方坦克, },
 	};
+
 
 	////流程控制
 	//int indexForPlay = 0;		//菜单索引
@@ -163,6 +166,8 @@ int main()
 	//		break;
 	//}
 
+
+
 	SetDefaultMap();
 	g_isRunning = 1;
 
@@ -189,27 +194,26 @@ int main()
 			DrawTank(tank, 我方坦克);
 		}
 
-		////我方子弹线程
-		//if (clock() - time4Bullet >= 50)
-		//{
-		//	if (tank.bullet.state != 不存在)
-		//	{
-		//		//子弹赋值
-		//		if (tank.bullet.state == 未赋值)//==1未赋值状态
-		//		{
-		//			tank.bullet = { {tank.body[0].X, tank.body[0].Y}, tank.dir };
-		//			tank.bullet.state = 已赋值;
-		//			//g_isBulExist++;//==2已赋值状态
-		//		}
-		//		//子弹移动
-		//		time4Bullet = clock();
-		//		COORD oldBulCore = tank.bullet.core;
-		//		MoveBullet(&tank.bullet);
-		//		CleanBullet(oldBulCore);
-		//		DrawBullet(&tank.bullet, &tank);
-		//		IsMyBulMeetOther(&tank.bullet, enemyTank, &tank);
-		//	}
-		//}
+		//我方子弹线程
+		if (clock() - time4Bullet >= 50)
+		{
+			if (tank.bullet.state != 不存在)
+			{
+				//子弹赋值
+				if (tank.bullet.state == 未赋值)//==1未赋值状态
+				{
+					tank.bullet.SetBullet({ tank.body[0].X, tank.body[0].Y }, tank.dir);
+					tank.bullet.state = 已赋值;
+				}
+				//子弹移动
+				time4Bullet = clock();
+				COORD oldBulCore = tank.bullet.core;
+				tank.bullet.MoveBullet();
+				tank.bullet.CleanBullet(oldBulCore);
+				DrawBullet(tank.bullet, tank);
+				tank.bullet.IsMyBulMeetOther( tank, enemyTank);
+			}
+		}
 
 		//敌方坦克线程
 		if (clock() - time4EnemyTank >= g_levelEneTank)
@@ -225,36 +229,41 @@ int main()
 			}
 		}
 
-		////敌方子弹线程
-		//if (clock() - time4EnemyBullet >= g_levelEneBul)
-		//{
-		//	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
-		//	{
-		//		if (enemyTank[i].bullet.state != 不存在)
-		//		{
-		//			//子弹赋值
-		//			if (enemyTank[i].bullet.state == 未赋值)//==1未赋值状态
-		//			{
-		//				enemyTank[i].bullet = { {enemyTank[i].body[0].X, enemyTank[i].body[0].Y}, enemyTank[i].dir };
-		//				enemyTank[i].bullet.state = 已赋值;
-		//			}
-		//			//子弹移动
-		//			time4EnemyBullet = clock();
-		//			COORD oldBulCore = enemyTank[i].bullet.core;
-		//			MoveBullet(&enemyTank[i].bullet);
-		//			CleanBullet(oldBulCore);
-		//			DrawBullet(&enemyTank[i].bullet, &enemyTank[i]);
-		//			IsEneBulMeetOther(&enemyTank[i].bullet, enemyTank, &tank);
-		//		}
-		//	}
-		//}
+		//敌方子弹线程
+		if (clock() - time4EnemyBullet >= g_levelEneBul)
+		{
+			for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+			{
+				if (enemyTank[i].bullet.state != 不存在)
+				{
+					//子弹赋值
+					if (enemyTank[i].bullet.state == 未赋值)//==1未赋值状态
+					{
+						enemyTank[i].bullet.SetBullet({enemyTank[i].body[0].X, enemyTank[i].body[0].Y}, enemyTank[i].dir );
+						enemyTank[i].bullet.state = 已赋值;
+					}
 
-		////判断游戏结束
-		//if (tank.blood == 0 || GetLiveEnemyAmount(enemyTank) == 0)
-		//{
-		//	GameOver(enemyTank);
-		//	break;
-		//}
+
+
+					tank.bullet.IsMyBulMeetOther(tank, enemyTank);
+
+					//子弹移动
+					time4EnemyBullet = clock();
+					COORD oldBulCore = enemyTank[i].bullet.core;
+					enemyTank[i].bullet.MoveBullet();
+					enemyTank[i].bullet.CleanBullet(oldBulCore);
+					DrawBullet(enemyTank[i].bullet, enemyTank[i]);
+					enemyTank[i].bullet.IsEneBulMeetOther(tank,enemyTank);
+				}
+			}
+		}
+
+		//判断游戏结束
+		if (tank.blood == 0 || GetLiveEnemyAmount(enemyTank) == 0)
+		{
+			GameOver(enemyTank);
+			break;
+		}
 	
 	}
 

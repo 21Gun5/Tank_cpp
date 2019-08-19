@@ -543,7 +543,7 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank)
 	return false;
 }
 
-int GetLiveEnemyAmount(PTANK penemytank)
+int GetLiveEnemyAmount(CTank* penemytank)
 {
 	int count = 0;
 	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)

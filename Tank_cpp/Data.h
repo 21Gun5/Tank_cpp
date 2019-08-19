@@ -49,7 +49,7 @@ extern const char* menuWhenMap[3];
 extern const char* menuLevel[3];
 
 //枚举
-enum { _UP = 72, _DOWN = 80, ENTER = 13 };//按键枚举
+//enum { _UP = 72, _DOWN = 80, ENTER = 13 };//按键枚举
 enum direction { UP, DOWN, LEFT, RIGHT };//方向枚举
 
 //子弹结构体

@@ -7,25 +7,32 @@
 #include <string.h>
 #include "Data.h"
 #include "Func.h"
-#include "Bullet.h"
 #include "Tank.h"
+#include "Bullet.h"
 
 //子弹相关
-void CBullet::MoveBullet(PBULLET pbullet)
+
+void CBullet::SetBullet(COORD cor, enum direction di)
 {
-	switch (pbullet->dir)
+	core = cor;
+	dir = di;
+}
+
+void CBullet::MoveBullet()
+{
+	switch (this->dir)
 	{
 	case UP:
-		pbullet->core.Y--;
+		this->core.Y--;
 		break;
 	case DOWN:
-		pbullet->core.Y++;
+		this->core.Y++;
 		break;
 	case LEFT:
-		pbullet->core.X--;
+		this->core.X--;
 		break;
 	case RIGHT:
-		pbullet->core.X++;
+		this->core.X++;
 		break;
 	default:
 		break;
@@ -36,112 +43,113 @@ void CBullet::CleanBullet(COORD oldBulCore)
 	GotoxyAndPrint(oldBulCore.X, oldBulCore.Y, "  ");
 	//printf("  ");
 }
-void CBullet::IsMyBulMeetOther(PBULLET pbullet, PTANK penemytank, PTANK ptank)
+
+void CBullet::IsMyBulMeetOther(CTank tank,CTank* penemytank)
 {
 	//遇边界
-	if (pbullet->core.X <= 0 ||
-		pbullet->core.X >= MAP_X_WALL / 2 ||
-		pbullet->core.Y <= 0 ||
-		pbullet->core.Y >= MAP_Y - 1)
+	if (this->core.X <= 0 ||
+		this->core.X >= MAP_X_WALL / 2 ||
+		this->core.Y <= 0 ||
+		this->core.Y >= MAP_Y - 1)
 	{
-		pbullet->state = 不存在;
+		this->state = 不存在;
 	}
 	//遇土块障碍
-	if (g_MAP[pbullet->core.X][pbullet->core.Y] == 土块障碍)
+	if (g_MAP[this->core.X][this->core.Y] == 土块障碍)
 	{
-		pbullet->state = 不存在;
-		g_MAP[pbullet->core.X][pbullet->core.Y] = 空地;
+		this->state = 不存在;
+		g_MAP[this->core.X][this->core.Y] = 空地;
 	}
 	//遇石块障碍
-	if (g_MAP[pbullet->core.X][pbullet->core.Y] == 石块障碍)
+	if (g_MAP[this->core.X][this->core.Y] == 石块障碍)
 	{
-		pbullet->state = 不存在;
+		this->state = 不存在;
 	}
 	//遇泉水
-	if (g_MAP[pbullet->core.X][pbullet->core.Y] == 我家泉水)
+	if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
 	{
-		pbullet->state = 不存在;
+		this->state = 不存在;
 	}
 	//遇敌方坦克
 	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 	{
 		if (penemytank[i].isAlive == false) continue;
-		switch (pbullet->dir)
+		switch (this->dir)
 		{
 		case UP:
 			if (
-				(pbullet->core.X == penemytank[i].core.X) && (pbullet->core.Y - penemytank[i].core.Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[0].X) && (pbullet->core.Y - penemytank[i].body[0].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[1].X) && (pbullet->core.Y - penemytank[i].body[1].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[2].X) && (pbullet->core.Y - penemytank[i].body[2].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[3].X) && (pbullet->core.Y - penemytank[i].body[3].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[4].X) && (pbullet->core.Y - penemytank[i].body[4].Y == 0)
+				(this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 0) ||
+				(this->core.X == penemytank[i].body[0].X) && (this->core.Y - penemytank[i].body[0].Y == 0) ||
+				(this->core.X == penemytank[i].body[1].X) && (this->core.Y - penemytank[i].body[1].Y == 0) ||
+				(this->core.X == penemytank[i].body[2].X) && (this->core.Y - penemytank[i].body[2].Y == 0) ||
+				(this->core.X == penemytank[i].body[3].X) && (this->core.Y - penemytank[i].body[3].Y == 0) ||
+				(this->core.X == penemytank[i].body[4].X) && (this->core.Y - penemytank[i].body[4].Y == 0)
 				)
 			{
 				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-				pbullet->state = 不存在;
+				this->state = 不存在;
 				penemytank[i].blood--;
 				if (penemytank[i].blood == 0)//减血后为0则死亡
 					penemytank[i].isAlive = false;
 				if (!penemytank[i].isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(penemytank)) % 3 == 0)//每打死三个生命值+1
-					(ptank->blood)++;//要加!penemytank[i].isAlive，要不打到多条命的敌坦也加命
+					(tank.blood)++;//要加!penemytank[i].isAlive，要不打到多条命的敌坦也加命
 			}
 			break;
 		case DOWN:
 			if (
-				(pbullet->core.X == penemytank[i].core.X) && (pbullet->core.Y - penemytank[i].core.Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[0].X) && (pbullet->core.Y - penemytank[i].body[0].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[1].X) && (pbullet->core.Y - penemytank[i].body[1].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[2].X) && (pbullet->core.Y - penemytank[i].body[2].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[3].X) && (pbullet->core.Y - penemytank[i].body[3].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[4].X) && (pbullet->core.Y - penemytank[i].body[4].Y == 0)
+				(this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 0) ||
+				(this->core.X == penemytank[i].body[0].X) && (this->core.Y - penemytank[i].body[0].Y == 0) ||
+				(this->core.X == penemytank[i].body[1].X) && (this->core.Y - penemytank[i].body[1].Y == 0) ||
+				(this->core.X == penemytank[i].body[2].X) && (this->core.Y - penemytank[i].body[2].Y == 0) ||
+				(this->core.X == penemytank[i].body[3].X) && (this->core.Y - penemytank[i].body[3].Y == 0) ||
+				(this->core.X == penemytank[i].body[4].X) && (this->core.Y - penemytank[i].body[4].Y == 0)
 				)
 			{
 				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-				pbullet->state = 不存在;
+				this->state = 不存在;
 				penemytank[i].blood--;
 				if (penemytank[i].blood == 0)//减血后为0则死亡
 					penemytank[i].isAlive = false;
 				if (!penemytank[i].isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(penemytank)) % 3 == 0)//每打死三个生命值+1
-					(ptank->blood)++;
+					(tank.blood)++;
 			}
 			break;
 		case LEFT:
 			if (
-				(pbullet->core.X == penemytank[i].core.X) && (pbullet->core.Y - penemytank[i].core.Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[0].X) && (pbullet->core.Y - penemytank[i].body[0].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[1].X) && (pbullet->core.Y - penemytank[i].body[1].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[2].X) && (pbullet->core.Y - penemytank[i].body[2].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[3].X) && (pbullet->core.Y - penemytank[i].body[3].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[4].X) && (pbullet->core.Y - penemytank[i].body[4].Y == 0)
+				(this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 0) ||
+				(this->core.X == penemytank[i].body[0].X) && (this->core.Y - penemytank[i].body[0].Y == 0) ||
+				(this->core.X == penemytank[i].body[1].X) && (this->core.Y - penemytank[i].body[1].Y == 0) ||
+				(this->core.X == penemytank[i].body[2].X) && (this->core.Y - penemytank[i].body[2].Y == 0) ||
+				(this->core.X == penemytank[i].body[3].X) && (this->core.Y - penemytank[i].body[3].Y == 0) ||
+				(this->core.X == penemytank[i].body[4].X) && (this->core.Y - penemytank[i].body[4].Y == 0)
 				)
 			{
 				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-				pbullet->state = 不存在;
+				this->state = 不存在;
 				penemytank[i].blood--;
 				if (penemytank[i].blood == 0)//减血后为0则死亡
 					penemytank[i].isAlive = false;
 				if (!penemytank[i].isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(penemytank)) % 3 == 0)//每打死三个生命值+1
-					(ptank->blood)++;
+					(tank.blood)++;
 			}
 			break;
 		case RIGHT:
 			if (
-				(pbullet->core.X == penemytank[i].core.X) && (pbullet->core.Y - penemytank[i].core.Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[0].X) && (pbullet->core.Y - penemytank[i].body[0].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[1].X) && (pbullet->core.Y - penemytank[i].body[1].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[2].X) && (pbullet->core.Y - penemytank[i].body[2].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[3].X) && (pbullet->core.Y - penemytank[i].body[3].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[4].X) && (pbullet->core.Y - penemytank[i].body[4].Y == 0)
+				(this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 0) ||
+				(this->core.X == penemytank[i].body[0].X) && (this->core.Y - penemytank[i].body[0].Y == 0) ||
+				(this->core.X == penemytank[i].body[1].X) && (this->core.Y - penemytank[i].body[1].Y == 0) ||
+				(this->core.X == penemytank[i].body[2].X) && (this->core.Y - penemytank[i].body[2].Y == 0) ||
+				(this->core.X == penemytank[i].body[3].X) && (this->core.Y - penemytank[i].body[3].Y == 0) ||
+				(this->core.X == penemytank[i].body[4].X) && (this->core.Y - penemytank[i].body[4].Y == 0)
 				)
 			{
 				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-				pbullet->state = 不存在;
+				this->state = 不存在;
 				penemytank[i].blood--;
 				if (penemytank[i].blood == 0)//减血后为0则死亡
 					penemytank[i].isAlive = false;
 				if (!penemytank[i].isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(penemytank)) % 3 == 0)//每打死三个生命值+1
-					(ptank->blood)++;
+					(tank.blood)++;
 			}
 			break;
 		default:
@@ -149,102 +157,106 @@ void CBullet::IsMyBulMeetOther(PBULLET pbullet, PTANK penemytank, PTANK ptank)
 		}
 	}
 }
-void CBullet::IsEneBulMeetOther(PBULLET pbullet, PTANK penemytank, PTANK ptank)
+
+
+
+
+void CBullet::IsEneBulMeetOther(CTank tank, CTank* penemytank)
 {
 	//遇边界
-	if (pbullet->core.X <= 0 ||
-		pbullet->core.X >= MAP_X_WALL / 2 ||
-		pbullet->core.Y <= 0 ||
-		pbullet->core.Y >= MAP_Y - 1)
+	if (this->core.X <= 0 ||
+		this->core.X >= MAP_X_WALL / 2 ||
+		this->core.Y <= 0 ||
+		this->core.Y >= MAP_Y - 1)
 	{
-		pbullet->state = 不存在;
+		this->state = 不存在;
 	}
 	//遇土块障碍
-	if (g_MAP[pbullet->core.X][pbullet->core.Y] == 土块障碍)
+	if (g_MAP[this->core.X][this->core.Y] == 土块障碍)
 	{
-		pbullet->state = 不存在;
-		g_MAP[pbullet->core.X][pbullet->core.Y] = 空地;
+		this->state = 不存在;
+		g_MAP[this->core.X][this->core.Y] = 空地;
 	}
 	//遇石块障碍
-	if (g_MAP[pbullet->core.X][pbullet->core.Y] == 石块障碍)
+	if (g_MAP[this->core.X][this->core.Y] == 石块障碍)
 	{
-		pbullet->state = 不存在;
+		this->state = 不存在;
 	}
 	//遇泉水
-	if (g_MAP[pbullet->core.X][pbullet->core.Y] == 我家泉水)
+	if (g_MAP[this->core.X][this->core.Y] == 我家泉水)
 	{
-		pbullet->state = 不存在;
-		ptank->blood = 0;//泉水打到，我方坦克当场去世
+		this->state = 不存在;
+		tank.blood = 0;//泉水打到，我方坦克当场去世
 	}
 	//遇到我方坦克
-	switch (pbullet->dir)
+	switch (this->dir)
 	{
 	case UP:
 		if (
-			(pbullet->core.X == ptank->core.X) && (pbullet->core.Y - ptank->core.Y == 0) ||
-			(pbullet->core.X == ptank->body[0].X) && (pbullet->core.Y - ptank->body[0].Y == 0) ||
-			(pbullet->core.X == ptank->body[1].X) && (pbullet->core.Y - ptank->body[1].Y == 0) ||
-			(pbullet->core.X == ptank->body[2].X) && (pbullet->core.Y - ptank->body[2].Y == 0) ||
-			(pbullet->core.X == ptank->body[3].X) && (pbullet->core.Y - ptank->body[3].Y == 0) ||
-			(pbullet->core.X == ptank->body[4].X) && (pbullet->core.Y - ptank->body[4].Y == 0)
+			(this->core.X == tank.core.X) && (this->core.Y - tank.core.Y == 0) ||
+			(this->core.X == tank.body[0].X) && (this->core.Y - tank.body[0].Y == 0) ||
+			(this->core.X == tank.body[1].X) && (this->core.Y - tank.body[1].Y == 0) ||
+			(this->core.X == tank.body[2].X) && (this->core.Y - tank.body[2].Y == 0) ||
+			(this->core.X == tank.body[3].X) && (this->core.Y - tank.body[3].Y == 0) ||
+			(this->core.X == tank.body[4].X) && (this->core.Y - tank.body[4].Y == 0)
 			)
 		{
 			PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-			pbullet->state = 不存在;
-			(ptank->blood)--;
-			if (ptank->blood == 0)//如果减血后为0
-				ptank->isAlive = false;//声明为死亡
+			this->state = 不存在;
+			(tank.blood)--;
+			if (tank.blood == 0)//如果减血后为0
+				tank.isAlive = false;//声明为死亡
 		}
 		break;
 	case DOWN:
 		if (
-			(pbullet->core.X == ptank->core.X) && (pbullet->core.Y - ptank->core.Y == 0) ||
-			(pbullet->core.X == ptank->body[0].X) && (pbullet->core.Y - ptank->body[0].Y == 0) ||
-			(pbullet->core.X == ptank->body[1].X) && (pbullet->core.Y - ptank->body[1].Y == 0) ||
-			(pbullet->core.X == ptank->body[2].X) && (pbullet->core.Y - ptank->body[2].Y == 0) ||
-			(pbullet->core.X == ptank->body[3].X) && (pbullet->core.Y - ptank->body[3].Y == 0) ||
-			(pbullet->core.X == ptank->body[4].X) && (pbullet->core.Y - ptank->body[4].Y == 0)
+			(this->core.X == tank.core.X) && (this->core.Y - tank.core.Y == 0) ||
+			(this->core.X == tank.body[0].X) && (this->core.Y - tank.body[0].Y == 0) ||
+			(this->core.X == tank.body[1].X) && (this->core.Y - tank.body[1].Y == 0) ||
+			(this->core.X == tank.body[2].X) && (this->core.Y - tank.body[2].Y == 0) ||
+			(this->core.X == tank.body[3].X) && (this->core.Y - tank.body[3].Y == 0) ||
+			(this->core.X == tank.body[4].X) && (this->core.Y - tank.body[4].Y == 0)
 			)
 		{
 			PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-			pbullet->state = 不存在;
-			(ptank->blood)--;
-			if (ptank->blood == 0)//如果减血后为0
-				ptank->isAlive = false;//声明为死亡
+			this->state = 不存在;
+			(tank.blood)--;
+			if (tank.blood == 0)//如果减血后为0
+				tank.isAlive = false;//声明为死亡
 		}
 		break;
 	case LEFT:
 		if (
-			(pbullet->core.X == ptank->core.X) && (pbullet->core.Y - ptank->core.Y == 0) ||
-			(pbullet->core.X == ptank->body[0].X) && (pbullet->core.Y - ptank->body[0].Y == 0) ||
-			(pbullet->core.X == ptank->body[1].X) && (pbullet->core.Y - ptank->body[1].Y == 0) ||
-			(pbullet->core.X == ptank->body[2].X) && (pbullet->core.Y - ptank->body[2].Y == 0) ||
-			(pbullet->core.X == ptank->body[3].X) && (pbullet->core.Y - ptank->body[3].Y == 0) ||
-			(pbullet->core.X == ptank->body[4].X) && (pbullet->core.Y - ptank->body[4].Y == 0)
+			(this->core.X == tank.core.X) && (this->core.Y - tank.core.Y == 0) ||
+			(this->core.X == tank.body[0].X) && (this->core.Y - tank.body[0].Y == 0) ||
+			(this->core.X == tank.body[1].X) && (this->core.Y - tank.body[1].Y == 0) ||
+			(this->core.X == tank.body[2].X) && (this->core.Y - tank.body[2].Y == 0) ||
+			(this->core.X == tank.body[3].X) && (this->core.Y - tank.body[3].Y == 0) ||
+			(this->core.X == tank.body[4].X) && (this->core.Y - tank.body[4].Y == 0)
 			)
 		{
 			PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-			pbullet->state = 不存在;
-			(ptank->blood)--;
-			if (ptank->blood == 0)//如果减血后为0
-				ptank->isAlive = false;//声明为死亡
+			this->state = 不存在;
+			(tank.blood)--;
+			if (tank.blood == 0)//如果减血后为0
+				tank.isAlive = false;//声明为死亡
 		}
 		break;
 	case RIGHT:
 		if (
-			(pbullet->core.X == ptank->core.X) && (pbullet->core.Y - ptank->core.Y == 0) ||
-			(pbullet->core.X == ptank->body[0].X) && (pbullet->core.Y - ptank->body[0].Y == 0) ||
-			(pbullet->core.X == ptank->body[1].X) && (pbullet->core.Y - ptank->body[1].Y == 0) ||
-			(pbullet->core.X == ptank->body[2].X) && (pbullet->core.Y - ptank->body[2].Y == 0) ||
-			(pbullet->core.X == ptank->body[3].X) && (pbullet->core.Y - ptank->body[3].Y == 0) ||
-			(pbullet->core.X == ptank->body[4].X) && (pbullet->core.Y - ptank->body[4].Y == 0)
+			(this->core.X == tank.core.X) && (this->core.Y - tank.core.Y == 0) ||
+			(this->core.X == tank.body[0].X) && (this->core.Y - tank.body[0].Y == 0) ||
+			(this->core.X == tank.body[1].X) && (this->core.Y - tank.body[1].Y == 0) ||
+			(this->core.X == tank.body[2].X) && (this->core.Y - tank.body[2].Y == 0) ||
+			(this->core.X == tank.body[3].X) && (this->core.Y - tank.body[3].Y == 0) ||
+			(this->core.X == tank.body[4].X) && (this->core.Y - tank.body[4].Y == 0)
 			)
 		{
 			PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-			pbullet->state = 不存在;
-			(ptank->blood)--;
-			if (ptank->blood == 0)//如果减血后为0
-				ptank->isAlive = false;//声明为死亡
+			this->state = 不存在;
+			(tank.blood)--;
+			if (tank.blood == 0)//如果减血后为0
+				tank.isAlive = false;//声明为死亡
 		}
 		break;
 	default:
@@ -254,58 +266,58 @@ void CBullet::IsEneBulMeetOther(PBULLET pbullet, PTANK penemytank, PTANK ptank)
 	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 	{
 		if (penemytank[i].isAlive == false) continue;
-		switch (pbullet->dir)
+		switch (this->dir)
 		{
 		case UP:
 			if (
-				(pbullet->core.X == penemytank[i].core.X) && (pbullet->core.Y - penemytank[i].core.Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[0].X) && (pbullet->core.Y - penemytank[i].body[0].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[1].X) && (pbullet->core.Y - penemytank[i].body[1].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[2].X) && (pbullet->core.Y - penemytank[i].body[2].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[3].X) && (pbullet->core.Y - penemytank[i].body[3].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[4].X) && (pbullet->core.Y - penemytank[i].body[4].Y == 0)
+				(this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 0) ||
+				(this->core.X == penemytank[i].body[0].X) && (this->core.Y - penemytank[i].body[0].Y == 0) ||
+				(this->core.X == penemytank[i].body[1].X) && (this->core.Y - penemytank[i].body[1].Y == 0) ||
+				(this->core.X == penemytank[i].body[2].X) && (this->core.Y - penemytank[i].body[2].Y == 0) ||
+				(this->core.X == penemytank[i].body[3].X) && (this->core.Y - penemytank[i].body[3].Y == 0) ||
+				(this->core.X == penemytank[i].body[4].X) && (this->core.Y - penemytank[i].body[4].Y == 0)
 				)
 			{
-				pbullet->state = 不存在;
+				this->state = 不存在;
 			}
 			break;
 		case DOWN:
 			if (
-				(pbullet->core.X == penemytank[i].core.X) && (pbullet->core.Y - penemytank[i].core.Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[0].X) && (pbullet->core.Y - penemytank[i].body[0].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[1].X) && (pbullet->core.Y - penemytank[i].body[1].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[2].X) && (pbullet->core.Y - penemytank[i].body[2].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[3].X) && (pbullet->core.Y - penemytank[i].body[3].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[4].X) && (pbullet->core.Y - penemytank[i].body[4].Y == 0)
+				(this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 0) ||
+				(this->core.X == penemytank[i].body[0].X) && (this->core.Y - penemytank[i].body[0].Y == 0) ||
+				(this->core.X == penemytank[i].body[1].X) && (this->core.Y - penemytank[i].body[1].Y == 0) ||
+				(this->core.X == penemytank[i].body[2].X) && (this->core.Y - penemytank[i].body[2].Y == 0) ||
+				(this->core.X == penemytank[i].body[3].X) && (this->core.Y - penemytank[i].body[3].Y == 0) ||
+				(this->core.X == penemytank[i].body[4].X) && (this->core.Y - penemytank[i].body[4].Y == 0)
 				)
 			{
-				pbullet->state = 不存在;
+				this->state = 不存在;
 			}
 			break;
 		case LEFT:
 			if (
-				(pbullet->core.X == penemytank[i].core.X) && (pbullet->core.Y - penemytank[i].core.Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[0].X) && (pbullet->core.Y - penemytank[i].body[0].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[1].X) && (pbullet->core.Y - penemytank[i].body[1].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[2].X) && (pbullet->core.Y - penemytank[i].body[2].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[3].X) && (pbullet->core.Y - penemytank[i].body[3].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[4].X) && (pbullet->core.Y - penemytank[i].body[4].Y == 0)
+				(this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 0) ||
+				(this->core.X == penemytank[i].body[0].X) && (this->core.Y - penemytank[i].body[0].Y == 0) ||
+				(this->core.X == penemytank[i].body[1].X) && (this->core.Y - penemytank[i].body[1].Y == 0) ||
+				(this->core.X == penemytank[i].body[2].X) && (this->core.Y - penemytank[i].body[2].Y == 0) ||
+				(this->core.X == penemytank[i].body[3].X) && (this->core.Y - penemytank[i].body[3].Y == 0) ||
+				(this->core.X == penemytank[i].body[4].X) && (this->core.Y - penemytank[i].body[4].Y == 0)
 				)
 			{
-				pbullet->state = 不存在;
+				this->state = 不存在;
 			}
 			break;
 		case RIGHT:
 			if (
-				(pbullet->core.X == penemytank[i].core.X) && (pbullet->core.Y - penemytank[i].core.Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[0].X) && (pbullet->core.Y - penemytank[i].body[0].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[1].X) && (pbullet->core.Y - penemytank[i].body[1].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[2].X) && (pbullet->core.Y - penemytank[i].body[2].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[3].X) && (pbullet->core.Y - penemytank[i].body[3].Y == 0) ||
-				(pbullet->core.X == penemytank[i].body[4].X) && (pbullet->core.Y - penemytank[i].body[4].Y == 0)
+				(this->core.X == penemytank[i].core.X) && (this->core.Y - penemytank[i].core.Y == 0) ||
+				(this->core.X == penemytank[i].body[0].X) && (this->core.Y - penemytank[i].body[0].Y == 0) ||
+				(this->core.X == penemytank[i].body[1].X) && (this->core.Y - penemytank[i].body[1].Y == 0) ||
+				(this->core.X == penemytank[i].body[2].X) && (this->core.Y - penemytank[i].body[2].Y == 0) ||
+				(this->core.X == penemytank[i].body[3].X) && (this->core.Y - penemytank[i].body[3].Y == 0) ||
+				(this->core.X == penemytank[i].body[4].X) && (this->core.Y - penemytank[i].body[4].Y == 0)
 				)
 			{
-				pbullet->state = 不存在;
+				this->state = 不存在;
 			}
 			break;
 		default:

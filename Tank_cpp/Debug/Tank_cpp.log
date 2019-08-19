@@ -1,5 +1,7 @@
 ﻿  Bullet.cpp
+  Data.cpp
   Draw.cpp
+  Func.cpp
   Game.cpp
   Map.cpp
   Tank.cpp

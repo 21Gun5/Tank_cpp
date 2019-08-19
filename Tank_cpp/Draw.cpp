@@ -95,43 +95,43 @@ void DrawTank(CTank tank, int who)
 	}
 }
 
-void DrawBullet(PBULLET pbullet, PTANK ptank)
+void DrawBullet(CBullet bullet, CTank tank)
 {
 	//碰到边界，换成边界的颜色，实现子弹消失的效果
-	if (pbullet->core.X <= 0 ||
-		pbullet->core.X >= MAP_X_WALL / 2 ||
-		pbullet->core.Y <= 0 ||
-		pbullet->core.Y >= MAP_Y - 1)
+	if (bullet.core.X <= 0 ||
+		bullet.core.X >= MAP_X_WALL / 2 ||
+		bullet.core.Y <= 0 ||
+		bullet.core.Y >= MAP_Y - 1)
 	{
 		setColor(7, 0);
 	}
 	else
 	{
-		if (ptank->who == 我方坦克)
+		if (tank.m_who == 我方坦克)
 			setColor(10, 0);
-		else if (ptank->who == 敌方坦克)
+		else if (tank.m_who == 敌方坦克)
 			setColor(11, 0);
 	}
 	//碰到障碍，将子弹画为空格，实现子弹消失
-	if (g_MAP[pbullet->core.X][pbullet->core.Y] == 土块障碍)
+	if (g_MAP[bullet.core.X][bullet.core.Y] == 土块障碍)
 	{
-		GotoxyAndPrint(pbullet->core.X, pbullet->core.Y, "  ");
+		GotoxyAndPrint(bullet.core.X, bullet.core.Y, "  ");
 	}
 	//碰到石块障碍物，，实现子弹消失的效果
-	else if (g_MAP[pbullet->core.X][pbullet->core.Y] == 石块障碍)
+	else if (g_MAP[bullet.core.X][bullet.core.Y] == 石块障碍)
 	{
 		setColor(7, 0);
 	}
 	//碰到泉水，将子弹换成其颜色和形状，实现子弹消失
-	else if (g_MAP[pbullet->core.X][pbullet->core.Y] == 我家泉水)
+	else if (g_MAP[bullet.core.X][bullet.core.Y] == 我家泉水)
 	{
 		setColor(12, 0);
-		GotoxyAndPrint(pbullet->core.X, pbullet->core.Y, "★");
+		GotoxyAndPrint(bullet.core.X, bullet.core.Y, "★");
 	}
 	//一般运动状态
 	else
 	{
-		GotoxyAndPrint(pbullet->core.X, pbullet->core.Y, "■");
+		GotoxyAndPrint(bullet.core.X, bullet.core.Y, "■");
 	}
 	setColor(7, 0);
 }
@@ -139,7 +139,7 @@ void DrawBullet(PBULLET pbullet, PTANK ptank)
 void DrawGameInfo(CTank tank, CTank * penemytank)
 {
 	//存活敌坦数量
-	//int eneTankCount = GetLiveEnemyAmount(penemytank);
+	int eneTankCount = GetLiveEnemyAmount(penemytank);
 	//当前难度
 	char level[10];
 	if (g_levelEneTank == 300) strcpy_s(level, 10, "简单\0");
@@ -155,11 +155,11 @@ void DrawGameInfo(CTank tank, CTank * penemytank)
 	GotoxyAndPrint(MAP_X / 2 - 11, 5, "");
 	printf("当前生命: %d", tank.blood);
 	GotoxyAndPrint(MAP_X / 2 - 11, 7, "");
-	printf("当前分数: %d",-1);
-	//printf("当前分数: %d", ENEMY_TANK_AMOUNT - eneTankCount);
+	//printf("当前分数: %d",-1);
+	printf("当前分数: %d", ENEMY_TANK_AMOUNT - eneTankCount);
 	GotoxyAndPrint(MAP_X / 2 - 11, 9, "");
-	printf("敌坦个数: %d",-1);
-	//printf("敌坦个数: %d", eneTankCount);
+	//printf("敌坦个数: %d",-1);
+	printf("敌坦个数: %d", eneTankCount);
 	GotoxyAndPrint(MAP_X / 2 - 11, 11, "");
 	printf("当前难度: %s", level);
 	setColor(7, 0);
