@@ -1,12 +1,6 @@
 #include "Func.h"
-
-#include <io.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <conio.h>
-#include <time.h>
-#include <string.h>
-#pragma comment(lib,"winmm.lib")
+#include <iostream>
+#include <windows.h>
 
 //系统功能
 void SetCursorState(bool b)
@@ -28,8 +22,10 @@ void GotoxyAndPrint(unsigned x, unsigned y, const char* str)
 	cur.X = x * 2;
 	cur.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
-	printf(str);
+	std::cout << str;
 }
+
+
 
 
 

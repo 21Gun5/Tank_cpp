@@ -1,5 +1,4 @@
 #pragma once
-#include <windows.h>
 
 //边界大小
 #define MAP_X 90		
@@ -37,9 +36,8 @@
 #define 我家泉水 4
 
 //枚举
-//enum { _UP = 72, _DOWN = 80, ENTER = 13 };//按键枚举
+enum { UP_KEY = 72, DOWN_KEY = 80, ENTER_KEY = 13 };//按键枚举
 enum direction { UP, DOWN, LEFT, RIGHT };//方向枚举
-
 
 //系统功能
 void SetCursorState(bool b);								//设置光标状态

@@ -2,9 +2,10 @@
 #include <conio.h>
 #include <time.h>
 #include "Func.h"
-#include "Tank.h"
-#include "Map.h"
 #include "Game.h"
+#include "Map.h"
+//#include "Bullet.h"
+#include "Tank.h"
 using namespace std;
 
 int main()
@@ -166,7 +167,7 @@ int main()
 	//}
 
 	map.SetDefaultMap();
-	game.g_isRunning = 1;
+	game.m_isRunning = 1;
 
 	//边界及障碍
 	map.DrawBorder();
@@ -174,7 +175,7 @@ int main()
 	map.DrawBarr();
 
 	//主循环
-	while (game.g_isRunning)
+	while (game.m_isRunning)
 	{
 		//信息实时显示
 		game.DrawGameInfo(tank, enemyTank);
@@ -182,8 +183,8 @@ int main()
 		if (clock() - time4Tank >= 100)
 		{
 			time4Tank = clock();
-			COORD oldCore = tank.core;
-			COORD oldBody[5] = { tank.body[0],tank.body[1],tank.body[2],tank.body[3],tank.body[4] };
+			COORD oldCore = tank.m_core;
+			COORD oldBody[5] = { tank.m_body[0],tank.m_body[1],tank.m_body[2],tank.m_body[3],tank.m_body[4] };
 			
 			tank.ManipulateMyTank(enemyTank,map);
 			tank.CleanTankTail(oldCore, oldBody);
@@ -192,61 +193,61 @@ int main()
 		//我方子弹线程
 		if (clock() - time4Bullet >= 50)
 		{
-			if (tank.bullet.state != 不存在)
+			if (tank.m_bullet.m_state != 不存在)
 			{
 				//子弹赋值
-				if (tank.bullet.state == 未赋值)//==1未赋值状态
+				if (tank.m_bullet.m_state == 未赋值)//==1未赋值状态
 				{
-					tank.bullet.SetBullet({ tank.body[0].X, tank.body[0].Y }, tank.dir);
-					tank.bullet.state = 已赋值;
+					tank.m_bullet.SetBullet({ tank.m_body[0].X, tank.m_body[0].Y }, tank.m_dir);
+					tank.m_bullet.m_state = 已赋值;
 				}
 				//子弹移动
 				time4Bullet = clock();
-				COORD oldBulCore = tank.bullet.core;
-				tank.bullet.MoveBullet();
-				tank.bullet.CleanBullet(oldBulCore);
-				tank.bullet.DrawBullet(tank,map);
-				tank.bullet.IsMyBulMeetOther( tank, enemyTank,map);
+				COORD oldBulCore = tank.m_bullet.m_core;
+				tank.m_bullet.MoveBullet();
+				tank.m_bullet.CleanBullet(oldBulCore);
+				tank.m_bullet.DrawBullet(tank,map);
+				tank.m_bullet.IsMyBulMeetOther( tank, enemyTank,map);
 			}
 		}
 		//敌方坦克线程
-		if (clock() - time4EnemyTank >= game.g_levelEneTank)
+		if (clock() - time4EnemyTank >= game.m_levelEneTank)
 		{
 			for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 			{
 				time4EnemyTank = clock();
-				COORD oldCore = enemyTank[i].core;
-				COORD oldBody[5] = { enemyTank[i].body[0],enemyTank[i].body[1],enemyTank[i].body[2],enemyTank[i].body[3],enemyTank[i].body[4] };
+				COORD oldCore = enemyTank[i].m_core;
+				COORD oldBody[5] = { enemyTank[i].m_body[0],enemyTank[i].m_body[1],enemyTank[i].m_body[2],enemyTank[i].m_body[3],enemyTank[i].m_body[4] };
 				enemyTank[i].ManipulateEneTank(tank, enemyTank,map);
 				enemyTank[i].CleanTankTail(oldCore, oldBody);
 				enemyTank[i].DrawTank();
 			}
 		}
 		//敌方子弹线程
-		if (clock() - time4EnemyBullet >= game.g_levelEneBul)
+		if (clock() - time4EnemyBullet >= game.m_levelEneBul)
 		{
 			for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 			{
-				if (enemyTank[i].bullet.state != 不存在)
+				if (enemyTank[i].m_bullet.m_state != 不存在)
 				{
 					//子弹赋值
-					if (enemyTank[i].bullet.state == 未赋值)//==1未赋值状态
+					if (enemyTank[i].m_bullet.m_state == 未赋值)//==1未赋值状态
 					{
-						enemyTank[i].bullet.SetBullet({enemyTank[i].body[0].X, enemyTank[i].body[0].Y}, enemyTank[i].dir );
-						enemyTank[i].bullet.state = 已赋值;
+						enemyTank[i].m_bullet.SetBullet({enemyTank[i].m_body[0].X, enemyTank[i].m_body[0].Y}, enemyTank[i].m_dir );
+						enemyTank[i].m_bullet.m_state = 已赋值;
 					}
 					//子弹移动
 					time4EnemyBullet = clock();
-					COORD oldBulCore = enemyTank[i].bullet.core;
-					enemyTank[i].bullet.MoveBullet();
-					enemyTank[i].bullet.CleanBullet(oldBulCore);
-					enemyTank[i].bullet.DrawBullet(enemyTank[i],map);
-					enemyTank[i].bullet.IsEneBulMeetOther(tank,enemyTank,map);
+					COORD oldBulCore = enemyTank[i].m_bullet.m_core;
+					enemyTank[i].m_bullet.MoveBullet();
+					enemyTank[i].m_bullet.CleanBullet(oldBulCore);
+					enemyTank[i].m_bullet.DrawBullet(enemyTank[i],map);
+					enemyTank[i].m_bullet.IsEneBulMeetOther(tank,enemyTank,map);
 				}
 			}
 		}
 		//判断游戏结束
-		if (tank.blood == 0 || GetLiveEnemyAmount(enemyTank) == 0)
+		if (tank.m_blood == 0 || GetLiveEnemyAmount(enemyTank) == 0)
 		{
 			game.GameOver(enemyTank);
 			break;

@@ -1,12 +1,8 @@
-#include <Windows.h>
 #include <io.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <conio.h>
-#include <time.h>
-#include <string.h>
-#include "Game.h"
-#include "Func.h"
 #include "Map.h"
 
 char* CMap::ShowMapFile()
@@ -78,7 +74,6 @@ void CMap::SetDefaultMap()
 		}
 	}
 }
-
 //void CMap::LoadMapFile(char* str)
 //{
 //	char* filename = (char*)malloc(40);
@@ -244,7 +239,6 @@ void CMap::DrawBarr()
 		}
 	}
 }
-
 void CMap::DrawBorder()
 {
 	system("cls");						//ªª“≥‘Ú«Â∆¡

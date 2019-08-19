@@ -1,15 +1,13 @@
 #pragma once
+#include "Map.h"
 #include "Tank.h"
-
-class CMap;
-class CTank;
 
 class CGame
 {
 public:
-	bool g_isRunning = false;
-	int g_levelEneTank = 200;
-	int g_levelEneBul = 70;
+	bool m_isRunning = false;
+	int m_levelEneTank = 200;
+	int m_levelEneBul = 70;
 
 	const char* menuPlay[3] = { "开始游戏","读取游戏","退出游戏" };
 	const char* menuWhoMap[3] = { "系统默认","玩家提供","返回上页" };
@@ -23,6 +21,7 @@ public:
 	//void SaveGame(PTANK ptank, PTANK penemytank);				//存档
 	//void LoadGame(PTANK ptank, PTANK penemytank, char* str);	//读档
 
+	// 打印相关
 	void DrawLogo();						//打印图标
 	void DrawGameHelp();					//打印帮助
 	void DrawGameInfo(CTank ptank, CTank* penemytank);			//打印游戏信息

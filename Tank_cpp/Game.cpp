@@ -1,14 +1,12 @@
-#include <Windows.h>
-#include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
 #include <time.h>
-#include <string.h>
-#include "Func.h"
-#include "Game.h"
-#include "Tank.h"
 
+#include "Game.h"
+#include "Func.h"
+#include "Map.h"
+#include "Tank.h"
+#pragma comment(lib,"winmm.lib")
 
 //游戏相关
 void CGame::GameInit(CMap &map)
@@ -237,6 +235,7 @@ void CGame::GameOver(CTank * penemytank)
 //	fclose(pFile);
 //}
 
+// 打印相关
 void CGame::DrawLogo()
 {
 	GotoxyAndPrint(MAP_X / 4 - 9, MAP_Y / 2 - 15, "MMP\"\"MM\"\"YMM                      `7MM      ");
@@ -247,7 +246,6 @@ void CGame::DrawLogo()
 	GotoxyAndPrint(MAP_X / 4 - 9, MAP_Y / 2 - 10, "     MM      8M   MM    MM    MM    MM `Mb. ");
 	GotoxyAndPrint(MAP_X / 4 - 9, MAP_Y / 2 - 9, "   .JMML.    `Moo9^Yo..JMML  JMML..JMML. YA.");
 }
-
 void CGame::DrawGameHelp()
 {
 	setColor(12, 0);
@@ -258,16 +256,15 @@ void CGame::DrawGameHelp()
 	GotoxyAndPrint(MAP_X / 2 - 11, 26, "空格: 开火");
 	setColor(7, 0);
 }
-
 void CGame::DrawGameInfo(CTank tank, CTank* penemytank)
 {
 	//存活敌坦数量
 	int eneTankCount = GetLiveEnemyAmount(penemytank);
 	//当前难度
 	char level[10];
-	if (g_levelEneTank == 300) strcpy_s(level, 10, "简单\0");
-	else if (g_levelEneTank == 200) strcpy_s(level, 10, "一般\0");
-	else if (g_levelEneTank == 100)strcpy_s(level, 10, "困难\0");
+	if (m_levelEneTank == 300) strcpy_s(level, 10, "简单\0");
+	else if (m_levelEneTank == 200) strcpy_s(level, 10, "一般\0");
+	else if (m_levelEneTank == 100)strcpy_s(level, 10, "困难\0");
 	//运行or暂停状态
 	setColor(12, 0);
 	GotoxyAndPrint(MAP_X / 2 - 14, 1, "RUNNING");
@@ -276,7 +273,7 @@ void CGame::DrawGameInfo(CTank tank, CTank* penemytank)
 	//游戏信息打印
 	setColor(12, 0);
 	GotoxyAndPrint(MAP_X / 2 - 11, 5, "");
-	printf("当前生命: %d", tank.blood);
+	printf("当前生命: %d", tank.m_blood);
 	GotoxyAndPrint(MAP_X / 2 - 11, 7, "");
 	//printf("当前分数: %d",-1);
 	printf("当前分数: %d", ENEMY_TANK_AMOUNT - eneTankCount);
@@ -287,7 +284,6 @@ void CGame::DrawGameInfo(CTank tank, CTank* penemytank)
 	printf("当前难度: %s", level);
 	setColor(7, 0);
 }
-
 void CGame::DrawMenu(const char** menu, int size, int index)
 {
 	system("cls");
