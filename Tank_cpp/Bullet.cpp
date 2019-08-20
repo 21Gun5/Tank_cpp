@@ -3,6 +3,12 @@
 #include "Map.h"
 #pragma comment(lib,"winmm.lib")
 
+CBullet::CBullet()
+{
+	m_core = { 0,0 };
+	m_dir = UP;
+	m_state = ²»´æÔÚ;
+}
 void CBullet::SetBullet(COORD core, enum direction dir)
 {
 	m_core = core;

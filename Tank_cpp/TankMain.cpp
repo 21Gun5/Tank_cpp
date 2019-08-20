@@ -4,7 +4,7 @@
 #include "Func.h"
 #include "Game.h"
 #include "Map.h"
-//#include "Bullet.h"
+#include "Bullet.h"
 #include "Tank.h"
 using namespace std;
 
@@ -29,145 +29,145 @@ int main()
 	{{MAP_X_WALL / 4, 2},UP,1,敌方坦克, },
 	};
 
-	////流程控制
-	//int indexForPlay = 0;		//菜单索引
-	//bool IsSelectedPlay = 0;	//是否选择结束
-	//while (true)
-	//{
-	//	DrawMenu(menuPlay, _countof(menuPlay), indexForPlay);
-	//	int play = SelectMenu(_countof(menuPlay), &indexForPlay);
-	//	if (play == ENTER)
-	//	{
-	//		switch (indexForPlay)
-	//		{
-	//		case 开始游戏:
-	//		{
-	//			int indexForWhoMap = 0;//菜单索引
-	//			bool IsSelectedWhoMap = 0; //选择的循环结束
-	//			while (true)
-	//			{
-	//				DrawMenu(menuWhoMap, _countof(menuWhoMap), indexForWhoMap);
-	//				int whoMap = SelectMenu(_countof(menuWhoMap), &indexForWhoMap);
-	//				if (whoMap == ENTER)
-	//				{
-	//					switch (indexForWhoMap)
-	//					{
-	//					case 系统默认:
-	//					{
-	//						int indexForLevel = 0;
-	//						bool IsSelectedLevel = 0;
-	//						while (true)
-	//						{
-	//							DrawMenu(menuLevel, _countof(menuLevel), indexForLevel);
-	//							int level = SelectMenu(_countof(menuLevel), &indexForLevel);
-	//							if (level == ENTER)
-	//							{
-	//								switch (indexForLevel)
-	//								{
-	//								case 简单:
-	//									g_levelEneTank = 300;
-	//									g_levelEneBul = 90;
-	//									IsSelectedLevel = 1;
-	//									break;
-	//								case 一般:
-	//									g_levelEneTank = 200;
-	//									g_levelEneBul = 70;
-	//									IsSelectedLevel = 1;
-	//									break;
-	//								case 困难:
-	//									g_levelEneTank = 100;
-	//									g_levelEneBul = 50;
-	//									IsSelectedLevel = 1;
-	//									break;
-	//								default:
-	//									break;
-	//								}
-	//							}
-	//							if (IsSelectedLevel == 1)
-	//								break;
-	//						}
-	//						SetDefaultMap();//使用默认的
-	//						IsSelectedPlay = 1;
-	//						IsSelectedWhoMap = 1;
-	//						g_isRunning = 1;//游戏运行
-	//						break;
-	//					}
-	//					//case 玩家提供:
-	//					//{
-	//					//	int indexForWhenMap = 0;//菜单索引
-	//					//	bool IsSelectedWhenMap = 0; //选择的循环结束
-	//					//	while (true)
-	//					//	{
-	//					//		DrawMenu(menuWhenMap, _countof(menuWhenMap), indexForWhenMap);
-	//					//		int whenMap = SelectMenu(_countof(menuWhenMap), &indexForWhenMap);
-	//					//		if (whenMap == ENTER)
-	//					//		{
-	//					//			switch (indexForWhenMap)
-	//					//			{
-	//					//			case 新建地图:
-	//					//				IsSelectedPlay = 1;
-	//					//				IsSelectedWhoMap = 1;
-	//					//				IsSelectedWhenMap = 1;
-	//					//				g_isRunning = 1;//要进入游戏了
-	//					//				CustomizeMap(&tank, enemyTank);//手动设置并直接使用
-	//					//				break;
-	//					//			case 已有地图:
-	//					//			{
-	//					//				IsSelectedPlay = 1;
-	//					//				IsSelectedWhoMap = 1;
-	//					//				IsSelectedWhenMap = 1;
-	//					//				g_isRunning = 1;//要进入游戏了
-	//					//				char* mapFile = ShowMapFile();
-	//					//				LoadMapFile(mapFile);//导入已有地图
-	//					//				break;
-	//					//			}
-	//					//			case 返回上页:
-	//					//			{
-	//					//				IsSelectedWhenMap = 1;
-	//					//				break;
-	//					//			}
-	//					//			default:
-	//					//				break;
-	//					//			}
-	//					//		}
-	//					//		if (IsSelectedWhenMap == 1)
-	//					//			break;
-	//					//	}
-	//					//	break;
-	//					//}
-	//					case 返回上页:
-	//					{
-	//						IsSelectedWhoMap = 1;
-	//						break;
-	//					}
-	//					default:
-	//						break;
-	//					}
-	//				}
-	//				if (IsSelectedWhoMap == 1)
-	//					break;
-	//			}
-	//			break;
-	//		}
-	//		//case 读取游戏:
-	//		//{
-	//		//	IsSelectedPlay = 1;
-	//		//	char* gameFile = ShowGameFile();
-	//		//	LoadGame(&tank, enemyTank, gameFile);
-	//		//	break;
-	//		//}
-	//		case 退出游戏:
-	//			return 0;
-	//		default:
-	//			break;
-	//		}
-	//	}
-	//	if (IsSelectedPlay)//选择结束，进入游戏
-	//		break;
-	//}
+	//流程控制
+	int indexForPlay = 0;		//菜单索引
+	bool IsSelectedPlay = 0;	//是否选择结束
+	while (true)
+	{
+		game.DrawMenu(game.menuPlay, _countof(game.menuPlay), indexForPlay);
+		int play = game.SelectMenu(_countof(game.menuPlay), &indexForPlay);
+		if (play == ENTER_KEY)
+		{
+			switch (indexForPlay)
+			{
+			case 开始游戏:
+			{
+				int indexForWhoMap = 0;//菜单索引
+				bool IsSelectedWhoMap = 0; //选择的循环结束
+				while (true)
+				{
+					game.DrawMenu(game.menuWhoMap, _countof(game.menuWhoMap), indexForWhoMap);
+					int whoMap = game.SelectMenu(_countof(game.menuWhoMap), &indexForWhoMap);
+					if (whoMap == ENTER_KEY)
+					{
+						switch (indexForWhoMap)
+						{
+						case 系统默认:
+						{
+							int indexForLevel = 0;
+							bool IsSelectedLevel = 0;
+							while (true)
+							{
+								game.DrawMenu(game.menuLevel, _countof(game.menuLevel), indexForLevel);
+								int level = game.SelectMenu(_countof(game.menuLevel), &indexForLevel);
+								if (level == ENTER_KEY)
+								{
+									switch (indexForLevel)
+									{
+									case 简单:
+										game.m_levelEneTank = 300;
+										game.m_levelEneBul = 90;
+										IsSelectedLevel = 1;
+										break;
+									case 一般:
+										game.m_levelEneTank = 200;
+										game.m_levelEneBul = 70;
+										IsSelectedLevel = 1;
+										break;
+									case 困难:
+										game.m_levelEneTank = 100;
+										game.m_levelEneBul = 50;
+										IsSelectedLevel = 1;
+										break;
+									default:
+										break;
+									}
+								}
+								if (IsSelectedLevel == 1)
+									break;
+							}
+							map.SetDefaultMap();//使用默认的
+							IsSelectedPlay = 1;
+							IsSelectedWhoMap = 1;
+							game.m_isRunning = 1;//游戏运行
+							break;
+						}
 
-	map.SetDefaultMap();
-	game.m_isRunning = 1;
+						case 玩家提供:
+						{
+							int indexForWhenMap = 0;//菜单索引
+							bool IsSelectedWhenMap = 0; //选择的循环结束
+							while (true)
+							{
+								game.DrawMenu(game.menuWhenMap, _countof(game.menuWhenMap), indexForWhenMap);
+								int whenMap = game.SelectMenu(_countof(game.menuWhenMap), &indexForWhenMap);
+								if (whenMap == ENTER_KEY)
+								{
+									switch (indexForWhenMap)
+									{
+									case 新建地图:
+										IsSelectedPlay = 1;
+										IsSelectedWhoMap = 1;
+										IsSelectedWhenMap = 1;
+										game.m_isRunning = 1;//要进入游戏了
+										map.CustomizeMap(tank, enemyTank,map);//手动设置并直接使用
+										break;
+									case 已有地图:
+									{
+										IsSelectedPlay = 1;
+										IsSelectedWhoMap = 1;
+										IsSelectedWhenMap = 1;
+										game.m_isRunning = 1;//要进入游戏了
+										char* mapFile = map.ShowMapFile();
+										map.LoadMapFile(mapFile,map);//导入已有地图
+										break;
+									}
+									case 返回上页:
+									{
+										IsSelectedWhenMap = 1;
+										break;
+									}
+									default:
+										break;
+									}
+								}
+								if (IsSelectedWhenMap == 1)
+									break;
+							}
+							break;
+						}
+
+						case 返回上页:
+						{
+							IsSelectedWhoMap = 1;
+							break;
+						}
+						default:
+							break;
+						}
+					}
+					if (IsSelectedWhoMap == 1)
+						break;
+				}
+				break;
+			}
+
+			case 读取游戏:
+			{
+				IsSelectedPlay = 1;
+				char* gameFile = game.ShowGameFile();
+				game.LoadGame(tank, enemyTank, map,gameFile);
+				break;
+			}
+			case 退出游戏:
+				return 0;
+			default:
+				break;
+			}
+		}
+		if (IsSelectedPlay)//选择结束，进入游戏
+			break;
+	}
 
 	//边界及障碍
 	map.DrawBorder();
@@ -186,7 +186,7 @@ int main()
 			COORD oldCore = tank.m_core;
 			COORD oldBody[5] = { tank.m_body[0],tank.m_body[1],tank.m_body[2],tank.m_body[3],tank.m_body[4] };
 			
-			tank.ManipulateMyTank(enemyTank,map);
+			tank.ManipulateMyTank(enemyTank,map,game);
 			tank.CleanTankTail(oldCore, oldBody);
 			tank.DrawTank();
 		}

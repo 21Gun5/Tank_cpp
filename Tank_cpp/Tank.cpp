@@ -1,8 +1,19 @@
 #include <conio.h>
 #include "Tank.h"
-
+#include "Map.h"
+#include "Game.h"
 
 //坦克相关
+CTank::CTank(COORD core, enum direction dir, int blood, int who)
+{
+	m_core = core;
+	//m_body[5] = { {0,0} };
+	m_dir= dir;
+	m_blood= blood;
+	m_isAlive=true;
+	m_who = who;
+	SetTankShape();
+}
 void CTank::CleanTankTail(COORD oldCore, PCOORD oldBody)
 {
 	GotoxyAndPrint(oldCore.X, oldCore.Y, "  ");//中心点
@@ -47,7 +58,7 @@ void CTank::SetTankShape()
 		this->m_body[4] = { this->m_core.X - 1, this->m_core.Y - 1 };
 	}
 }
-void CTank::ManipulateMyTank(CTank * penemytank,CMap map)
+void CTank::ManipulateMyTank(CTank * penemytank,CMap map,CGame &game)
 {
 	if (this->m_isAlive == false) return;
 	if (this->m_who == 我方坦克)
@@ -83,56 +94,55 @@ void CTank::ManipulateMyTank(CTank * penemytank,CMap map)
 					this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
 				break;
 			case 'q':
-			//{
-			//	//暂停及恢复
-			//	mciSendString("pause bgm", NULL, 0, NULL);	//暂停bgm
-			//	setColor(12, 0);
-			//	GotoxyAndPrint(MAP_X / 2 - 14, 1, "       ");//先把较长的running清空
-			//	GotoxyAndPrint(MAP_X / 2 - 14, 1, "PAUSE");
-			//	GotoxyAndPrint(MAP_X / 2 - 14, 2, "1. 回到游戏");
-			//	GotoxyAndPrint(MAP_X / 2 - 14, 3, "2. 退出游戏");
-			//	char tmp;
-			//	do
-			//	{
-			//		tmp = _getch();	//利用阻塞函数暂停游戏
-			//	} while (!(tmp == '1' || tmp == '2' || tmp == '3'));//只有输入123才可
-			//	switch (tmp)
-			//	{
-			//	case '1'://恢复游戏
-			//	{
-			//		mciSendString("resume bgm", NULL, 0, NULL);//恢复bgm
-			//		GotoxyAndPrint(MAP_X / 2 - 14, 1, "RUNNING");
-			//		GotoxyAndPrint(MAP_X / 2 - 14, 2, "Q: 暂停游戏");
-			//		GotoxyAndPrint(MAP_X / 2 - 14, 3, "           ");
-			//		GotoxyAndPrint(MAP_X / 2 - 14, 4, "           ");
-			//		break;
-			//	}
-			//	case '2'://退出游戏
-			//	{
-			//		GotoxyAndPrint(MAP_X / 2 - 14, 1, "想如何退出?");
-			//		GotoxyAndPrint(MAP_X / 2 - 14, 2, "1. 保存退出");
-			//		GotoxyAndPrint(MAP_X / 2 - 14, 3, "2. 直接退出");
-			//		char op = _getch();
-			//		if (op == '1')		//保存退出
-			//		{
-			//			SaveGame(this, penemytank);
-			//			GameOver(penemytank);
-			//			g_isRunning = false;
-			//			break;
-			//		}
-			//		else if (op == '2')	//直接退出
-			//		{
-			//			GameOver(penemytank);
-			//			g_isRunning = false;
-			//			break;
-			//		}
-			//	}
-			//	default:
-			//		break;
-			//	}
-			//	break;
-			//}
-
+			{
+				//暂停及恢复
+				mciSendString("pause bgm", NULL, 0, NULL);	//暂停bgm
+				setColor(12, 0);
+				GotoxyAndPrint(MAP_X / 2 - 14, 1, "       ");//先把较长的running清空
+				GotoxyAndPrint(MAP_X / 2 - 14, 1, "PAUSE");
+				GotoxyAndPrint(MAP_X / 2 - 14, 2, "1. 回到游戏");
+				GotoxyAndPrint(MAP_X / 2 - 14, 3, "2. 退出游戏");
+				char tmp;
+				do
+				{
+					tmp = _getch();	//利用阻塞函数暂停游戏
+				} while (!(tmp == '1' || tmp == '2' || tmp == '3'));//只有输入123才可
+				switch (tmp)
+				{
+				case '1'://恢复游戏
+				{
+					mciSendString("resume bgm", NULL, 0, NULL);//恢复bgm
+					GotoxyAndPrint(MAP_X / 2 - 14, 1, "RUNNING");
+					GotoxyAndPrint(MAP_X / 2 - 14, 2, "Q: 暂停游戏");
+					GotoxyAndPrint(MAP_X / 2 - 14, 3, "           ");
+					GotoxyAndPrint(MAP_X / 2 - 14, 4, "           ");
+					break;
+				}
+				case '2'://退出游戏
+				{
+					GotoxyAndPrint(MAP_X / 2 - 14, 1, "想如何退出?");
+					GotoxyAndPrint(MAP_X / 2 - 14, 2, "1. 保存退出");
+					GotoxyAndPrint(MAP_X / 2 - 14, 3, "2. 直接退出");
+					char op = _getch();
+					if (op == '1')		//保存退出
+					{
+						game.SaveGame(*this, penemytank,map);
+						game.GameOver(penemytank);
+						game.m_isRunning = false;
+						break;
+					}
+					else if (op == '2')	//直接退出
+					{
+						game.GameOver(penemytank);
+						game.m_isRunning = false;
+						break;
+					}
+				}
+				default:
+					break;
+				}
+				break;
+			}
 			default:
 				break;
 			}
