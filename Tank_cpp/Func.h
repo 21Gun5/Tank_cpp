@@ -1,9 +1,10 @@
 #pragma once
 
 //边界大小
-#define MAP_X 90		
-#define MAP_Y 30
-#define MAP_X_WALL 60
+#define MAP_X 120	
+#define MAP_Y 40
+#define MAP_X_WALL 80
+
 //怎么玩
 #define 开始游戏 0
 #define 读取游戏 1
@@ -30,10 +31,12 @@
 #define 已赋值 2
 //地图状态
 #define 空地 0
-#define 地图边界 1
-#define 土块障碍 2
-#define 石块障碍 3
-#define 我家泉水 4
+#define 边界 1
+#define 土块 2
+#define 石块 3
+#define 草丛 4
+#define 河流 5
+#define 泉水 6
 
 //枚举
 enum { UP_KEY = 72, DOWN_KEY = 80, ENTER_KEY = 13 };//按键枚举

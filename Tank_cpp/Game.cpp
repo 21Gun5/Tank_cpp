@@ -13,7 +13,7 @@
 //游戏相关
 void CGame::GameInit(CMap &map)
 {
-	//设置地图
+	//设置地图（静态的
 	for (int x = 0; x < MAP_X / 2; x++)
 	{
 		for (int y = 0; y < MAP_Y; y++)
@@ -23,22 +23,32 @@ void CGame::GameInit(CMap &map)
 				y == 0 || y == MAP_Y - 1 ||							//两横边
 				(x > MAP_X_WALL / 2 && y == MAP_Y / 2))				//帮助信息与游戏信息分割线
 			{
-				map.m_nArrMap[x][y] = 地图边界;
+				map.m_nArrMap[x][y] = 边界;
 			}
+			//泉水
 			if (x >= MAP_X_WALL / 4 - 2 && x <= MAP_X_WALL / 4 + 3 && y >= MAP_Y - 2 - 3 && y <= MAP_Y - 2)
 			{
 				if (x >= MAP_X_WALL / 4 && x <= MAP_X_WALL / 4 + 1 && y >= MAP_Y - 2 - 1 && y <= MAP_Y - 2)
-					map.m_nArrMap[x][y] = 我家泉水;
-				else
-					map.m_nArrMap[x][y] = 土块障碍;
+					map.m_nArrMap[x][y] = 泉水;
+				//else
+				//	map.m_nArrMap[x][y] = 土块;
 			}
 		}
 	}
 
+	// 控制台相关设置
 	SetCursorState(false);				//隐藏光标
 	system("title Tank");				//设置标题
-	srand((unsigned int)time(0));		//初始化随机数种子
+	//system("color fc");				//设置颜色	
 
+	// 窗口大小
+	char strCmd[50];
+	sprintf_s(strCmd,50,"mode con cols=%d lines=%d", MAP_X, MAP_Y);
+	system(strCmd);
+
+	//初始化随机数种子
+	srand((unsigned int)time(0));		
+	
 	//播放背景音乐(先不放，烦人
 	//mciSendString("open conf/BGM.mp3 alias bgm", NULL, 0, NULL);//打开文件
 	//mciSendString("play bgm repeat", NULL, 0, NULL);			  // 循环播放
@@ -251,11 +261,11 @@ void CGame::DrawLogo()
 void CGame::DrawGameHelp()
 {
 	setColor(12, 0);
-	GotoxyAndPrint(MAP_X / 2 - 10, 18, "操作说明");
-	GotoxyAndPrint(MAP_X / 2 - 11, 20, "W: 上  S: 下");
-	GotoxyAndPrint(MAP_X / 2 - 11, 22, "A: 左  D: 右");
-	GotoxyAndPrint(MAP_X / 2 - 11, 24, "Q:  暂停游戏");
-	GotoxyAndPrint(MAP_X / 2 - 11, 26, "空格: 开火");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 24, "操 作 说 明");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 26, "W: 上 S: 下");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 28, "A: 左 D: 右");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 30, "Q: 暂停游戏");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 32, "空格:  开火");
 	setColor(7, 0);
 }
 void CGame::DrawGameInfo(CTank tank, CTank* penemytank)
@@ -269,20 +279,18 @@ void CGame::DrawGameInfo(CTank tank, CTank* penemytank)
 	else if (m_levelEneTank == 100)strcpy_s(level, 10, "困难\0");
 	//运行or暂停状态
 	setColor(12, 0);
-	GotoxyAndPrint(MAP_X / 2 - 14, 1, "RUNNING");
-	GotoxyAndPrint(MAP_X / 2 - 14, 2, "Q: 暂停游戏");
+	GotoxyAndPrint(MAP_X_WALL/2 + 1, 1, "RUNNING");
+	GotoxyAndPrint(MAP_X_WALL/2 + 1, 2, "Q: 暂停游戏");
 	setColor(7, 0);
 	//游戏信息打印
 	setColor(12, 0);
-	GotoxyAndPrint(MAP_X / 2 - 11, 5, "");
-	printf("当前生命: %d", tank.m_blood);
-	GotoxyAndPrint(MAP_X / 2 - 11, 7, "");
-	//printf("当前分数: %d",-1);
-	printf("当前分数: %d", ENEMY_TANK_AMOUNT - eneTankCount);
-	GotoxyAndPrint(MAP_X / 2 - 11, 9, "");
-	//printf("敌坦个数: %d",-1);
-	printf("敌坦个数: %d", eneTankCount);
-	GotoxyAndPrint(MAP_X / 2 - 11, 11, "");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "");
+	printf("当前生命: %2d", tank.m_blood);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "");
+	printf("当前分数: %2d", ENEMY_TANK_AMOUNT - eneTankCount);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "");
+	printf("敌坦个数: %2d", eneTankCount);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 11, "");
 	printf("当前难度: %s", level);
 	setColor(7, 0);
 }

@@ -1,14 +1,15 @@
-#include <io.h>
+ï»¿#include <io.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <string>
 #include "Map.h"
 #include "Tank.h"
 
 char* CMap::ShowMapFile()
 {
-	//±éÀúÖ¸¶¨Ä¿Â¼¼°ºó×ºµÄÎÄ¼şÃû²¢´æÈëÊı×é
+	//éå†æŒ‡å®šç›®å½•åŠåç¼€çš„æ–‡ä»¶åå¹¶å­˜å…¥æ•°ç»„
 	char* mapFiles[10] = { nullptr };
 	long Handle;
 	struct _finddata_t FileInfo;
@@ -30,27 +31,40 @@ char* CMap::ShowMapFile()
 		}
 		_findclose(Handle);
 	}
-	//ÏÔÊ¾µØÍ¼ÎÄ¼ş
+	//æ˜¾ç¤ºåœ°å›¾æ–‡ä»¶
 	system("cls");
-	GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 8, "ÇëÑ¡ÔñµØÍ¼");
-	int i = 0;								//Ñ­»·±äÁ¿ÔÚforÍâ¶¨Òå
+	GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 8, "è¯·é€‰æ‹©åœ°å›¾");
+	int i = 0;								//å¾ªç¯å˜é‡åœ¨forå¤–å®šä¹‰
 	for (; i < count; i++)
 	{
 		GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + i, "");
 		printf("%d.%s", i + 1, mapFiles[i]);
 	}
-	//Ñ¡Ôñ
-	GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + i, "ÇëÊäÈëÑ¡Ôñ-> ");
+	//é€‰æ‹©
+	GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + i, "è¯·è¾“å…¥é€‰æ‹©-> ");
 	SetCursorState(true);
-	int input = _getch() - '0';				//±£Ö¤0-9¶ø·ÇASCII
+	int input = _getch() - '0';				//ä¿è¯0-9è€ŒéASCII
 	SetCursorState(false);
 	char* _file = (char*)malloc(15);
-	strcpy_s(_file, 15, mapFiles[input - 1]);//Êı×ÖÊ¼ÓÚ1£¬¶øÏÂ±êÊ¼ÓÚ0	
+	strcpy_s(_file, 15, mapFiles[input - 1]);//æ•°å­—å§‹äº1ï¼Œè€Œä¸‹æ ‡å§‹äº0	
 	return _file;
 }
+
 void CMap::SetDefaultMap()
 {
+	std::string filename = "conf/map/default.i";
+	FILE* pFile = NULL;
+	errno_t err = fopen_s(&pFile, filename.c_str(), "rb");
 	for (int x = 0; x < MAP_X_WALL; x++)
+	{
+		for (int y = 0; y < MAP_Y; y++)
+		{
+			fread(&m_nArrMap[x][y], sizeof(int), 1, pFile);
+		}
+	}
+	fclose(pFile);
+
+	/*for (int x = 0; x < MAP_X_WALL; x++)
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
@@ -61,7 +75,7 @@ void CMap::SetDefaultMap()
 				(x < MAP_X_WALL / 4 + 9 && x > MAP_X_WALL / 4 + 5 && y < MAP_Y / 2 + 6 && y > MAP_Y / 2 + 2)
 				)
 			{
-				m_nArrMap[x][y] = ÍÁ¿éÕÏ°­;
+				m_nArrMap[x][y] = åœŸå—;
 			}
 			if (
 				(x > MAP_X_WALL / 4 - 9 && x < MAP_X_WALL / 4 - 5 && y > MAP_Y / 2 - 9 && y < MAP_Y / 2 - 7) ||
@@ -70,10 +84,11 @@ void CMap::SetDefaultMap()
 				(x < MAP_X_WALL / 4 + 9 && x > MAP_X_WALL / 4 + 5 && y < MAP_Y / 2 + 7 && y > MAP_Y / 2 + 5)
 				)
 			{
-				m_nArrMap[x][y] = Ê¯¿éÕÏ°­;
+				m_nArrMap[x][y] = çŸ³å—;
 			}
+
 		}
-	}
+	}*/
 }
 
 void CMap::LoadMapFile(char* str,CMap &map)
@@ -92,39 +107,81 @@ void CMap::LoadMapFile(char* str,CMap &map)
 	fclose(pFile);
 }
 
-void CMap::CustomizeMap(CTank tank, CTank* penemytank,CMap &map)
+void CMap::CustomizeMap(CTank tank, CTank* penemytank)
 {
-	DrawBorder();		//µØÍ¼±ß½ç
-	//ÌáÊ¾ĞÅÏ¢
+	DrawBorder();		//åœ°å›¾è¾¹ç•Œ
+	//æç¤ºä¿¡æ¯
 	setColor(12, 0);
-	GotoxyAndPrint(MAP_X / 2 - 12, 2, "     ±à¼­µØÍ¼");
-	GotoxyAndPrint(MAP_X / 2 - 12, 4, "×ó¼üµ¥»÷£º´´½¨ÍÁ¿é");
-	GotoxyAndPrint(MAP_X / 2 - 12, 6, "¹öÂÖµ¥»÷£º´´½¨Ê¯¿é");
-	GotoxyAndPrint(MAP_X / 2 - 12, 8, "ÓÒ¼üµ¥»÷£ºÏû³ıÕÏ°­");
-	GotoxyAndPrint(MAP_X / 2 - 12, 10, "½çÍâË«»÷£ºÍË³ö±à¼­");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 2, "å·¦é”®å•å‡»ï¼šç»˜åˆ¶åœ°å›¾");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 4, "æ»šè½®å•å‡»ï¼šé€‰æ‹©ç§ç±»");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 6, "å³é”®å•å‡»ï¼šæ¶ˆé™¤ç§ç±»");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 8, "ç•Œå¤–åŒå‡»ï¼šé€€å‡ºç¼–è¾‘");
+
+	setColor(6, 0);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 12, "ç‚¹æˆ‘é€‰æ‹©åœŸå—: â– ");
+	setColor(8, 0);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 14, "ç‚¹æˆ‘é€‰æ‹©çŸ³å—: â– ");
+	setColor(2, 0);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 16, "ç‚¹æˆ‘é€‰æ‹©è‰ä¸›: â– ");
+	setColor(9, 0);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 18, "ç‚¹æˆ‘é€‰æ‹©æ²³æµ: â– ");
+
 	setColor(7, 0);
-	//Êó±êÊÂ¼şÏà¹Ø
+	//é¼ æ ‡äº‹ä»¶ç›¸å…³
 	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 	INPUT_RECORD ir = {};
 	DWORD dwCount = 0;
 	SetConsoleMode(hInput, ENABLE_MOUSE_INPUT);
-	//²¶»ñÊó±êÊÂ¼ş²¢·´À¡¸øÆÁÄ»
+
+	//æ•è·é¼ æ ‡äº‹ä»¶å¹¶åé¦ˆç»™å±å¹•
+	int barType = ç©ºåœ°;//éšœç¢ç±»åˆ«
+	bool isSelectedType = 0;//æ˜¯å¦é€‰æ‹©äº†ç§ç±»
 	while (true)
 	{
 		ReadConsoleInput(hInput, &ir, 1, &dwCount);
 		if (ir.EventType == MOUSE_EVENT)
 		{
-			//×ó¼ü»æÖÆÍÁ¿éÕÏ°­
-			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+			// æ»šè½®é”®é€‰æ‹©ç§ç±»
+			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
 			{
-				COORD pos = ir.Event.MouseEvent.dwMousePosition;//»ñÈ¡°´¼üµÄÎ»ÖÃ
-				//²»¿ÉÔÚÎÒ·½Ì¹¿Ë´¦»æÖÆ
+				COORD pos = ir.Event.MouseEvent.dwMousePosition;
+				if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 12))
+				{
+					barType = åœŸå—;
+					setColor(6, 0);
+					isSelectedType = 1;
+				}
+				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 14))
+				{
+					barType = çŸ³å—;
+					setColor(8, 0);
+					isSelectedType = 1;
+				}
+				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 16))
+				{
+					barType = è‰ä¸›;
+					setColor(2, 0);
+					isSelectedType = 1;
+				}
+				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 18))
+				{
+					barType = æ²³æµ;
+					setColor(9, 0);
+					isSelectedType = 1;
+				}
+			}
+
+			//å·¦é”®ç»˜åˆ¶å„ç§éšœç¢ï¼ˆç§ç±»é€‰æ‹©å®Œæˆæ‰å¯ç»˜åˆ¶
+			if (isSelectedType  && ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+			{
+				COORD pos = ir.Event.MouseEvent.dwMousePosition;//è·å–æŒ‰é”®çš„ä½ç½®
+				//ä¸å¯åœ¨æˆ‘æ–¹å¦å…‹å¤„ç»˜åˆ¶
 				if (pos.X / 2 >= tank.m_core.X - 1 &&
 					pos.X / 2 <= tank.m_core.X + 1 &&
 					pos.Y >= tank.m_core.Y - 1 &&
 					pos.Y <= tank.m_core.Y + 1)
 					continue;
-				//²»¿ÉÔÚÎÒ·½Ì¹¿Ë»æÖÆ
+				//ä¸å¯åœ¨æ•Œæ–¹å¦å…‹ç»˜åˆ¶
 				int flag = 0;
 				for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 				{
@@ -133,83 +190,88 @@ void CMap::CustomizeMap(CTank tank, CTank* penemytank,CMap &map)
 						pos.Y >= penemytank[i].m_core.Y - 1 &&
 						pos.Y <= penemytank[i].m_core.Y + 1)
 						flag = 1;
-					//continue;//×÷ÓÃÓòÊÇ´Ëfor
+					//continue;//ä½œç”¨åŸŸæ˜¯æ­¤for
 				}
 				if (flag == 1) continue;
-				//²»¿ÉÔÚÈªË®»æÖÆ
+				//ä¸å¯åœ¨æ³‰æ°´ç»˜åˆ¶
 				if (pos.X / 2 >= MAP_X_WALL / 4 &&
 					pos.X / 2 <= MAP_X_WALL / 4 + 1 &&
 					pos.Y >= MAP_Y - 2 - 1 &&
 					pos.Y <= MAP_Y - 2) continue;
-				//¿É»æÖÆ´¦£¨³ı±ß½ç¡¢Ì¹¿Ë¡¢ÈªË®£©
+				//å¯ç»˜åˆ¶å¤„ï¼ˆé™¤è¾¹ç•Œã€å¦å…‹ã€æ³‰æ°´ï¼‰
 				if (pos.X > 1 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y - 1)
 				{
-					map.m_nArrMap[pos.X / 2][pos.Y] = ÍÁ¿éÕÏ°­;
-					GotoxyAndPrint(pos.X / 2, pos.Y, "¡ù");
+					//map.m_nArrMap[pos.X / 2][pos.Y] = åœŸå—éšœç¢;
+					//GotoxyAndPrint(pos.X / 2, pos.Y, "â€»");
+					m_nArrMap[pos.X / 2][pos.Y] = barType;
+					GotoxyAndPrint(pos.X / 2, pos.Y, "â– ");
 				}
 			}
-			//¹öÂÖ»æÖÆÊ¯¿éÕÏ°­
-			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
-			{
-				COORD pos = ir.Event.MouseEvent.dwMousePosition;//»ñÈ¡°´¼üµÄÎ»ÖÃ
-				//²»¿ÉÔÚÎÒ·½Ì¹¿Ë´¦»æÖÆ
-				if (pos.X / 2 >= tank.m_core.X - 1 &&
-					pos.X / 2 <= tank.m_core.X + 1 &&
-					pos.Y >= tank.m_core.Y - 1 &&
-					pos.Y <= tank.m_core.Y + 1)
-					continue;
-				//²»¿ÉÔÚÎÒ·½Ì¹¿Ë»æÖÆ
-				int flag = 0;
-				for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
-				{
-					if (pos.X / 2 >= penemytank[i].m_core.X - 1 &&
-						pos.X / 2 <= penemytank[i].m_core.X + 1 &&
-						pos.Y >= penemytank[i].m_core.Y - 1 &&
-						pos.Y <= penemytank[i].m_core.Y + 1)
-						flag = 1;
-					//continue;//×÷ÓÃÓòÊÇ´Ëfor
-				}
-				if (flag == 1) continue;
-				//²»¿ÉÔÚÈªË®»æÖÆ
-				if (pos.X / 2 >= MAP_X_WALL / 4 - 2 &&
-					pos.X / 2 <= MAP_X_WALL / 4 + 3 &&
-					pos.Y >= MAP_Y - 2 - 3 &&
-					pos.Y <= MAP_Y - 2) continue;
-				//¿É»æÖÆ´¦£¨³ı±ß½ç¡¢Ì¹¿Ë¡¢ÈªË®£©
-				if (pos.X > 1 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y - 1)
-				{
-					map.m_nArrMap[pos.X / 2][pos.Y] = Ê¯¿éÕÏ°­;
-					GotoxyAndPrint(pos.X / 2, pos.Y, "¡ö");
-				}
-			}
-			//ÓÒ¼üÏû³ı
+
+			////æ»šè½®ç»˜åˆ¶çŸ³å—éšœç¢
+			//if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
+			//{
+			//	COORD pos = ir.Event.MouseEvent.dwMousePosition;//è·å–æŒ‰é”®çš„ä½ç½®
+			//	//ä¸å¯åœ¨æˆ‘æ–¹å¦å…‹å¤„ç»˜åˆ¶
+			//	if (pos.X / 2 >= tank.m_core.X - 1 &&
+			//		pos.X / 2 <= tank.m_core.X + 1 &&
+			//		pos.Y >= tank.m_core.Y - 1 &&
+			//		pos.Y <= tank.m_core.Y + 1)
+			//		continue;
+			//	//ä¸å¯åœ¨æˆ‘æ–¹å¦å…‹ç»˜åˆ¶
+			//	int flag = 0;
+			//	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+			//	{
+			//		if (pos.X / 2 >= penemytank[i].m_core.X - 1 &&
+			//			pos.X / 2 <= penemytank[i].m_core.X + 1 &&
+			//			pos.Y >= penemytank[i].m_core.Y - 1 &&
+			//			pos.Y <= penemytank[i].m_core.Y + 1)
+			//			flag = 1;
+			//		//continue;//ä½œç”¨åŸŸæ˜¯æ­¤for
+			//	}
+			//	if (flag == 1) continue;
+			//	//ä¸å¯åœ¨æ³‰æ°´ç»˜åˆ¶
+			//	if (pos.X / 2 >= MAP_X_WALL / 4 - 2 &&
+			//		pos.X / 2 <= MAP_X_WALL / 4 + 3 &&
+			//		pos.Y >= MAP_Y - 2 - 3 &&
+			//		pos.Y <= MAP_Y - 2) continue;
+			//	//å¯ç»˜åˆ¶å¤„ï¼ˆé™¤è¾¹ç•Œã€å¦å…‹ã€æ³‰æ°´ï¼‰
+			//	if (pos.X > 1 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y - 1)
+			//	{
+			//		map.m_nArrMap[pos.X / 2][pos.Y] = çŸ³å—éšœç¢;
+			//		GotoxyAndPrint(pos.X / 2, pos.Y, "â– ");
+			//	}
+			//}
+			
+			// å³é”®æ¶ˆé™¤éšœç¢
 			if (ir.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 			{
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;
 				if (pos.X > 1 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y - 1)
 				{
-					map.m_nArrMap[pos.X / 2][pos.Y] = ¿ÕµØ;
+					m_nArrMap[pos.X / 2][pos.Y] = ç©ºåœ°;
 					GotoxyAndPrint(pos.X / 2, pos.Y, "  ");
 				}
 			}
-			//Ë«»÷ÍË³ö
+			// ç•Œå¤–åŒå‡»é€€å‡º
 			if (ir.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
 			{
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;
 				if (!(pos.X > 1 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y - 1))
 				{
-					//µØÍ¼ÍâË«»÷²ÅÍË³ö
+					//åœ°å›¾å¤–åŒå‡»æ‰é€€å‡º
 					break;
 				}
 			}
 		}
 	}
-	//ÌáÊ¾ĞÅÏ¢
+
+	//æç¤ºä¿¡æ¯
 	system("cls");
 	setColor(12, 0);
-	GotoxyAndPrint(MAP_X / 2 - 12, 12, "ÇëÊäÈëµØÍ¼Ãû×Ö:");
+	GotoxyAndPrint(MAP_X / 2 - 12, 12, "è¯·è¾“å…¥åœ°å›¾åå­—:");
 	GotoxyAndPrint(MAP_X - 24, 14, "");
-	//ÊäÈëÎÄ¼şÃû
+	//è¾“å…¥æ–‡ä»¶å
 	char str[15];
 	char* filename = (char*)malloc(40);
 	SetCursorState(true);
@@ -217,14 +279,14 @@ void CMap::CustomizeMap(CTank tank, CTank* penemytank,CMap &map)
 	SetCursorState(false);
 	setColor(7, 0);
 	sprintf_s(filename, 40, "%s%s%s", "conf/map/", str, ".i");
-	//Êı¾İĞ´ÈëÎÄ¼ş
+	//æ•°æ®å†™å…¥æ–‡ä»¶
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, filename, "wb");
 	for (int x = 0; x < MAP_X_WALL; x++)
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
-			fwrite(&map.m_nArrMap[x][y], sizeof(int), 1, pFile);
+			fwrite(&m_nArrMap[x][y], sizeof(int), 1, pFile);
 		}
 	}
 	fclose(pFile);
@@ -236,26 +298,45 @@ void CMap::DrawBarr()
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
-			if (m_nArrMap[x][y] == Ê¯¿éÕÏ°­) GotoxyAndPrint(x, y, "¡ö");
-			if (m_nArrMap[x][y] == ÍÁ¿éÕÏ°­) GotoxyAndPrint(x, y, "¡ù");
+			if (this->m_nArrMap[x][y] == çŸ³å—)
+			{
+				setColor(8, 0);
+				GotoxyAndPrint(x, y, "â– ");
+			}
+			else if (this->m_nArrMap[x][y] == åœŸå—)
+			{
+				setColor(6, 0);
+				GotoxyAndPrint(x, y, "â– ");
+			}			
+			else if (this->m_nArrMap[x][y] == è‰ä¸›)
+			{
+				setColor(2, 0);
+				GotoxyAndPrint(x, y, "â– ");
+			}			
+			else if (this->m_nArrMap[x][y] == æ²³æµ)
+			{
+				setColor(9, 0);
+				GotoxyAndPrint(x, y, "â– ");
+			}
 		}
 	}
 }
+
 void CMap::DrawBorder()
 {
-	system("cls");						//»»Ò³ÔòÇåÆÁ
+	system("cls");						//æ¢é¡µåˆ™æ¸…å±
 	for (int x = 0; x < MAP_X; x++)
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
-			if (m_nArrMap[x][y] == µØÍ¼±ß½ç)
+			if (m_nArrMap[x][y] == è¾¹ç•Œ)
 			{
-				GotoxyAndPrint(x, y, "¡ö");
+				GotoxyAndPrint(x, y, "â– ");
 			}
-			if (m_nArrMap[x][y] == ÎÒ¼ÒÈªË®)
+			if (m_nArrMap[x][y] == æ³‰æ°´)
 			{
 				setColor(12, 0);
-				GotoxyAndPrint(x, y, "¡ï");
+				GotoxyAndPrint(x, y, "â˜…");
 				setColor(7, 0);
 			}
 		}

@@ -98,10 +98,10 @@ void CTank::ManipulateMyTank(CTank * penemytank,CMap map,CGame &game)
 				//暂停及恢复
 				mciSendString("pause bgm", NULL, 0, NULL);	//暂停bgm
 				setColor(12, 0);
-				GotoxyAndPrint(MAP_X / 2 - 14, 1, "       ");//先把较长的running清空
-				GotoxyAndPrint(MAP_X / 2 - 14, 1, "PAUSE");
-				GotoxyAndPrint(MAP_X / 2 - 14, 2, "1. 回到游戏");
-				GotoxyAndPrint(MAP_X / 2 - 14, 3, "2. 退出游戏");
+				GotoxyAndPrint(MAP_X_WALL / 2 + 1, 1, "       ");//先把较长的running清空
+				GotoxyAndPrint(MAP_X_WALL / 2 + 1, 1, "PAUSE");
+				GotoxyAndPrint(MAP_X_WALL / 2 + 1, 2, "1. 回到游戏");
+				GotoxyAndPrint(MAP_X_WALL / 2 + 1, 3, "2. 退出游戏");
 				char tmp;
 				do
 				{
@@ -112,17 +112,17 @@ void CTank::ManipulateMyTank(CTank * penemytank,CMap map,CGame &game)
 				case '1'://恢复游戏
 				{
 					mciSendString("resume bgm", NULL, 0, NULL);//恢复bgm
-					GotoxyAndPrint(MAP_X / 2 - 14, 1, "RUNNING");
-					GotoxyAndPrint(MAP_X / 2 - 14, 2, "Q: 暂停游戏");
-					GotoxyAndPrint(MAP_X / 2 - 14, 3, "           ");
-					GotoxyAndPrint(MAP_X / 2 - 14, 4, "           ");
+					GotoxyAndPrint(MAP_X_WALL / 2 + 1, 1, "RUNNING");
+					GotoxyAndPrint(MAP_X_WALL / 2 + 1, 2, "Q: 暂停游戏");
+					GotoxyAndPrint(MAP_X_WALL / 2 + 1, 3, "           ");
+					GotoxyAndPrint(MAP_X_WALL / 2 + 1, 4, "           ");
 					break;
 				}
 				case '2'://退出游戏
 				{
-					GotoxyAndPrint(MAP_X / 2 - 14, 1, "想如何退出?");
-					GotoxyAndPrint(MAP_X / 2 - 14, 2, "1. 保存退出");
-					GotoxyAndPrint(MAP_X / 2 - 14, 3, "2. 直接退出");
+					GotoxyAndPrint(MAP_X_WALL / 2 + 1, 1, "想如何退出?");
+					GotoxyAndPrint(MAP_X_WALL / 2 + 1, 2, "1. 保存退出");
+					GotoxyAndPrint(MAP_X_WALL / 2 + 1, 3, "2. 直接退出");
 					char op = _getch();
 					if (op == '1')		//保存退出
 					{
@@ -161,12 +161,12 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank,CMap map)
 			return true;
 		}
 		//是否撞障碍物
-		if ((map.m_nArrMap[this->m_core.X][this->m_core.Y - 2] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X - 1][this->m_core.Y - 2] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X + 1][this->m_core.Y - 2] == 土块障碍) ||
-			(map.m_nArrMap[this->m_core.X][this->m_core.Y - 2] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X - 1][this->m_core.Y - 2] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X + 1][this->m_core.Y - 2] == 石块障碍))
+		if ((map.m_nArrMap[this->m_core.X][this->m_core.Y - 2] == 土块 ||
+			map.m_nArrMap[this->m_core.X - 1][this->m_core.Y - 2] == 土块 ||
+			map.m_nArrMap[this->m_core.X + 1][this->m_core.Y - 2] == 土块) ||
+			(map.m_nArrMap[this->m_core.X][this->m_core.Y - 2] == 石块 ||
+				map.m_nArrMap[this->m_core.X - 1][this->m_core.Y - 2] == 石块 ||
+				map.m_nArrMap[this->m_core.X + 1][this->m_core.Y - 2] == 石块))
 		{
 			return true;
 		}
@@ -193,17 +193,17 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank,CMap map)
 			return true;
 		}
 		//是否撞障碍物
-		if ((map.m_nArrMap[this->m_core.X][this->m_core.Y + 2] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X - 1][this->m_core.Y + 2] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X + 1][this->m_core.Y + 2] == 土块障碍) ||
-			(map.m_nArrMap[this->m_core.X][this->m_core.Y + 2] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X - 1][this->m_core.Y + 2] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X + 1][this->m_core.Y + 2] == 石块障碍))
+		if ((map.m_nArrMap[this->m_core.X][this->m_core.Y + 2] == 土块 ||
+			map.m_nArrMap[this->m_core.X - 1][this->m_core.Y + 2] == 土块 ||
+			map.m_nArrMap[this->m_core.X + 1][this->m_core.Y + 2] == 土块) ||
+			(map.m_nArrMap[this->m_core.X][this->m_core.Y + 2] == 石块 ||
+				map.m_nArrMap[this->m_core.X - 1][this->m_core.Y + 2] == 石块 ||
+				map.m_nArrMap[this->m_core.X + 1][this->m_core.Y + 2] == 石块))
 		{
 			return true;
 		}
 		//是否遇到我家泉水
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 		{
 			return true;
 		}
@@ -230,17 +230,17 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank,CMap map)
 			return true;
 		}
 		//是否撞障碍物
-		if ((map.m_nArrMap[this->m_core.X - 2][this->m_core.Y] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X - 2][this->m_core.Y - 1] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X - 2][this->m_core.Y + 1] == 土块障碍) ||
-			(map.m_nArrMap[this->m_core.X - 2][this->m_core.Y] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X - 2][this->m_core.Y - 1] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X - 2][this->m_core.Y + 1] == 石块障碍))
+		if ((map.m_nArrMap[this->m_core.X - 2][this->m_core.Y] == 土块 ||
+			map.m_nArrMap[this->m_core.X - 2][this->m_core.Y - 1] == 土块 ||
+			map.m_nArrMap[this->m_core.X - 2][this->m_core.Y + 1] == 土块) ||
+			(map.m_nArrMap[this->m_core.X - 2][this->m_core.Y] == 石块 ||
+				map.m_nArrMap[this->m_core.X - 2][this->m_core.Y - 1] == 石块 ||
+				map.m_nArrMap[this->m_core.X - 2][this->m_core.Y + 1] == 石块))
 		{
 			return true;
 		}
 		//是否遇到我家泉水
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 		{
 			return true;
 		}
@@ -267,17 +267,17 @@ bool CTank::IsMyTankMeetOther(int dir, CTank * penemytank,CMap map)
 			return true;
 		}
 		//是否撞障碍物
-		if ((map.m_nArrMap[this->m_core.X + 2][this->m_core.Y] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X + 2][this->m_core.Y - 1] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X + 2][this->m_core.Y + 1] == 土块障碍) ||
-			(map.m_nArrMap[this->m_core.X + 2][this->m_core.Y] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X + 2][this->m_core.Y - 1] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X + 2][this->m_core.Y + 1] == 石块障碍))
+		if ((map.m_nArrMap[this->m_core.X + 2][this->m_core.Y] == 土块 ||
+			map.m_nArrMap[this->m_core.X + 2][this->m_core.Y - 1] == 土块 ||
+			map.m_nArrMap[this->m_core.X + 2][this->m_core.Y + 1] == 土块) ||
+			(map.m_nArrMap[this->m_core.X + 2][this->m_core.Y] == 石块 ||
+				map.m_nArrMap[this->m_core.X + 2][this->m_core.Y - 1] == 石块 ||
+				map.m_nArrMap[this->m_core.X + 2][this->m_core.Y + 1] == 石块))
 		{
 			return true;
 		}
 		//是否遇到我家泉水
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 		{
 			return true;
 		}
@@ -350,12 +350,12 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank, CMap m
 			return true;
 		}
 		//是否撞障碍物
-		if ((map.m_nArrMap[this->m_core.X][this->m_core.Y - 2] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X - 1][this->m_core.Y - 2] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X + 1][this->m_core.Y - 2] == 土块障碍) ||
-			(map.m_nArrMap[this->m_core.X][this->m_core.Y - 2] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X - 1][this->m_core.Y - 2] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X + 1][this->m_core.Y - 2] == 石块障碍))
+		if ((map.m_nArrMap[this->m_core.X][this->m_core.Y - 2] == 土块 ||
+			map.m_nArrMap[this->m_core.X - 1][this->m_core.Y - 2] == 土块 ||
+			map.m_nArrMap[this->m_core.X + 1][this->m_core.Y - 2] == 土块) ||
+			(map.m_nArrMap[this->m_core.X][this->m_core.Y - 2] == 石块 ||
+				map.m_nArrMap[this->m_core.X - 1][this->m_core.Y - 2] == 石块 ||
+				map.m_nArrMap[this->m_core.X + 1][this->m_core.Y - 2] == 石块))
 		{
 			return true;
 		}
@@ -394,17 +394,17 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank, CMap m
 			return true;
 		}
 		//是否撞障碍物
-		if ((map.m_nArrMap[this->m_core.X][this->m_core.Y + 2] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X - 1][this->m_core.Y + 2] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X + 1][this->m_core.Y + 2] == 土块障碍) ||
-			(map.m_nArrMap[this->m_core.X][this->m_core.Y + 2] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X - 1][this->m_core.Y + 2] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X + 1][this->m_core.Y + 2] == 石块障碍))
+		if ((map.m_nArrMap[this->m_core.X][this->m_core.Y + 2] == 土块 ||
+			map.m_nArrMap[this->m_core.X - 1][this->m_core.Y + 2] == 土块 ||
+			map.m_nArrMap[this->m_core.X + 1][this->m_core.Y + 2] == 土块) ||
+			(map.m_nArrMap[this->m_core.X][this->m_core.Y + 2] == 石块 ||
+				map.m_nArrMap[this->m_core.X - 1][this->m_core.Y + 2] == 石块 ||
+				map.m_nArrMap[this->m_core.X + 1][this->m_core.Y + 2] == 石块))
 		{
 			return true;
 		}
 		//是否遇到我家泉水
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 		{
 			return true;
 		}
@@ -443,17 +443,17 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank, CMap m
 			return true;
 		}
 		//是否撞障碍物
-		if ((map.m_nArrMap[this->m_core.X - 2][this->m_core.Y] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X - 2][this->m_core.Y - 1] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X - 2][this->m_core.Y + 1] == 土块障碍) ||
-			(map.m_nArrMap[this->m_core.X - 2][this->m_core.Y] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X - 2][this->m_core.Y - 1] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X - 2][this->m_core.Y + 1] == 石块障碍))
+		if ((map.m_nArrMap[this->m_core.X - 2][this->m_core.Y] == 土块 ||
+			map.m_nArrMap[this->m_core.X - 2][this->m_core.Y - 1] == 土块 ||
+			map.m_nArrMap[this->m_core.X - 2][this->m_core.Y + 1] == 土块) ||
+			(map.m_nArrMap[this->m_core.X - 2][this->m_core.Y] == 石块 ||
+				map.m_nArrMap[this->m_core.X - 2][this->m_core.Y - 1] == 石块 ||
+				map.m_nArrMap[this->m_core.X - 2][this->m_core.Y + 1] == 石块))
 		{
 			return true;
 		}
 		//是否遇到我家泉水
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 		{
 			return true;
 		}
@@ -492,17 +492,17 @@ bool CTank::IsEneTankMeetOther(int dir, CTank pmytank, CTank* penemytank, CMap m
 			return true;
 		}
 		//是否撞障碍物
-		if ((map.m_nArrMap[this->m_core.X + 2][this->m_core.Y] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X + 2][this->m_core.Y - 1] == 土块障碍 ||
-			map.m_nArrMap[this->m_core.X + 2][this->m_core.Y + 1] == 土块障碍) ||
-			(map.m_nArrMap[this->m_core.X + 2][this->m_core.Y] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X + 2][this->m_core.Y - 1] == 石块障碍 ||
-				map.m_nArrMap[this->m_core.X + 2][this->m_core.Y + 1] == 石块障碍))
+		if ((map.m_nArrMap[this->m_core.X + 2][this->m_core.Y] == 土块 ||
+			map.m_nArrMap[this->m_core.X + 2][this->m_core.Y - 1] == 土块 ||
+			map.m_nArrMap[this->m_core.X + 2][this->m_core.Y + 1] == 土块) ||
+			(map.m_nArrMap[this->m_core.X + 2][this->m_core.Y] == 石块 ||
+				map.m_nArrMap[this->m_core.X + 2][this->m_core.Y - 1] == 石块 ||
+				map.m_nArrMap[this->m_core.X + 2][this->m_core.Y + 1] == 石块))
 		{
 			return true;
 		}
 		//是否遇到我家泉水
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 		{
 			return true;
 		}

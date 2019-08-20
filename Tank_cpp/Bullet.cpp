@@ -49,18 +49,18 @@ void CBullet::IsMyBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
 		this->m_state = 不存在;
 	}
 	//遇土块障碍
-	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 土块障碍)
+	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 土块)
 	{
 		this->m_state = 不存在;
 		map.m_nArrMap[this->m_core.X][this->m_core.Y] = 空地;
 	}
 	//遇石块障碍
-	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 石块障碍)
+	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 石块)
 	{
 		this->m_state = 不存在;
 	}
 	//遇泉水
-	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 	{
 		this->m_state = 不存在;
 	}
@@ -151,7 +151,7 @@ void CBullet::IsMyBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
 		}
 	}
 }
-void CBullet::IsEneBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
+void CBullet::IsEneBulMeetOther(CTank &tank, CTank* penemytank, CMap& map)
 {
 	//遇边界
 	if (this->m_core.X <= 0 ||
@@ -162,18 +162,18 @@ void CBullet::IsEneBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
 		this->m_state = 不存在;
 	}
 	//遇土块障碍
-	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 土块障碍)
+	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 土块)
 	{
 		this->m_state = 不存在;
 		map.m_nArrMap[this->m_core.X][this->m_core.Y] = 空地;
 	}
 	//遇石块障碍
-	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 石块障碍)
+	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 石块)
 	{
 		this->m_state = 不存在;
 	}
 	//遇泉水
-	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 	{
 		this->m_state = 不存在;
 		tank.m_blood = 0;//泉水打到，我方坦克当场去世
@@ -333,17 +333,17 @@ void CBullet::DrawBullet(CTank tank, CMap map)
 			setColor(11, 0);
 	}
 	//碰到障碍，将子弹画为空格，实现子弹消失
-	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 土块障碍)
+	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 土块)
 	{
 		GotoxyAndPrint(this->m_core.X, this->m_core.Y, "  ");
 	}
 	//碰到石块障碍物，，实现子弹消失的效果
-	else if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 石块障碍)
+	else if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 石块)
 	{
 		setColor(7, 0);
 	}
 	//碰到泉水，将子弹换成其颜色和形状，实现子弹消失
-	else if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 我家泉水)
+	else if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 	{
 		setColor(12, 0);
 		GotoxyAndPrint(this->m_core.X, this->m_core.Y, "★");
