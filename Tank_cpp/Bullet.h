@@ -16,8 +16,8 @@ public:
 	void SetBullet(COORD core, enum direction dir);
 	void MoveBullet();	//移动子弹
 	void CleanBullet(COORD oldBulCore);	//清理旧子弹
-	void IsMyBulMeetOther(CTank tank, CTank * penemytank,CMap &map); //我方子弹碰撞
-	void IsEneBulMeetOther(CTank &tank, CTank* penemytank,  CMap &map);//敌方子弹碰撞
+	void IsMyBulMeetOther(CTank tank, CTank* pMyTank,CTank * penemytank,CMap &map); //我方子弹碰撞
+	void IsEneBulMeetOther(CTank *pMyTank, CTank* pEnemyTank,  CMap &map);//敌方子弹碰撞
 	void DrawBullet( CTank tank, CMap map);				//打印子弹
 };
 

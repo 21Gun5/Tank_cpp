@@ -38,8 +38,10 @@ void CBullet::CleanBullet(COORD oldBulCore)
 {
 	GotoxyAndPrint(oldBulCore.X, oldBulCore.Y, "  ");
 }
-void CBullet::IsMyBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
+void CBullet::IsMyBulMeetOther(CTank tank, CTank* pMyTank,CTank* pEnemyTank, CMap& map)
 {
+	//tank 参数用于奖励值+1
+
 	//遇边界
 	if (this->m_core.X <= 0 ||
 		this->m_core.X >= MAP_X_WALL / 2 ||
@@ -67,82 +69,82 @@ void CBullet::IsMyBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
 	//遇敌方坦克
 	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 	{
-		if (penemytank[i].m_isAlive == false) continue;
+		if (pEnemyTank[i].m_isAlive == false) continue;
 		switch (this->m_dir)
 		{
 		case UP:
 			if (
-				(this->m_core.X == penemytank[i].m_core.X) && (this->m_core.Y - penemytank[i].m_core.Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[0].X) && (this->m_core.Y - penemytank[i].m_body[0].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[1].X) && (this->m_core.Y - penemytank[i].m_body[1].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[2].X) && (this->m_core.Y - penemytank[i].m_body[2].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[3].X) && (this->m_core.Y - penemytank[i].m_body[3].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[4].X) && (this->m_core.Y - penemytank[i].m_body[4].Y == 0)
+				(this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[0].X) && (this->m_core.Y - pEnemyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[1].X) && (this->m_core.Y - pEnemyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[2].X) && (this->m_core.Y - pEnemyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[3].X) && (this->m_core.Y - pEnemyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[4].X) && (this->m_core.Y - pEnemyTank[i].m_body[4].Y == 0)
 				)
 			{
 				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
 				this->m_state = 不存在;
-				penemytank[i].m_blood--;
-				if (penemytank[i].m_blood == 0)//减血后为0则死亡
-					penemytank[i].m_isAlive = false;
-				if (!penemytank[i].m_isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(penemytank)) % 3 == 0)//每打死三个生命值+1
+				pEnemyTank[i].m_blood--;
+				if (pEnemyTank[i].m_blood == 0)//减血后为0则死亡
+					pEnemyTank[i].m_isAlive = false;
+				if (!pEnemyTank[i].m_isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(pEnemyTank)) % 3 == 0)//每打死三个生命值+1
 					(tank.m_blood)++;//要加!penemytank[i].isAlive，要不打到多条命的敌坦也加命
 			}
 			break;
 		case DOWN:
 			if (
-				(this->m_core.X == penemytank[i].m_core.X) && (this->m_core.Y - penemytank[i].m_core.Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[0].X) && (this->m_core.Y - penemytank[i].m_body[0].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[1].X) && (this->m_core.Y - penemytank[i].m_body[1].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[2].X) && (this->m_core.Y - penemytank[i].m_body[2].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[3].X) && (this->m_core.Y - penemytank[i].m_body[3].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[4].X) && (this->m_core.Y - penemytank[i].m_body[4].Y == 0)
+				(this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[0].X) && (this->m_core.Y - pEnemyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[1].X) && (this->m_core.Y - pEnemyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[2].X) && (this->m_core.Y - pEnemyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[3].X) && (this->m_core.Y - pEnemyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[4].X) && (this->m_core.Y - pEnemyTank[i].m_body[4].Y == 0)
 				)
 			{
 				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
 				this->m_state = 不存在;
-				penemytank[i].m_blood--;
-				if (penemytank[i].m_blood == 0)//减血后为0则死亡
-					penemytank[i].m_isAlive = false;
-				if (!penemytank[i].m_isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(penemytank)) % 3 == 0)//每打死三个生命值+1
+				pEnemyTank[i].m_blood--;
+				if (pEnemyTank[i].m_blood == 0)//减血后为0则死亡
+					pEnemyTank[i].m_isAlive = false;
+				if (!pEnemyTank[i].m_isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(pEnemyTank)) % 3 == 0)//每打死三个生命值+1
 					(tank.m_blood)++;
 			}
 			break;
 		case LEFT:
 			if (
-				(this->m_core.X == penemytank[i].m_core.X) && (this->m_core.Y - penemytank[i].m_core.Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[0].X) && (this->m_core.Y - penemytank[i].m_body[0].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[1].X) && (this->m_core.Y - penemytank[i].m_body[1].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[2].X) && (this->m_core.Y - penemytank[i].m_body[2].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[3].X) && (this->m_core.Y - penemytank[i].m_body[3].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[4].X) && (this->m_core.Y - penemytank[i].m_body[4].Y == 0)
+				(this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[0].X) && (this->m_core.Y - pEnemyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[1].X) && (this->m_core.Y - pEnemyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[2].X) && (this->m_core.Y - pEnemyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[3].X) && (this->m_core.Y - pEnemyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[4].X) && (this->m_core.Y - pEnemyTank[i].m_body[4].Y == 0)
 				)
 			{
 				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
 				this->m_state = 不存在;
-				penemytank[i].m_blood--;
-				if (penemytank[i].m_blood == 0)//减血后为0则死亡
-					penemytank[i].m_isAlive = false;
-				if (!penemytank[i].m_isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(penemytank)) % 3 == 0)//每打死三个生命值+1
+				pEnemyTank[i].m_blood--;
+				if (pEnemyTank[i].m_blood == 0)//减血后为0则死亡
+					pEnemyTank[i].m_isAlive = false;
+				if (!pEnemyTank[i].m_isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(pEnemyTank)) % 3 == 0)//每打死三个生命值+1
 					(tank.m_blood)++;
 			}
 			break;
 		case RIGHT:
 			if (
-				(this->m_core.X == penemytank[i].m_core.X) && (this->m_core.Y - penemytank[i].m_core.Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[0].X) && (this->m_core.Y - penemytank[i].m_body[0].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[1].X) && (this->m_core.Y - penemytank[i].m_body[1].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[2].X) && (this->m_core.Y - penemytank[i].m_body[2].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[3].X) && (this->m_core.Y - penemytank[i].m_body[3].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[4].X) && (this->m_core.Y - penemytank[i].m_body[4].Y == 0)
+				(this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[0].X) && (this->m_core.Y - pEnemyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[1].X) && (this->m_core.Y - pEnemyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[2].X) && (this->m_core.Y - pEnemyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[3].X) && (this->m_core.Y - pEnemyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[4].X) && (this->m_core.Y - pEnemyTank[i].m_body[4].Y == 0)
 				)
 			{
 				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
 				this->m_state = 不存在;
-				penemytank[i].m_blood--;
-				if (penemytank[i].m_blood == 0)//减血后为0则死亡
-					penemytank[i].m_isAlive = false;
-				if (!penemytank[i].m_isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(penemytank)) % 3 == 0)//每打死三个生命值+1
+				pEnemyTank[i].m_blood--;
+				if (pEnemyTank[i].m_blood == 0)//减血后为0则死亡
+					pEnemyTank[i].m_isAlive = false;
+				if (!pEnemyTank[i].m_isAlive && (ENEMY_TANK_AMOUNT - GetLiveEnemyAmount(pEnemyTank)) % 3 == 0)//每打死三个生命值+1
 					(tank.m_blood)++;
 			}
 			break;
@@ -150,8 +152,70 @@ void CBullet::IsMyBulMeetOther(CTank tank, CTank* penemytank, CMap& map)
 			break;
 		}
 	}
+	//遇我方其他
+	for (int i = 0; i < MY_TANK_AMOUNT; i++)
+	{
+		if (pMyTank[i].m_isAlive == false) continue;
+		switch (this->m_dir)
+		{
+		case UP:
+			if (
+				(this->m_core.X == pMyTank[i].m_core.X) && (this->m_core.Y - pMyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[0].X) && (this->m_core.Y - pMyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[1].X) && (this->m_core.Y - pMyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[2].X) && (this->m_core.Y - pMyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[3].X) && (this->m_core.Y - pMyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[4].X) && (this->m_core.Y - pMyTank[i].m_body[4].Y == 0)
+				)
+			{
+				this->m_state = 不存在;
+			}
+			break;
+		case DOWN:
+			if (
+				(this->m_core.X == pMyTank[i].m_core.X) && (this->m_core.Y - pMyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[0].X) && (this->m_core.Y - pMyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[1].X) && (this->m_core.Y - pMyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[2].X) && (this->m_core.Y - pMyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[3].X) && (this->m_core.Y - pMyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[4].X) && (this->m_core.Y - pMyTank[i].m_body[4].Y == 0)
+				)
+			{
+				this->m_state = 不存在;
+			}
+			break;
+		case LEFT:
+			if (
+				(this->m_core.X == pMyTank[i].m_core.X) && (this->m_core.Y - pMyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[0].X) && (this->m_core.Y - pMyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[1].X) && (this->m_core.Y - pMyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[2].X) && (this->m_core.Y - pMyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[3].X) && (this->m_core.Y - pMyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[4].X) && (this->m_core.Y - pMyTank[i].m_body[4].Y == 0)
+				)
+			{
+				this->m_state = 不存在;
+			}
+			break;
+		case RIGHT:
+			if (
+				(this->m_core.X == pMyTank[i].m_core.X) && (this->m_core.Y - pMyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[0].X) && (this->m_core.Y - pMyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[1].X) && (this->m_core.Y - pMyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[2].X) && (this->m_core.Y - pMyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[3].X) && (this->m_core.Y - pMyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[4].X) && (this->m_core.Y - pMyTank[i].m_body[4].Y == 0)
+				)
+			{
+				this->m_state = 不存在;
+			}
+			break;
+		default:
+			break;
+		}
+	}
 }
-void CBullet::IsEneBulMeetOther(CTank &tank, CTank* penemytank, CMap& map)
+void CBullet::IsEneBulMeetOther(CTank *pMyTank, CTank* pEnemyTank, CMap& map)
 {
 	//遇边界
 	if (this->m_core.X <= 0 ||
@@ -176,96 +240,100 @@ void CBullet::IsEneBulMeetOther(CTank &tank, CTank* penemytank, CMap& map)
 	if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
 	{
 		this->m_state = 不存在;
-		tank.m_blood = 0;//泉水打到，我方坦克当场去世
+		pMyTank[0].m_blood = 0;//泉水打到，我方坦克当场去世
+		pMyTank[1].m_blood = 0;//泉水打到，我方坦克当场去世
 	}
 	//遇到我方坦克
-	switch (this->m_dir)
+	for (int i = 0; i < MY_TANK_AMOUNT; i++)
 	{
-	case UP:
-		if (
-			(this->m_core.X == tank.m_core.X) && (this->m_core.Y - tank.m_core.Y == 0) ||
-			(this->m_core.X == tank.m_body[0].X) && (this->m_core.Y - tank.m_body[0].Y == 0) ||
-			(this->m_core.X == tank.m_body[1].X) && (this->m_core.Y - tank.m_body[1].Y == 0) ||
-			(this->m_core.X == tank.m_body[2].X) && (this->m_core.Y - tank.m_body[2].Y == 0) ||
-			(this->m_core.X == tank.m_body[3].X) && (this->m_core.Y - tank.m_body[3].Y == 0) ||
-			(this->m_core.X == tank.m_body[4].X) && (this->m_core.Y - tank.m_body[4].Y == 0)
-			)
-		{
-			PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-			this->m_state = 不存在;
-			(tank.m_blood)--;
-			if (tank.m_blood == 0)//如果减血后为0
-				tank.m_isAlive = false;//声明为死亡
-		}
-		break;
-	case DOWN:
-		if (
-			(this->m_core.X == tank.m_core.X) && (this->m_core.Y - tank.m_core.Y == 0) ||
-			(this->m_core.X == tank.m_body[0].X) && (this->m_core.Y - tank.m_body[0].Y == 0) ||
-			(this->m_core.X == tank.m_body[1].X) && (this->m_core.Y - tank.m_body[1].Y == 0) ||
-			(this->m_core.X == tank.m_body[2].X) && (this->m_core.Y - tank.m_body[2].Y == 0) ||
-			(this->m_core.X == tank.m_body[3].X) && (this->m_core.Y - tank.m_body[3].Y == 0) ||
-			(this->m_core.X == tank.m_body[4].X) && (this->m_core.Y - tank.m_body[4].Y == 0)
-			)
-		{
-			PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-			this->m_state = 不存在;
-			(tank.m_blood)--;
-			if (tank.m_blood == 0)//如果减血后为0
-				tank.m_isAlive = false;//声明为死亡
-		}
-		break;
-	case LEFT:
-		if (
-			(this->m_core.X == tank.m_core.X) && (this->m_core.Y - tank.m_core.Y == 0) ||
-			(this->m_core.X == tank.m_body[0].X) && (this->m_core.Y - tank.m_body[0].Y == 0) ||
-			(this->m_core.X == tank.m_body[1].X) && (this->m_core.Y - tank.m_body[1].Y == 0) ||
-			(this->m_core.X == tank.m_body[2].X) && (this->m_core.Y - tank.m_body[2].Y == 0) ||
-			(this->m_core.X == tank.m_body[3].X) && (this->m_core.Y - tank.m_body[3].Y == 0) ||
-			(this->m_core.X == tank.m_body[4].X) && (this->m_core.Y - tank.m_body[4].Y == 0)
-			)
-		{
-			PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-			this->m_state = 不存在;
-			(tank.m_blood)--;
-			if (tank.m_blood == 0)//如果减血后为0
-				tank.m_isAlive = false;//声明为死亡
-		}
-		break;
-	case RIGHT:
-		if (
-			(this->m_core.X == tank.m_core.X) && (this->m_core.Y - tank.m_core.Y == 0) ||
-			(this->m_core.X == tank.m_body[0].X) && (this->m_core.Y - tank.m_body[0].Y == 0) ||
-			(this->m_core.X == tank.m_body[1].X) && (this->m_core.Y - tank.m_body[1].Y == 0) ||
-			(this->m_core.X == tank.m_body[2].X) && (this->m_core.Y - tank.m_body[2].Y == 0) ||
-			(this->m_core.X == tank.m_body[3].X) && (this->m_core.Y - tank.m_body[3].Y == 0) ||
-			(this->m_core.X == tank.m_body[4].X) && (this->m_core.Y - tank.m_body[4].Y == 0)
-			)
-		{
-			PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
-			this->m_state = 不存在;
-			(tank.m_blood)--;
-			if (tank.m_blood == 0)//如果减血后为0
-				tank.m_isAlive = false;//声明为死亡
-		}
-		break;
-	default:
-		break;
-	}
-	//遇其他敌方坦克
-	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
-	{
-		if (penemytank[i].m_isAlive == false) continue;
 		switch (this->m_dir)
 		{
 		case UP:
 			if (
-				(this->m_core.X == penemytank[i].m_core.X) && (this->m_core.Y - penemytank[i].m_core.Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[0].X) && (this->m_core.Y - penemytank[i].m_body[0].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[1].X) && (this->m_core.Y - penemytank[i].m_body[1].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[2].X) && (this->m_core.Y - penemytank[i].m_body[2].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[3].X) && (this->m_core.Y - penemytank[i].m_body[3].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[4].X) && (this->m_core.Y - penemytank[i].m_body[4].Y == 0)
+				(this->m_core.X == pMyTank[i].m_core.X) && (this->m_core.Y - pMyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[0].X) && (this->m_core.Y - pMyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[1].X) && (this->m_core.Y - pMyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[2].X) && (this->m_core.Y - pMyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[3].X) && (this->m_core.Y - pMyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[4].X) && (this->m_core.Y - pMyTank[i].m_body[4].Y == 0)
+				)
+			{
+				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
+				this->m_state = 不存在;
+				(pMyTank[i].m_blood)--;
+				if (pMyTank[i].m_blood == 0)//如果减血后为0
+					pMyTank[i].m_isAlive = false;//声明为死亡
+			}
+			break;
+		case DOWN:
+			if (
+				(this->m_core.X == pMyTank[i].m_core.X) && (this->m_core.Y - pMyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[0].X) && (this->m_core.Y - pMyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[1].X) && (this->m_core.Y - pMyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[2].X) && (this->m_core.Y - pMyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[3].X) && (this->m_core.Y - pMyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[4].X) && (this->m_core.Y - pMyTank[i].m_body[4].Y == 0)
+				)
+			{
+				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
+				this->m_state = 不存在;
+				(pMyTank[i].m_blood)--;
+				if (pMyTank[i].m_blood == 0)//如果减血后为0
+					pMyTank[i].m_isAlive = false;//声明为死亡
+			}
+			break;
+		case LEFT:
+			if (
+				(this->m_core.X == pMyTank[i].m_core.X) && (this->m_core.Y - pMyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[0].X) && (this->m_core.Y - pMyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[1].X) && (this->m_core.Y - pMyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[2].X) && (this->m_core.Y - pMyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[3].X) && (this->m_core.Y - pMyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[4].X) && (this->m_core.Y - pMyTank[i].m_body[4].Y == 0)
+				)
+			{
+				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
+				this->m_state = 不存在;
+				(pMyTank[i].m_blood)--;
+				if (pMyTank[i].m_blood == 0)//如果减血后为0
+					pMyTank[i].m_isAlive = false;//声明为死亡
+			}
+			break;
+		case RIGHT:
+			if (
+				(this->m_core.X == pMyTank[i].m_core.X) && (this->m_core.Y - pMyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[0].X) && (this->m_core.Y - pMyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[1].X) && (this->m_core.Y - pMyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[2].X) && (this->m_core.Y - pMyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[3].X) && (this->m_core.Y - pMyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pMyTank[i].m_body[4].X) && (this->m_core.Y - pMyTank[i].m_body[4].Y == 0)
+				)
+			{
+				PlaySound(TEXT("conf/duang.wav"), NULL, SND_FILENAME | SND_ASYNC);//播放音效
+				this->m_state = 不存在;
+				(pMyTank[i].m_blood)--;
+				if (pMyTank[i].m_blood == 0)//如果减血后为0
+					pMyTank[i].m_isAlive = false;//声明为死亡
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	//遇其他敌方坦克
+	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+	{
+		if (pEnemyTank[i].m_isAlive == false) continue;
+		switch (this->m_dir)
+		{
+		case UP:
+			if (
+				(this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[0].X) && (this->m_core.Y - pEnemyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[1].X) && (this->m_core.Y - pEnemyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[2].X) && (this->m_core.Y - pEnemyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[3].X) && (this->m_core.Y - pEnemyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[4].X) && (this->m_core.Y - pEnemyTank[i].m_body[4].Y == 0)
 				)
 			{
 				this->m_state = 不存在;
@@ -273,12 +341,12 @@ void CBullet::IsEneBulMeetOther(CTank &tank, CTank* penemytank, CMap& map)
 			break;
 		case DOWN:
 			if (
-				(this->m_core.X == penemytank[i].m_core.X) && (this->m_core.Y - penemytank[i].m_core.Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[0].X) && (this->m_core.Y - penemytank[i].m_body[0].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[1].X) && (this->m_core.Y - penemytank[i].m_body[1].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[2].X) && (this->m_core.Y - penemytank[i].m_body[2].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[3].X) && (this->m_core.Y - penemytank[i].m_body[3].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[4].X) && (this->m_core.Y - penemytank[i].m_body[4].Y == 0)
+				(this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[0].X) && (this->m_core.Y - pEnemyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[1].X) && (this->m_core.Y - pEnemyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[2].X) && (this->m_core.Y - pEnemyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[3].X) && (this->m_core.Y - pEnemyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[4].X) && (this->m_core.Y - pEnemyTank[i].m_body[4].Y == 0)
 				)
 			{
 				this->m_state = 不存在;
@@ -286,12 +354,12 @@ void CBullet::IsEneBulMeetOther(CTank &tank, CTank* penemytank, CMap& map)
 			break;
 		case LEFT:
 			if (
-				(this->m_core.X == penemytank[i].m_core.X) && (this->m_core.Y - penemytank[i].m_core.Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[0].X) && (this->m_core.Y - penemytank[i].m_body[0].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[1].X) && (this->m_core.Y - penemytank[i].m_body[1].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[2].X) && (this->m_core.Y - penemytank[i].m_body[2].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[3].X) && (this->m_core.Y - penemytank[i].m_body[3].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[4].X) && (this->m_core.Y - penemytank[i].m_body[4].Y == 0)
+				(this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[0].X) && (this->m_core.Y - pEnemyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[1].X) && (this->m_core.Y - pEnemyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[2].X) && (this->m_core.Y - pEnemyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[3].X) && (this->m_core.Y - pEnemyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[4].X) && (this->m_core.Y - pEnemyTank[i].m_body[4].Y == 0)
 				)
 			{
 				this->m_state = 不存在;
@@ -299,12 +367,12 @@ void CBullet::IsEneBulMeetOther(CTank &tank, CTank* penemytank, CMap& map)
 			break;
 		case RIGHT:
 			if (
-				(this->m_core.X == penemytank[i].m_core.X) && (this->m_core.Y - penemytank[i].m_core.Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[0].X) && (this->m_core.Y - penemytank[i].m_body[0].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[1].X) && (this->m_core.Y - penemytank[i].m_body[1].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[2].X) && (this->m_core.Y - penemytank[i].m_body[2].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[3].X) && (this->m_core.Y - penemytank[i].m_body[3].Y == 0) ||
-				(this->m_core.X == penemytank[i].m_body[4].X) && (this->m_core.Y - penemytank[i].m_body[4].Y == 0)
+				(this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[0].X) && (this->m_core.Y - pEnemyTank[i].m_body[0].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[1].X) && (this->m_core.Y - pEnemyTank[i].m_body[1].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[2].X) && (this->m_core.Y - pEnemyTank[i].m_body[2].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[3].X) && (this->m_core.Y - pEnemyTank[i].m_body[3].Y == 0) ||
+				(this->m_core.X == pEnemyTank[i].m_body[4].X) && (this->m_core.Y - pEnemyTank[i].m_body[4].Y == 0)
 				)
 			{
 				this->m_state = 不存在;
@@ -327,9 +395,9 @@ void CBullet::DrawBullet(CTank tank, CMap map)
 	}
 	else
 	{
-		if (tank.m_who == 我方坦克)
+		if (tank.m_who != 敌方坦克)
 			setColor(10, 0);
-		else if (tank.m_who == 敌方坦克)
+		else
 			setColor(11, 0);
 	}
 	//碰到障碍，将子弹画为空格，实现子弹消失

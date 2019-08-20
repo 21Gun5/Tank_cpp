@@ -22,9 +22,11 @@
 #define 一般 1
 #define 困难 2
 //坦克相关
-#define 我方坦克 0
-#define 敌方坦克 1
-#define ENEMY_TANK_AMOUNT 2//敌军数量
+#define 我方坦克A 0
+#define 我方坦克B 1
+#define 敌方坦克 2
+#define MY_TANK_AMOUNT 2//敌军数量
+#define ENEMY_TANK_AMOUNT 3//敌军数量
 //子弹状态
 #define 不存在 0
 #define 未赋值 1
@@ -37,6 +39,9 @@
 #define 草丛 4
 #define 河流 5
 #define 泉水 6
+
+// 检测键盘按下
+#define KEYDOWN(key) ((GetAsyncKeyState(key) & 0x8000)?1:0)
 
 //枚举
 enum { UP_KEY = 72, DOWN_KEY = 80, ENTER_KEY = 13 };//按键枚举

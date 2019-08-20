@@ -18,13 +18,13 @@ public:
 	char* ShowGameFile();					//显示存档
 	void GameOver(CTank* penemytank);		//善后工作
 	int SelectMenu(int size, int* pindex);  //选择菜单项
-	void SaveGame(CTank tank, CTank* penemytank,CMap map);	//存档
-	void LoadGame(CTank &tank, CTank * penemytank, CMap &map, char* str);	//读档
+	void SaveGameFile(CTank *pMyTank, CTank* PEnemyTank,CMap map);	//存档
+	void LoadGameFile(CTank * pMyTank, CTank * pEnemyTank, CMap &map, char* str);	//读档
 
 	// 打印相关
 	void DrawLogo();						//打印图标
 	void DrawGameHelp();					//打印帮助
-	void DrawGameInfo(CTank ptank, CTank* penemytank);			//打印游戏信息
+	void DrawGameInfo(CTank * pMyTank, CTank* pEnemyTank);			//打印游戏信息
 	void DrawMenu(const char** menu, int size, int index);		//打印各种菜单
 };
 

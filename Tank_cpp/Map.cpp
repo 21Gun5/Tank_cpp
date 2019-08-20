@@ -50,7 +50,7 @@ char* CMap::ShowMapFile()
 	return _file;
 }
 
-void CMap::SetDefaultMap()
+void CMap::LoadDefaultMap()
 {
 	std::string filename = "conf/map/default.i";
 	FILE* pFile = NULL;
@@ -107,9 +107,9 @@ void CMap::LoadMapFile(char* str,CMap &map)
 	fclose(pFile);
 }
 
-void CMap::CustomizeMap(CTank tank, CTank* penemytank)
+void CMap::SaveMapFile(CTank *pMytank, CTank* pEnemyTank)
 {
-	DrawBorder();		//地图边界
+	DrawStaticMap();		//地图边界
 	//提示信息
 	setColor(12, 0);
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 2, "左键单击：绘制地图");
@@ -175,24 +175,26 @@ void CMap::CustomizeMap(CTank tank, CTank* penemytank)
 			if (isSelectedType  && ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 			{
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
+				
 				//不可在我方坦克处绘制
-				if (pos.X / 2 >= tank.m_core.X - 1 &&
-					pos.X / 2 <= tank.m_core.X + 1 &&
-					pos.Y >= tank.m_core.Y - 1 &&
-					pos.Y <= tank.m_core.Y + 1)
-					continue;
+				int flagMy = 0;
+				for (int i = 0; i < MY_TANK_AMOUNT; i++)
+				{
+					if (pos.X / 2 >= pMytank[i].m_core.X - 1 && pos.X / 2 <= pMytank[i].m_core.X + 1 && pos.Y >= pMytank[i].m_core.Y - 1 && pos.Y <= pMytank[i].m_core.Y + 1)
+						flagMy = 1;
+				}
+				if(flagMy == 1) continue;
 				//不可在敌方坦克绘制
-				int flag = 0;
+				int flagEne = 0;
 				for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 				{
-					if (pos.X / 2 >= penemytank[i].m_core.X - 1 &&
-						pos.X / 2 <= penemytank[i].m_core.X + 1 &&
-						pos.Y >= penemytank[i].m_core.Y - 1 &&
-						pos.Y <= penemytank[i].m_core.Y + 1)
-						flag = 1;
-					//continue;//作用域是此for
+					if (pos.X / 2 >= pEnemyTank[i].m_core.X - 1 &&
+						pos.X / 2 <= pEnemyTank[i].m_core.X + 1 &&
+						pos.Y >= pEnemyTank[i].m_core.Y - 1 &&
+						pos.Y <= pEnemyTank[i].m_core.Y + 1)
+						flagEne = 1;
 				}
-				if (flag == 1) continue;
+				if (flagEne == 1) continue;
 				//不可在泉水绘制
 				if (pos.X / 2 >= MAP_X_WALL / 4 &&
 					pos.X / 2 <= MAP_X_WALL / 4 + 1 &&
@@ -201,48 +203,12 @@ void CMap::CustomizeMap(CTank tank, CTank* penemytank)
 				//可绘制处（除边界、坦克、泉水）
 				if (pos.X > 1 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y - 1)
 				{
-					//map.m_nArrMap[pos.X / 2][pos.Y] = 土块障碍;
-					//GotoxyAndPrint(pos.X / 2, pos.Y, "※");
 					m_nArrMap[pos.X / 2][pos.Y] = barType;
 					GotoxyAndPrint(pos.X / 2, pos.Y, "■");
 				}
 			}
 
-			////滚轮绘制石块障碍
-			//if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
-			//{
-			//	COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
-			//	//不可在我方坦克处绘制
-			//	if (pos.X / 2 >= tank.m_core.X - 1 &&
-			//		pos.X / 2 <= tank.m_core.X + 1 &&
-			//		pos.Y >= tank.m_core.Y - 1 &&
-			//		pos.Y <= tank.m_core.Y + 1)
-			//		continue;
-			//	//不可在我方坦克绘制
-			//	int flag = 0;
-			//	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
-			//	{
-			//		if (pos.X / 2 >= penemytank[i].m_core.X - 1 &&
-			//			pos.X / 2 <= penemytank[i].m_core.X + 1 &&
-			//			pos.Y >= penemytank[i].m_core.Y - 1 &&
-			//			pos.Y <= penemytank[i].m_core.Y + 1)
-			//			flag = 1;
-			//		//continue;//作用域是此for
-			//	}
-			//	if (flag == 1) continue;
-			//	//不可在泉水绘制
-			//	if (pos.X / 2 >= MAP_X_WALL / 4 - 2 &&
-			//		pos.X / 2 <= MAP_X_WALL / 4 + 3 &&
-			//		pos.Y >= MAP_Y - 2 - 3 &&
-			//		pos.Y <= MAP_Y - 2) continue;
-			//	//可绘制处（除边界、坦克、泉水）
-			//	if (pos.X > 1 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y - 1)
-			//	{
-			//		map.m_nArrMap[pos.X / 2][pos.Y] = 石块障碍;
-			//		GotoxyAndPrint(pos.X / 2, pos.Y, "■");
-			//	}
-			//}
-			
+
 			// 右键消除障碍
 			if (ir.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 			{
@@ -292,7 +258,7 @@ void CMap::CustomizeMap(CTank tank, CTank* penemytank)
 	fclose(pFile);
 }
 
-void CMap::DrawBarr()
+void CMap::DrawDynamicMap()
 {
 	for (int x = 0; x < MAP_X_WALL; x++)
 	{
@@ -322,7 +288,7 @@ void CMap::DrawBarr()
 	}
 }
 
-void CMap::DrawBorder()
+void CMap::DrawStaticMap()
 {
 	system("cls");						//换页则清屏
 	for (int x = 0; x < MAP_X; x++)
