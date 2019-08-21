@@ -168,41 +168,45 @@ void CBullet::IsBulMeetOther(CTank tank, CTank* pMyTank, CTank* pEnemyTank, CMap
 }
 void CBullet::DrawBullet(CMap map)
 {
-	//碰到边界，换成边界的颜色，实现子弹消失的效果
-	if (m_core.X <= 0 ||
-		m_core.X >= MAP_X_WALL / 2 ||
-		m_core.Y <= 0 ||
-		m_core.Y >= MAP_Y - 1)
+
+	//遇边界，更改为其颜色
+	if (m_core.X <= 0 ||m_core.X >= MAP_X_WALL / 2 ||m_core.Y <= 0 ||m_core.Y >= MAP_Y - 1)
 	{
-		setColor(7, 0);
+		GotoxyAndPrint(m_core.X, m_core.Y, "■",默认颜色);
 	}
-	else
-	{
-		if (m_who != 敌方坦克)
-			setColor(10, 0);
-		else
-			setColor(11, 0);
-	}
-	//碰到障碍，将子弹画为空格，实现子弹消失
-	if (map.m_nArrMap[m_core.X][m_core.Y] == 土块)
-	{
-		GotoxyAndPrint(m_core.X, m_core.Y, "  ");
-	}
-	//碰到石块障碍物，，实现子弹消失的效果
+	//遇石块，更改为其颜色
 	else if (map.m_nArrMap[m_core.X][m_core.Y] == 石块)
 	{
-		setColor(7, 0);
+		GotoxyAndPrint(m_core.X, m_core.Y, "■", 石块颜色);
 	}
-	//碰到泉水，将子弹换成其颜色和形状，实现子弹消失
+	//遇土块，画为空格
+	else if (map.m_nArrMap[m_core.X][m_core.Y] == 土块)
+	{
+		GotoxyAndPrint(m_core.X, m_core.Y, "  ",默认颜色);
+	}
+
+	//遇草丛
+	else if (map.m_nArrMap[m_core.X][m_core.Y] == 草丛)
+	{
+		//GotoxyAndPrint(m_core.X, m_core.Y, "■", 石块颜色);
+	}
+	//遇河流
+	else if (map.m_nArrMap[m_core.X][m_core.Y] == 河流)
+	{
+		//GotoxyAndPrint(m_core.X, m_core.Y, "  ", 默认颜色);
+	}
+
+	//碰到泉水，更改为其颜色和形状
 	else if (map.m_nArrMap[m_core.X][m_core.Y] == 泉水)
 	{
-		setColor(12, 0);
-		GotoxyAndPrint(m_core.X, m_core.Y, "★");
+		GotoxyAndPrint(m_core.X, m_core.Y, "★",泉水颜色);
 	}
 	//一般运动状态
 	else
 	{
-		GotoxyAndPrint(m_core.X, m_core.Y, "■");
+		if (m_who != 敌方坦克)
+			GotoxyAndPrint(m_core.X, m_core.Y, "■",我坦颜色);
+		else
+			GotoxyAndPrint(m_core.X, m_core.Y, "■", 敌坦颜色);		
 	}
-	setColor(7, 0);
 }

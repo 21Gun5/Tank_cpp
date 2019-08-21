@@ -1,59 +1,98 @@
 #pragma once
 
 //边界大小
-#define MAP_X 120	
-#define MAP_Y 40
-#define MAP_X_WALL 80
-
+enum MapSize
+{
+	MAP_X = 120,
+	MAP_Y = 40,
+	MAP_X_WALL = 80
+};
 //怎么玩
-#define 开始游戏 0
-#define 读取游戏 1
-#define 退出游戏 2
+enum howToPlay
+{
+	开始游戏,
+	读取游戏,
+	退出游戏
+};
 //选地图
-#define 系统默认 0
-#define 玩家提供 1
-#define 返回上页 2
+enum whoMap
+{
+	系统默认,
+	玩家提供,
+	返回上页
+};
 //选地图
-#define 新建地图 0
-#define 已有地图 1
-#define 返回上页 2
+enum whenMap
+{
+	新建地图,
+	已有地图,
+	//返回上页
+};
 //难度
-#define 简单 0
-#define 一般 1
-#define 困难 2
+enum level
+{
+	简单,
+	一般,
+	困难
+};
 //坦克相关
-#define 我方坦克A 0
-#define 我方坦克B 1
-#define 敌方坦克 2
-#define MY_TANK_AMOUNT 2//敌军数量
-#define ENEMY_TANK_AMOUNT 3//敌军数量
+enum tankType
+{
+	我方坦克A,
+	我方坦克B,
+	敌方坦克
+};
+// 坦克数量
+enum tankAmount
+{
+	MY_TANK_AMOUNT = 2,
+	ENEMY_TANK_AMOUNT = 3,
+};
 //子弹状态
-#define 不存在 0
-#define 未赋值 1
-#define 已赋值 2
+enum bulState
+{
+	不存在,
+	未赋值,
+	已赋值
+};
 //地图状态
-#define 空地 0
-#define 边界 1
-#define 土块 2
-#define 石块 3
-#define 草丛 4
-#define 河流 5
-#define 泉水 6
+enum mapState
+{
+	空地,
+	边界,
+	土块,
+	石块,
+	草丛,
+	河流,
+	泉水,
+};
+//颜色
+enum color
+{
+	默认颜色 = 7,
+	提示颜色 = 12,
+	我坦颜色 = 10,
+	敌坦颜色 = 11,
+	土块颜色 = 6,
+	石块颜色 = 8,
+	草丛颜色 = 2,
+	河流颜色 = 9,
+	泉水颜色 = 12
+};
+//按键
+enum key
+{
+	UP_KEY = 72, DOWN_KEY = 80, ENTER_KEY = 13
+};
+//方向
+enum direction
+{
+	UP, DOWN, LEFT, RIGHT
+};
 
 // 检测键盘按下
 #define KEYDOWN(key) ((GetAsyncKeyState(key) & 0x8000)?1:0)
 
-//枚举
-enum { UP_KEY = 72, DOWN_KEY = 80, ENTER_KEY = 13 };//按键枚举
-enum direction { UP, DOWN, LEFT, RIGHT };//方向枚举
-
 //系统功能
 void SetCursorState(bool b);								//设置光标状态
-void setColor(int ForeColor, int BackGroundColor);			//设置颜色
-void GotoxyAndPrint(unsigned x, unsigned y, const char* str);//光标到指定位置
-
-
-
-
-
-
+void GotoxyAndPrint(unsigned x, unsigned y, const char* str, int ForeColor = 默认颜色);//光标到指定位置

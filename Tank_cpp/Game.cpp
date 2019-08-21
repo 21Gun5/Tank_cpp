@@ -104,15 +104,13 @@ void CGame::GameOver(CTank * penemytank)
 	//关闭音乐文件
 	mciSendString("close bgm", NULL, 0, NULL);	//close关闭而非stop停止
 	//提示信息
-	setColor(12, 0);
-	GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 7, "GAME OVER! ");
+	GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 7, "GAME OVER! ", 提示颜色);
 	if (eneTankCount == 0)
-		GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 5, "A Winner!");
+		GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 5, "A Winner!", 提示颜色);
 	else
-		GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 5, "A Loser!");
-	GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 3, "");
+		GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 5, "A Loser!", 提示颜色);
+	GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 3, "", 提示颜色);
 	printf("Scores: %d", ENEMY_TANK_AMOUNT - eneTankCount);
-	setColor(7, 0);
 }
 
 int  CGame::SelectMenu(int size, int* pindex)
@@ -141,8 +139,7 @@ void CGame::SaveGameFile(CTank *pMyTank, CTank* pEnemyTank,CMap map)
 {
 	//提示信息
 	system("cls");
-	setColor(12, 0);
-	GotoxyAndPrint(MAP_X / 2 - 12, 12, "请输入存档名字");
+	GotoxyAndPrint(MAP_X / 2 - 12, 12, "请输入存档名字", 提示颜色);
 	GotoxyAndPrint(MAP_X / 2 - 12, 14, "");
 	//输入文件名
 	char str[15];
@@ -150,7 +147,6 @@ void CGame::SaveGameFile(CTank *pMyTank, CTank* pEnemyTank,CMap map)
 	SetCursorState(true);
 	scanf_s("%s", str, 15);
 	SetCursorState(false);
-	setColor(7, 0);
 	sprintf_s(filename, 40, "%s%s%s", "conf/game/", str, ".i");
 	//打开文件
 	FILE* pFile = NULL;
@@ -267,13 +263,11 @@ void CGame::DrawLogo()
 }
 void CGame::DrawGameHelp()
 {
-	setColor(12, 0);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 24, "操 作 说 明");
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 26, "W: 上 S: 下");
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 28, "A: 左 D: 右");
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 30, "Q: 暂停游戏");
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 32, "空格:  开火");
-	setColor(7, 0);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 24, "操 作 说 明", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 26, "W: 上 S: 下", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 28, "A: 左 D: 右", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 30, "Q: 暂停游戏", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 32, "空格:  开火", 提示颜色);
 }
 void CGame::DrawGameInfo(CTank *pMyTank, CTank* pEnemyTank)
 {
@@ -285,23 +279,19 @@ void CGame::DrawGameInfo(CTank *pMyTank, CTank* pEnemyTank)
 	else if (m_levelEneTank == 200) strcpy_s(level, 10, "一般\0");
 	else if (m_levelEneTank == 100)strcpy_s(level, 10, "困难\0");
 	//运行or暂停状态
-	setColor(12, 0);
-	GotoxyAndPrint(MAP_X_WALL/2 + 1, 1, "RUNNING");
-	GotoxyAndPrint(MAP_X_WALL/2 + 1, 2, "Q: 暂停游戏");
-	setColor(7, 0);
+	GotoxyAndPrint(MAP_X_WALL/2 + 1, 1, "RUNNING",提示颜色);
+	GotoxyAndPrint(MAP_X_WALL/2 + 1, 2, "Q: 暂停游戏", 提示颜色);
 	//游戏信息打印
-	setColor(12, 0);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "", 提示颜色);
 	printf("A 生命值: %2d", pMyTank[0].m_blood);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "", 提示颜色);
 	printf("B 生命值: %2d", pMyTank[1].m_blood);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "", 提示颜色);
 	printf("当前分数: %2d", ENEMY_TANK_AMOUNT - eneTankCount);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 11, "");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 11, "", 提示颜色);
 	printf("敌坦个数: %2d", eneTankCount);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 13, "");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 13, "", 提示颜色);
 	printf("当前难度: %s", level);
-	setColor(7, 0);
 }
 void CGame::DrawMenu(const char** menu, int size, int index)
 {
@@ -312,11 +302,9 @@ void CGame::DrawMenu(const char** menu, int size, int index)
 	{
 		if (i == index)
 		{
-			setColor(12, 0);
-			GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + 2 * i, menu[i]);
-			setColor(7, 0);
+			GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + 2 * i, menu[i],  提示颜色);
 		}
 		else
-			GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + 2 * i, menu[i]);
+			GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + 2 * i, menu[i],默认颜色);
 	}
 }
