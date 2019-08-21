@@ -112,19 +112,19 @@ void CMap::SaveMapFile(CTank *pMytank, CTank* pEnemyTank)
 	DrawStaticMap();		//地图边界
 	//提示信息
 	setColor(12, 0);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 2, "左键单击：绘制地图");
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 4, "滚轮单击：选择种类");
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 6, "右键单击：消除种类");
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 8, "界外双击：退出编辑");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 5, "左键单击：绘制地图");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 7, "滚轮单击：选择种类");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 9, "右键单击：消除种类");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 11, "界外双击：退出编辑");
 
 	setColor(6, 0);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 12, "点我选择土块: ■");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 26, "点我选择土块: ■");
 	setColor(8, 0);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 14, "点我选择石块: ■");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 28, "点我选择石块: ■");
 	setColor(2, 0);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 16, "点我选择草丛: ■");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 30, "点我选择草丛: ■");
 	setColor(9, 0);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 18, "点我选择河流: ■");
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 32, "点我选择河流: ■");
 
 	setColor(7, 0);
 	//鼠标事件相关
