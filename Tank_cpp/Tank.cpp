@@ -7,11 +7,11 @@
 CTank::CTank(COORD core, enum direction dir, int blood, int who)
 {
 	m_core = core;
-	//m_body[5] = { {0,0} };
 	m_dir = dir;
 	m_blood = blood;
 	m_isAlive = true;
 	m_who = who;
+	m_isHided = false;//默认非隐藏的
 	SetTankShape();
 }
 
@@ -91,8 +91,14 @@ void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& g
 		}
 		else if (KEYDOWN(' '))
 		{
-			if (this->m_bullet.m_state != 已赋值)
-				this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+			// 非隐藏状态才可开火
+			if (!m_isHided)
+			{
+				if (this->m_bullet.m_state != 已赋值)
+				{
+					this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+				}
+			}
 		}
 		else if (KEYDOWN('Q'))
 		{
@@ -173,8 +179,14 @@ void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& g
 		}
 		else if (KEYDOWN('H'))
 		{
-			if (this->m_bullet.m_state != 已赋值)
-				this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+			// 非隐藏状态才可开火
+			if (!m_isHided)
+			{
+				if (this->m_bullet.m_state != 已赋值)
+				{
+					this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+				}
+			}
 		}
 	}
 	else if (this->m_who == 敌方坦克)
@@ -202,8 +214,14 @@ void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& g
 			this->m_dir = RIGHT;
 			break;
 		case 4:
-			if (this->m_bullet.m_state != 已赋值)
-				this->m_bullet.m_state = 未赋值;
+			// 非隐藏状态才可开火
+			if (!m_isHided)
+			{
+				if (this->m_bullet.m_state != 已赋值)
+				{
+					this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+				}
+			}
 			break;
 		default:
 			break;
@@ -215,6 +233,7 @@ void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& g
 
 bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map)
 {
+
 	switch (dir)
 	{
 	case UP:
@@ -230,7 +249,18 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 		{
 			return true;
 		}
-		//遇草丛可通过障碍
+		//进草丛可隐藏
+		if (map.m_nArrMap[m_core.X][m_core.Y ] == 草丛 || map.m_nArrMap[m_core.X - 1][m_core.Y ] == 草丛 || map.m_nArrMap[m_core.X + 1][m_core.Y ] == 草丛)
+		{
+			
+			m_isHided = true;
+		}
+		// 出草丛则显示（if 与else if 还是有区别的，被坑了
+		if (map.m_nArrMap[m_core.X][m_core.Y -2] == 空地 || map.m_nArrMap[m_core.X - 1][m_core.Y -2] == 空地 || map.m_nArrMap[m_core.X + 1][m_core.Y -2] == 空地)
+		{
+			
+			m_isHided = false;
+		}
 
 		//遇我方坦克
 		for (int i = 0; i < MY_TANK_AMOUNT; i++)
@@ -290,7 +320,19 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 		{
 			return true;
 		}
-		//遇草丛可通过障碍
+		
+		// 进草丛可隐藏
+		if (map.m_nArrMap[m_core.X][m_core.Y ] == 草丛 || map.m_nArrMap[m_core.X - 1][m_core.Y ] == 草丛 || map.m_nArrMap[m_core.X + 1][m_core.Y ] == 草丛)
+		{
+			
+			m_isHided = true;
+		}
+		// 出草丛则显示
+		if (map.m_nArrMap[m_core.X][m_core.Y + 2] == 空地 || map.m_nArrMap[m_core.X - 1][m_core.Y + 2] == 空地 || map.m_nArrMap[m_core.X + 1][m_core.Y + 2] == 空地)
+		{
+			
+			m_isHided = false;
+		}
 
 		//遇泉水
 		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
@@ -355,7 +397,18 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 		{
 			return true;
 		}
-		//遇草丛可通过障碍
+
+		// 进草丛可隐藏
+		if (map.m_nArrMap[m_core.X ][m_core.Y] == 草丛 || map.m_nArrMap[m_core.X ][m_core.Y - 1] == 草丛 || map.m_nArrMap[m_core.X ][m_core.Y + 1] == 草丛)
+		{
+			
+			m_isHided = true;
+		}
+		// 出草丛则显示
+		if (map.m_nArrMap[m_core.X - 2][m_core.Y] == 空地 || map.m_nArrMap[m_core.X - 2][m_core.Y - 1] == 空地 || map.m_nArrMap[m_core.X - 2][m_core.Y + 1] == 空地)
+		{
+			m_isHided = false;
+		}
 
 		//遇泉水
 		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
@@ -420,7 +473,17 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 		{
 			return true;
 		}
-		//遇草丛可通过障碍
+
+		// 进草丛可隐藏
+		if (map.m_nArrMap[m_core.X ][m_core.Y] == 草丛 || map.m_nArrMap[m_core.X ][m_core.Y - 1] == 草丛 || map.m_nArrMap[m_core.X][m_core.Y + 1] == 草丛)
+		{
+			m_isHided = true;
+		}
+		// 出草丛则显示
+		if (map.m_nArrMap[m_core.X + 2][m_core.Y] == 空地 || map.m_nArrMap[m_core.X + 2][m_core.Y - 1] == 空地 || map.m_nArrMap[m_core.X +2][m_core.Y + 1] == 空地)
+		{
+			m_isHided = false;
+		}
 
 		//遇泉水
 		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == 泉水)
@@ -481,6 +544,7 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 void CTank::DrawTank()
 {
 	if (this->m_isAlive == false) return;
+	//if (m_isHided == true) return;
 
 	if (this->m_who != 敌方坦克)
 	{
@@ -518,6 +582,7 @@ void CTank::DrawTank()
 		}
 	}
 }
+
 int GetLiveEnemyAmount(CTank* penemytank)
 {
 	int count = 0;

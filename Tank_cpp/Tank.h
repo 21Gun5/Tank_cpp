@@ -14,6 +14,7 @@ public:
 	unsigned m_blood;		//血量
 	bool m_isAlive;			//是否存活
 	int m_who;				//哪一方
+	bool m_isHided;			//是否隐藏（是否能被找、能被打、能开火
 	CBullet m_bullet;
 public:
 	CTank(COORD core, enum direction dir, int blood, int who);
