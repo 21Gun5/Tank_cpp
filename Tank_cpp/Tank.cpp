@@ -568,7 +568,7 @@ void CTank::DrawTank()
 	}
 	else if (m_who == 敌方坦克)
 	{
-		if (this->m_blood == 2)
+		if (this->m_blood == 20)
 		{
 			GotoxyAndPrint(this->m_core.X, this->m_core.Y, "■", 敌坦颜色);//中心点
 			for (int i = 0; i < 5; i++)//其他点

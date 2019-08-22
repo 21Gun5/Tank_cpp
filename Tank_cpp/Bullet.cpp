@@ -48,11 +48,6 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 {
 	//tank 参数：为了获取奖励值
 
-	//如果坦克死亡，子弹也消失
-	//if (!tank.m_isAlive)
-	//{
-	//	m_state = 不存在;
-	//}
 	//遇边界
 	if (m_core.X <= 0 || m_core.X >= MAP_X_WALL / 2 || m_core.Y <= 0 || m_core.Y >= MAP_Y - 1)
 	{
@@ -70,7 +65,6 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 		map.m_nArrMap[m_core.X][m_core.Y] = 空地;
 	}
 	//遇子弹
-
 	if (m_who != 敌方坦克)
 	{
 		//遇泉水
@@ -98,8 +92,10 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 		// 遇敌方坦克及子弹
 		for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end();it++)
 		{
-			// 死坦克不判断
-			//if (it->m_isAlive == false) continue;
+			
+			//if (it->m_isAlive == false) continue;// 死坦克不判断
+			
+			// 遇坦克
 			if (
 				(m_core.X == it->m_core.X) && (m_core.Y == it->m_core.Y) ||
 				(m_core.X == it->m_body[0].X) && (m_core.Y == it->m_body[0].Y) ||
@@ -117,9 +113,6 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 				{
 					it->m_isAlive = false;//死亡
 					tank.m_killCount++;//杀敌数+1
-					//GotoxyAndPrint(it->m_bullet.m_core.X, it->m_bullet.m_core.Y+1, " ");
-					//map.m_nArrMap[it->m_bullet.m_core.X][it->m_bullet.m_core.Y] = 空地;
-					//it->m_bullet.m_state = 不存在;//敌军死亡，则子弹也消失
 				}
 				// 每打死三个奖励一条生命值
 				if (tank.m_killCount == 3)
@@ -128,30 +121,22 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 					tank.m_killCount = 0;
 				}
 			}
-
-			//if (pEnemyTank[i].m_bullet.m_state = 不存在) continue;
-			//// 敌我子弹相遇则都消失（我我、敌敌则不
-			//if( (m_core.X == pEnemyTank[i].m_bullet.m_core.X) && (m_core.Y == pEnemyTank[i].m_bullet.m_core.Y))
-			//{
-			//	m_state = 不存在;
-			//	pEnemyTank[i].m_bullet.m_state = 不存在;
-			//	//map.m_nArrMap[m_core.X][m_core.Y] = 空地;
-			//}
+			// 遇子弹
+			if ((m_core.X == it->m_bullet.m_core.X) && (m_core.Y == it->m_bullet.m_core.Y))
+			{
+				// 设置子弹状态
+				m_state = 不存在;
+				it->m_bullet.m_state = 不存在;
+				// 抹除子弹
+				GotoxyAndPrint(m_core.X, m_core.Y, " ");
+				GotoxyAndPrint(it->m_bullet.m_core.X, it->m_bullet.m_core.Y, " ");
+				// 破坏相等的条件
+				m_core = { 0 };
+				it->m_bullet.m_core = { -1 };
+			}
 		}
-		
-		//// 遇敌方子弹
-		//for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
-		//{
-		//	//if (pEnemyTank[i].m_bullet.m_state = 不存在) continue;
-		//	// 敌我子弹相遇则都消失（我我、敌敌则不
-		//	if ((m_core.X == pEnemyTank[i].m_bullet.m_core.X) && (m_core.Y == pEnemyTank[i].m_bullet.m_core.Y))
-		//	{
-		//		m_state = 不存在;
-		//		pEnemyTank[i].m_bullet.m_state = 不存在;
-		//		//map.m_nArrMap[m_core.X][m_core.Y] = 空地;
-		//	}
-		//}
 	}
+
 	else if (m_who == 敌方坦克)
 	{
 		//遇泉水
@@ -165,8 +150,10 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 		//遇到我方坦克及子弹
 		for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 		{
-			// 死坦克不判断
-			//if (it->m_isAlive == false) continue;
+			
+			//if (it->m_isAlive == false) continue;// 死坦克不判断
+			
+			// 遇到坦克
 			if (
 				(m_core.X == it->m_core.X) && (m_core.Y == it->m_core.Y) ||
 				(m_core.X == it->m_body[0].X) && (m_core.Y == it->m_body[0].Y ) ||
@@ -187,33 +174,25 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 				if (it->m_blood == 0)
 				{
 					it->m_isAlive = false;//声明为死亡
-					//it->m_bullet.m_state = 不存在;//坦克死亡，则子弹也消失
 				}
 					
 			}
 
-			//// 敌我子弹相遇则都消失（我我、敌敌则不
-			//if ((m_core.X == it->m_bullet.m_core.X) && (m_core.Y == it->m_bullet.m_core.Y))
-			//{
-			//	m_state = 不存在;
-			//	it->m_bullet.m_state = 不存在;
-			//	map.m_nArrMap[m_core.X][m_core.Y] = 空地;
-			//}
+			// 遇子弹
+			if ((m_core.X == it->m_bullet.m_core.X) && (m_core.Y == it->m_bullet.m_core.Y))
+			{
+				// 设置子弹状态
+				m_state = 不存在;
+				it->m_bullet.m_state = 不存在;
+				// 抹除子弹
+				GotoxyAndPrint(m_core.X, m_core.Y, " ");// 抹除其子弹
+				GotoxyAndPrint(it->m_bullet.m_core.X, it->m_bullet.m_core.Y, " ");// 抹除其子弹
+				// 破坏相等的条件
+				m_core = { 0 };
+				it->m_bullet.m_core = { -1 };
+			}
 
 		}
-
-		//// 遇我方子弹
-		//for (int i = 0; i < MY_TANK_AMOUNT; i++)
-		//{
-		//	//if (pEnemyTank[i].m_bullet.m_state = 不存在) continue;
-		//	// 敌我子弹相遇则都消失（我我、敌敌则不
-		//	if ((m_core.X == pMyTank[i].m_bullet.m_core.X) && (m_core.Y == pMyTank[i].m_bullet.m_core.Y))
-		//	{
-		//		m_state = 不存在;
-		//		pMyTank[i].m_bullet.m_state = 不存在;
-		//		//map.m_nArrMap[m_core.X][m_core.Y] = 空地;
-		//	}
-		//}
 
 		//遇其他敌方坦克
 		for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
