@@ -4,6 +4,11 @@
 #include "Game.h"
 
 //坦克相关
+
+CTank::CTank()
+{
+
+}
 CTank::CTank(COORD core, enum direction dir, int blood, int who,int power)
 {
 	m_core = core;
@@ -194,8 +199,8 @@ void CTank::ManipulateTank(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap
 	}
 	else if (this->m_who == 敌方坦克)
 	{
-		//switch (rand() % 5)
-		switch (4)
+		switch (rand() % 5)
+		//switch (4)
 		{
 		case UP:
 			if (!this->IsTankMeetOther(UP, myTank, enemyTank, map))

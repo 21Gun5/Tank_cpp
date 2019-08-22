@@ -158,10 +158,18 @@ void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank,CMap ma
 	//打开文件
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, filename, "wb");
-	//写入全局变量
+	//写入游戏属性
 	fwrite(&this->m_isRunning, sizeof(int), 1, pFile);		//游戏运行状态
 	fwrite(&this->m_levelEneTank, sizeof(int), 1, pFile);	//写入难度，控制敌方坦克速度
 	fwrite(&this->m_levelEneBul, sizeof(int), 1, pFile);	//写入难度，控制敌方子弹速度
+	fwrite(&this->m_stage, sizeof(int), 1, pFile);//写入关卡数
+	fwrite(&this->m_isOver, sizeof(bool), 1, pFile);//是否结束
+	fwrite(&this->m_maxStage, sizeof(int), 1, pFile);//最大关卡
+	fwrite(&this->m_needLoadNewStage, sizeof(bool), 1, pFile);//是否需要导入新关卡
+	m_myTankAmount = myTank.size();
+	fwrite(&this->m_myTankAmount, sizeof(int), 1, pFile);//我的坦克数量（读取时用
+	m_enemyTankAmount = enemyTank.size();
+	fwrite(&this->m_enemyTankAmount, sizeof(int), 1, pFile);//敌军坦克数量（
 	//写入障碍
 	for (int x = 0; x < MAP_X_WALL; x++)
 	{
@@ -170,20 +178,28 @@ void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank,CMap ma
 			fwrite(&map.m_nArrMap[x][y], sizeof(int), 1, pFile);
 		}
 	}
+	// 写入我方
 	for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 	{
 		//写入我方坦克
 		fwrite(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
 		for (int i = 0; i < 5; i++)
+		{
 			fwrite(&it->m_body[i], sizeof(COORD), 1, pFile);//其他节点
+		}
 		fwrite(&it->m_dir, sizeof(int), 1, pFile);//方向
 		fwrite(&it->m_blood, sizeof(int), 1, pFile);//血量
 		fwrite(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
 		fwrite(&it->m_who, sizeof(int), 1, pFile);//身份
+		fwrite(&it->m_isHided, sizeof(bool), 1, pFile);//是否隐藏
+		fwrite(&it->m_killCount, sizeof(int), 1, pFile);//杀敌数
+		fwrite(&it->m_power, sizeof(int), 1, pFile);//伤害
+
 		//写入我方子弹
-		fwrite(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+		fwrite(&it->m_bullet.GetCore(), sizeof(COORD), 1, pFile);//坐标
 		fwrite(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
 		fwrite(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
+		fwrite(&it->m_bullet.m_who, sizeof(int), 1, pFile);//哪一方的子弹
 	}
 	//写入敌方
 	for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
@@ -191,16 +207,25 @@ void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank,CMap ma
 		//写入敌方坦克
 		fwrite(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
 		for (int j = 0; j < 5; j++)
+		{
 			fwrite(&it->m_body[j], sizeof(COORD), 1, pFile);//其他节点
+		}
 		fwrite(&it->m_dir, sizeof(int), 1, pFile);//方向
 		fwrite(&it->m_blood, sizeof(int), 1, pFile);//血量
 		fwrite(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
 		fwrite(&it->m_who, sizeof(int), 1, pFile);//身份
+		fwrite(&it->m_isHided, sizeof(bool), 1, pFile);//是否隐藏
+		fwrite(&it->m_killCount, sizeof(int), 1, pFile);//杀敌数
+		fwrite(&it->m_power, sizeof(int), 1, pFile);//伤害
+
 		//写入敌方子弹
-		fwrite(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+		fwrite(&it->m_bullet.GetCore(), sizeof(COORD), 1, pFile);//坐标
 		fwrite(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
 		fwrite(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
+		fwrite(&it->m_bullet.m_who, sizeof(int), 1, pFile);//哪一方的子弹
+
 	}
+	
 	fclose(pFile);
 }
 
@@ -210,10 +235,16 @@ void CGame::LoadGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap& 
 	sprintf_s(filename, 40, "%s%s", "conf/game/", str);
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, filename, "rb");
-	//读取全局变量
+	//读取游戏属性
 	fread(&this->m_isRunning, sizeof(int), 1, pFile);		//游戏运行状态
 	fread(&this->m_levelEneTank, sizeof(int), 1, pFile);	//读取难度，控制敌方坦克速度
 	fread(&this->m_levelEneBul, sizeof(int), 1, pFile);	//读取难度，控制敌方子弹速度
+	fread(&this->m_stage, sizeof(int), 1, pFile);//写入关卡数
+	fread(&this->m_isOver, sizeof(bool), 1, pFile);//是否结束
+	fread(&this->m_maxStage, sizeof(int), 1, pFile);//最大关卡
+	fread(&this->m_needLoadNewStage, sizeof(bool), 1, pFile);//是否需要导入新关卡
+	fread(&this->m_myTankAmount, sizeof(int), 1, pFile);//我的坦克数量（读取时用
+	fread(&this->m_enemyTankAmount, sizeof(int), 1, pFile);//敌军坦克数量（
 	//读取障碍
 	for (int x = 0; x < MAP_X_WALL; x++)
 	{
@@ -223,37 +254,121 @@ void CGame::LoadGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap& 
 		}
 	}
 	//读取我方
-	for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
+	CTank mytankTmp;
+	for (int i = 0; i < this->m_myTankAmount; i++)
 	{
 		//读取我方坦克
-		fread(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
+		fread(&mytankTmp.m_core, sizeof(COORD), 1, pFile);//中心节点
 		for (int i = 0; i < 5; i++)
-			fread(&it->m_body[i], sizeof(COORD), 1, pFile);//其他节点
-		fread(&it->m_dir, sizeof(int), 1, pFile);//方向
-		fread(&it->m_blood, sizeof(int), 1, pFile);//血量
-		fread(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
-		fread(&it->m_who, sizeof(int), 1, pFile);//身份
+		{
+			fread(&mytankTmp.m_body[i], sizeof(COORD), 1, pFile);//其他节点
+		}
+		fread(&mytankTmp.m_dir, sizeof(int), 1, pFile);//方向
+		fread(&mytankTmp.m_blood, sizeof(int), 1, pFile);//血量
+		fread(&mytankTmp.m_isAlive, sizeof(bool), 1, pFile);//是否存活
+		fread(&mytankTmp.m_who, sizeof(int), 1, pFile);//身份
+		fread(&mytankTmp.m_isHided, sizeof(bool), 1, pFile);//是否隐藏
+		fread(&mytankTmp.m_killCount, sizeof(int), 1, pFile);//杀敌数
+		fread(&mytankTmp.m_power, sizeof(int), 1, pFile);//伤害
+
 		//读取我方子弹
-		fread(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
-		fread(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
-		fread(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
+
+		//COORD core_tmp;
+		//fread(&core_tmp, sizeof(COORD), 1, pFile);//坐标
+		//mytankTmp.m_bullet.SetCore(core_tmp);
+
+		fread(&mytankTmp.m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+
+		fread(&mytankTmp.m_bullet.m_dir, sizeof(int), 1, pFile);//方向
+		fread(&mytankTmp.m_bullet.m_state, sizeof(int), 1, pFile);//状态
+		fread(&mytankTmp.m_bullet.m_who, sizeof(int), 1, pFile);//哪一方的子弹
+
+		myTank.push_back(mytankTmp);
 	}
+
+	//for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
+	//{
+	//	//读取我方坦克
+	//	fread(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
+	//	for (int i = 0; i < 5; i++)
+	//	{
+	//		fread(&it->m_body[i], sizeof(COORD), 1, pFile);//其他节点
+	//	}
+	//	fread(&it->m_dir, sizeof(int), 1, pFile);//方向
+	//	fread(&it->m_blood, sizeof(int), 1, pFile);//血量
+	//	fread(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
+	//	fread(&it->m_who, sizeof(int), 1, pFile);//身份
+	//	fread(&it->m_isHided, sizeof(bool), 1, pFile);//是否隐藏
+	//	fread(&it->m_killCount, sizeof(int), 1, pFile);//杀敌数
+	//	fread(&it->m_power, sizeof(int), 1, pFile);//伤害
+	//	//读取我方子弹
+	//	//COORD core_tmp;
+	//	//fread(&core_tmp, sizeof(COORD), 1, pFile);//坐标
+	//	//it->m_bullet.SetCore(core_tmp);
+	//	fread(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+	//	fread(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
+	//	fread(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
+	//	fread(&it->m_bullet.m_who, sizeof(int), 1, pFile);//哪一方的子弹
+	//}
+
 	//读取敌方
-	for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
+	CTank enemytankTmp;
+	for (int i = 0; i < this->m_enemyTankAmount; i++)
 	{
 		//读取敌方坦克
-		fread(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
+		fread(&enemytankTmp.m_core, sizeof(COORD), 1, pFile);//中心节点
 		for (int j = 0; j < 5; j++)
-			fread(&it->m_body[j], sizeof(COORD), 1, pFile);//其他节点
-		fread(&it->m_dir, sizeof(int), 1, pFile);//方向
-		fread(&it->m_blood, sizeof(int), 1, pFile);//血量
-		fread(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
-		fread(&it->m_who, sizeof(int), 1, pFile);//身份
+		{
+			fread(&enemytankTmp.m_body[j], sizeof(COORD), 1, pFile);//其他节点
+		}
+		fread(&enemytankTmp.m_dir, sizeof(int), 1, pFile);//方向
+		fread(&enemytankTmp.m_blood, sizeof(int), 1, pFile);//血量
+		fread(&enemytankTmp.m_isAlive, sizeof(bool), 1, pFile);//是否存活
+		fread(&enemytankTmp.m_who, sizeof(int), 1, pFile);//身份
+		fread(&enemytankTmp.m_isHided, sizeof(bool), 1, pFile);//是否隐藏
+		fread(&enemytankTmp.m_killCount, sizeof(int), 1, pFile);//杀敌数
+		fread(&enemytankTmp.m_power, sizeof(int), 1, pFile);//伤害
+
 		//读取敌方子弹
-		fread(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
-		fread(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
-		fread(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
+
+		//COORD core_tmp2;
+		//fread(&core_tmp2, sizeof(COORD), 1, pFile);//坐标
+		//enemytankTmp.m_bullet.SetCore(core_tmp2);
+
+		fread(&enemytankTmp.m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+
+		fread(&enemytankTmp.m_bullet.m_dir, sizeof(int), 1, pFile);//方向
+		fread(&enemytankTmp.m_bullet.m_state, sizeof(int), 1, pFile);//状态
+		fread(&enemytankTmp.m_bullet.m_who, sizeof(int), 1, pFile);//哪一方的子弹
+
+		enemyTank.push_back(enemytankTmp);
 	}
+
+	//for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
+	//{
+	//	//读取敌方坦克
+	//	fread(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
+	//	for (int j = 0; j < 5; j++)
+	//	{
+	//		fread(&it->m_body[j], sizeof(COORD), 1, pFile);//其他节点
+	//	}
+	//	fread(&it->m_dir, sizeof(int), 1, pFile);//方向
+	//	fread(&it->m_blood, sizeof(int), 1, pFile);//血量
+	//	fread(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
+	//	fread(&it->m_who, sizeof(int), 1, pFile);//身份
+	//	fread(&it->m_isHided, sizeof(bool), 1, pFile);//是否隐藏
+	//	fread(&it->m_killCount, sizeof(int), 1, pFile);//杀敌数
+	//	fread(&it->m_power, sizeof(int), 1, pFile);//伤害
+	//	//读取敌方子弹
+	//	//COORD core_tmp2;
+	//	//fread(&core_tmp2, sizeof(COORD), 1, pFile);//坐标
+	//	//it->m_bullet.SetCore(core_tmp2);
+	//	fread(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+	//	fread(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
+	//	fread(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
+	//	fread(&it->m_bullet.m_who, sizeof(int), 1, pFile);//哪一方的子弹
+	//}
+	
 	fclose(pFile);
 }
 

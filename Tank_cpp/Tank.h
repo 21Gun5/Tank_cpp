@@ -21,6 +21,7 @@ public:
 	CBullet m_bullet;
 	int m_power = 1;
 public:
+	CTank();
 	CTank(COORD core, enum direction dir, int blood, int who,int power=1);
 	void SetTankShape();								//设置坦克形态
 	void CleanTankTail(COORD oldCore, PCOORD oldBody);	//清除旧坦克

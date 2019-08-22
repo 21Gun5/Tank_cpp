@@ -17,6 +17,8 @@ public:
 	bool m_isOver = 0;
 	int m_maxStage = 3;
 	bool m_needLoadNewStage = 0;//是否需要导入新关卡
+	int m_myTankAmount;
+	int m_enemyTankAmount;
 
 	const char* menuPlay[3] = { "开始游戏","读取游戏","退出游戏" };
 	const char* menuWhoMap[3] = { "系统默认","玩家提供","返回上页" };

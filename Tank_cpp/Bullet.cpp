@@ -11,6 +11,17 @@ CBullet::CBullet()
 	m_state = ²»´æÔÚ;
 	m_who = -1;
 }
+
+COORD CBullet::GetCore()
+{
+	return m_core;
+
+}
+void CBullet::SetCore(COORD core)
+{
+	m_core = core;
+}
+
 void CBullet::SetBullet(CTank tank)
 {
 	m_core = tank.m_core;
