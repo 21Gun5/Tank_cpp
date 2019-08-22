@@ -26,18 +26,23 @@ int main()
 	CTank myTankA = { { MAP_X_WALL / 4 - 4, MAP_Y - 3 }, UP, 30, 我方坦克A };
 	CTank myTankB = { { MAP_X_WALL / 4 + 5, MAP_Y - 3 }, UP, 3, 我方坦克B };
 	myTank.push_back(myTankA);
-//	myTank.push_back(myTankB);
+	//myTank.push_back(myTankB);
 
 	//敌方坦克
 	vector<CTank> enemyTank;
-	CTank enemyTankA = { {2, 2} ,DOWN ,20,敌方坦克 };
-	CTank enemyTankB = { {MAP_X_WALL / 4, 2},DOWN,1,敌方坦克 };
-	CTank enemyTankC = { {MAP_X_WALL / 2 - 2, 2}, DOWN,1,敌方坦克 };
-	CTank enemyTankD = { {MAP_X_WALL / 4 - 8, MAP_Y - 3}, LEFT,1,敌方坦克 };
+	CTank enemyTankA = { {2, 2} ,DOWN ,1,敌方坦克,2 };
+	CTank enemyTankB = { {MAP_X_WALL / 8 + 1, 2},DOWN,2,敌方坦克,1 };
+	CTank enemyTankC = { {MAP_X_WALL / 4, 2},DOWN,1,敌方坦克,1 };
+	CTank enemyTankD = { {MAP_X_WALL / 8 + MAP_X_WALL / 4 - 1, 2}, DOWN,1,敌方坦克,2 };
+	CTank enemyTankE = { {MAP_X_WALL / 2 - 2, 2}, DOWN,2,敌方坦克 ,1};
+	//CTank enemyTankT = { {MAP_X_WALL / 4 - 8, MAP_Y - 3}, LEFT,1,敌方坦克 };
+
 	enemyTank.push_back(enemyTankA);
 	enemyTank.push_back(enemyTankB);
-	//enemyTank.push_back(enemyTankD);
 	enemyTank.push_back(enemyTankC);
+	enemyTank.push_back(enemyTankD);
+	enemyTank.push_back(enemyTankE);
+	//enemyTank.push_back(enemyTankT);
 	
 
 	////流程控制

@@ -4,7 +4,7 @@
 #include "Game.h"
 
 //坦克相关
-CTank::CTank(COORD core, enum direction dir, int blood, int who)
+CTank::CTank(COORD core, enum direction dir, int blood, int who,int power)
 {
 	m_core = core;
 	m_dir = dir;
@@ -12,6 +12,7 @@ CTank::CTank(COORD core, enum direction dir, int blood, int who)
 	m_isAlive = true;
 	m_who = who;
 	m_isHided = false;//默认非隐藏的
+	m_power = power;
 	SetTankShape();
 }
 
@@ -568,7 +569,8 @@ void CTank::DrawTank()
 	}
 	else if (m_who == 敌方坦克)
 	{
-		if (this->m_blood == 20)
+		// 两条命
+		if (this->m_blood == 2)
 		{
 			GotoxyAndPrint(this->m_core.X, this->m_core.Y, "■", 敌坦颜色);//中心点
 			for (int i = 0; i < 5; i++)//其他点
@@ -576,13 +578,28 @@ void CTank::DrawTank()
 				GotoxyAndPrint(this->m_body[i].X, this->m_body[i].Y, "■", 敌坦颜色);//中心点
 			}
 		}
+		// 一条命
 		else if (this->m_blood == 1)
 		{
-			GotoxyAndPrint(this->m_core.X, this->m_core.Y, "□", 敌坦颜色);//中心点
-			for (int i = 0; i < 5; i++)//其他点
+			// 一点攻击力
+			if (m_power == 1)
 			{
-				GotoxyAndPrint(this->m_body[i].X, this->m_body[i].Y, "□", 敌坦颜色);
+				GotoxyAndPrint(this->m_core.X, this->m_core.Y, "□", 敌坦颜色);//中心点
+				for (int i = 0; i < 5; i++)//其他点
+				{
+					GotoxyAndPrint(this->m_body[i].X, this->m_body[i].Y, "□", 敌坦颜色);
+				}
 			}
+			// 两点攻击力
+			else if (m_power == 2)
+			{
+				GotoxyAndPrint(this->m_core.X, this->m_core.Y, "※", 敌坦颜色);//中心点
+				for (int i = 0; i < 5; i++)//其他点
+				{
+					GotoxyAndPrint(this->m_body[i].X, this->m_body[i].Y, "※", 敌坦颜色);
+				}
+			}
+
 		}
 	}
 }

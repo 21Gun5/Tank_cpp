@@ -19,8 +19,9 @@ public:
 	bool m_isHided;			//是否隐藏（是否能被找、能被打、能开火
 	int m_killCount = 0;//杀敌数
 	CBullet m_bullet;
+	int m_power = 1;
 public:
-	CTank(COORD core, enum direction dir, int blood, int who);
+	CTank(COORD core, enum direction dir, int blood, int who,int power=1);
 	void SetTankShape();								//设置坦克形态
 	void CleanTankTail(COORD oldCore, PCOORD oldBody);	//清除旧坦克
 	void ManipulateTank(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap map, CGame& game);

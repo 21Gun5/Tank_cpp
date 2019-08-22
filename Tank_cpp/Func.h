@@ -46,7 +46,7 @@ enum tankType
 enum tankAmount
 {
 	MY_TANK_AMOUNT = 2,
-	ENEMY_TANK_AMOUNT = 4,
+	ENEMY_TANK_AMOUNT = 5,
 };
 //×Óµ¯×´Ì¬
 enum bulState

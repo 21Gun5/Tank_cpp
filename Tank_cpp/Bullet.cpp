@@ -168,7 +168,10 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 				// 坦克在隐藏状态被打到不掉血
 				if (!it->m_isHided)
 				{
-					it->m_blood--;
+					if (tank.m_power == 1)
+						it->m_blood--;
+					else if (tank.m_power == 2)
+						it->m_blood -= 2;
 				}
 				//如果减血后为0
 				if (it->m_blood == 0)
