@@ -63,32 +63,6 @@ void CMap::LoadDefaultMap()
 		}
 	}
 	fclose(pFile);
-
-	/*for (int x = 0; x < MAP_X_WALL; x++)
-	{
-		for (int y = 0; y < MAP_Y; y++)
-		{
-			if (
-				(x > MAP_X_WALL / 4 - 9 && x < MAP_X_WALL / 4 - 5 && y > MAP_Y / 2 - 8 && y < MAP_Y / 2 - 4) ||
-				(x < MAP_X_WALL / 4 + 9 && x > MAP_X_WALL / 4 + 5 && y > MAP_Y / 2 - 8 && y < MAP_Y / 2 - 4) ||
-				(x > MAP_X_WALL / 4 - 9 && x < MAP_X_WALL / 4 - 5 && y < MAP_Y / 2 + 6 && y > MAP_Y / 2 + 2) ||
-				(x < MAP_X_WALL / 4 + 9 && x > MAP_X_WALL / 4 + 5 && y < MAP_Y / 2 + 6 && y > MAP_Y / 2 + 2)
-				)
-			{
-				m_nArrMap[x][y] = 土块;
-			}
-			if (
-				(x > MAP_X_WALL / 4 - 9 && x < MAP_X_WALL / 4 - 5 && y > MAP_Y / 2 - 9 && y < MAP_Y / 2 - 7) ||
-				(x < MAP_X_WALL / 4 + 9 && x > MAP_X_WALL / 4 + 5 && y > MAP_Y / 2 - 9 && y < MAP_Y / 2 - 7) ||
-				(x > MAP_X_WALL / 4 - 9 && x < MAP_X_WALL / 4 - 5 && y < MAP_Y / 2 + 7 && y > MAP_Y / 2 + 5) ||
-				(x < MAP_X_WALL / 4 + 9 && x > MAP_X_WALL / 4 + 5 && y < MAP_Y / 2 + 7 && y > MAP_Y / 2 + 5)
-				)
-			{
-				m_nArrMap[x][y] = 石块;
-			}
-
-		}
-	}*/
 }
 
 void CMap::LoadMapFile(char* str,CMap &map)
@@ -107,7 +81,7 @@ void CMap::LoadMapFile(char* str,CMap &map)
 	fclose(pFile);
 }
 
-void CMap::SaveMapFile(CTank *pMytank, CTank* pEnemyTank)
+void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 {
 	DrawStaticMap();		//地图边界
 	//提示信息
@@ -139,22 +113,22 @@ void CMap::SaveMapFile(CTank *pMytank, CTank* pEnemyTank)
 			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
 			{
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;
-				if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 12))
+				if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 26))
 				{
 					barType = 土块;
 					isSelectedType = 1;
 				}
-				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 14))
+				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 28))
 				{
 					barType = 石块;
 					isSelectedType = 1;
 				}
-				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 16))
+				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 30))
 				{
 					barType = 草丛;
 					isSelectedType = 1;
 				}
-				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 18))
+				else if ((pos.X >= (MAP_X + MAP_X_WALL) / 4 - 5 && pos.Y == 32))
 				{
 					barType = 河流;
 					isSelectedType = 1;
@@ -168,20 +142,20 @@ void CMap::SaveMapFile(CTank *pMytank, CTank* pEnemyTank)
 				
 				//不可在我方坦克处绘制
 				int flagMy = 0;
-				for (int i = 0; i < MY_TANK_AMOUNT; i++)
+				for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 				{
-					if (pos.X / 2 >= pMytank[i].m_core.X - 1 && pos.X / 2 <= pMytank[i].m_core.X + 1 && pos.Y >= pMytank[i].m_core.Y - 1 && pos.Y <= pMytank[i].m_core.Y + 1)
+					if (pos.X / 2 >= it->m_core.X - 1 && pos.X / 2 <= it->m_core.X + 1 && pos.Y >= it->m_core.Y - 1 && pos.Y <= it->m_core.Y + 1)
 						flagMy = 1;
 				}
 				if(flagMy == 1) continue;
 				//不可在敌方坦克绘制
 				int flagEne = 0;
-				for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+				for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
 				{
-					if (pos.X / 2 >= pEnemyTank[i].m_core.X - 1 &&
-						pos.X / 2 <= pEnemyTank[i].m_core.X + 1 &&
-						pos.Y >= pEnemyTank[i].m_core.Y - 1 &&
-						pos.Y <= pEnemyTank[i].m_core.Y + 1)
+					if (pos.X / 2 >= it->m_core.X - 1 &&
+						pos.X / 2 <= it->m_core.X + 1 &&
+						pos.Y >= it->m_core.Y - 1 &&
+						pos.Y <= it->m_core.Y + 1)
 						flagEne = 1;
 				}
 				if (flagEne == 1) continue;

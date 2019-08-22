@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
+#include <vector>
 #include "Bullet.h"
+using namespace std;
 
 class CGame;
 class CMap;
@@ -15,14 +17,15 @@ public:
 	bool m_isAlive;			//是否存活
 	int m_who;				//哪一方
 	bool m_isHided;			//是否隐藏（是否能被找、能被打、能开火
+	int m_killCount = 0;//杀敌数
 	CBullet m_bullet;
 public:
 	CTank(COORD core, enum direction dir, int blood, int who);
 	void SetTankShape();								//设置坦克形态
 	void CleanTankTail(COORD oldCore, PCOORD oldBody);	//清除旧坦克
-	void ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& game);
-	bool IsTankMeetOther(int dir, CTank* pMyTank, CTank  *pEnemyTank, CMap map);//阻挡我方坦克
+	void ManipulateTank(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap map, CGame& game);
+	bool IsTankMeetOther(int dir, vector<CTank>& myTank,vector<CTank> &enemyTank, CMap map);//阻挡我方坦克
 	void DrawTank();	//打印坦克
 };
 
-int GetLiveEnemyAmount(CTank* penemytank);					  //存活敌军数量
+//int GetLiveEnemyAmount(vector<CTank>& enemyTank);					  //存活敌军数量

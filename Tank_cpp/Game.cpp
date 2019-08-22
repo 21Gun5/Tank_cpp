@@ -10,6 +10,7 @@
 #include "Tank.h"
 #pragma comment(lib,"winmm.lib")
 
+
 //游戏相关
 void CGame::GameInit(CMap &map)
 {
@@ -97,10 +98,10 @@ char* CGame::ShowGameFile()
 	return _file;
 }
 
-void CGame::GameOver(CTank * penemytank)
+void CGame::GameOver(vector<CTank>& enemyTank)
 {
 	//存活敌坦数量
-	int eneTankCount = GetLiveEnemyAmount(penemytank);
+	int eneTankCount = enemyTank.size();
 	//关闭音乐文件
 	mciSendString("close bgm", NULL, 0, NULL);	//close关闭而非stop停止
 	//提示信息
@@ -111,6 +112,11 @@ void CGame::GameOver(CTank * penemytank)
 		GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 5, "A Loser!", 提示颜色);
 	GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 3, "", 提示颜色);
 	printf("Scores: %d", ENEMY_TANK_AMOUNT - eneTankCount);
+}
+
+void CGame::NextStage()
+{
+	m_stage++;
 }
 
 int  CGame::SelectMenu(int size, int* pindex)
@@ -135,7 +141,7 @@ int  CGame::SelectMenu(int size, int* pindex)
 	return 0;
 }
 
-void CGame::SaveGameFile(CTank *pMyTank, CTank* pEnemyTank,CMap map)
+void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank,CMap map)
 {
 	//提示信息
 	system("cls");
@@ -163,41 +169,41 @@ void CGame::SaveGameFile(CTank *pMyTank, CTank* pEnemyTank,CMap map)
 			fwrite(&map.m_nArrMap[x][y], sizeof(int), 1, pFile);
 		}
 	}
-	for (int i = 0; i < MY_TANK_AMOUNT; i++)
+	for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 	{
 		//写入我方坦克
-		fwrite(&pMyTank[i].m_core, sizeof(COORD), 1, pFile);//中心节点
+		fwrite(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
 		for (int i = 0; i < 5; i++)
-			fwrite(&pMyTank[i].m_body[i], sizeof(COORD), 1, pFile);//其他节点
-		fwrite(&pMyTank[i].m_dir, sizeof(int), 1, pFile);//方向
-		fwrite(&pMyTank[i].m_blood, sizeof(int), 1, pFile);//血量
-		fwrite(&pMyTank[i].m_isAlive, sizeof(bool), 1, pFile);//是否存活
-		fwrite(&pMyTank[i].m_who, sizeof(int), 1, pFile);//身份
+			fwrite(&it->m_body[i], sizeof(COORD), 1, pFile);//其他节点
+		fwrite(&it->m_dir, sizeof(int), 1, pFile);//方向
+		fwrite(&it->m_blood, sizeof(int), 1, pFile);//血量
+		fwrite(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
+		fwrite(&it->m_who, sizeof(int), 1, pFile);//身份
 		//写入我方子弹
-		fwrite(&pMyTank[i].m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
-		fwrite(&pMyTank[i].m_bullet.m_dir, sizeof(int), 1, pFile);//方向
-		fwrite(&pMyTank[i].m_bullet.m_state, sizeof(int), 1, pFile);//状态
+		fwrite(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+		fwrite(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
+		fwrite(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
 	}
 	//写入敌方
-	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+	for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
 	{
 		//写入敌方坦克
-		fwrite(&pEnemyTank[i].m_core, sizeof(COORD), 1, pFile);//中心节点
+		fwrite(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
 		for (int j = 0; j < 5; j++)
-			fwrite(&pEnemyTank[i].m_body[j], sizeof(COORD), 1, pFile);//其他节点
-		fwrite(&pEnemyTank[i].m_dir, sizeof(int), 1, pFile);//方向
-		fwrite(&pEnemyTank[i].m_blood, sizeof(int), 1, pFile);//血量
-		fwrite(&pEnemyTank[i].m_isAlive, sizeof(bool), 1, pFile);//是否存活
-		fwrite(&pEnemyTank[i].m_who, sizeof(int), 1, pFile);//身份
+			fwrite(&it->m_body[j], sizeof(COORD), 1, pFile);//其他节点
+		fwrite(&it->m_dir, sizeof(int), 1, pFile);//方向
+		fwrite(&it->m_blood, sizeof(int), 1, pFile);//血量
+		fwrite(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
+		fwrite(&it->m_who, sizeof(int), 1, pFile);//身份
 		//写入敌方子弹
-		fwrite(&pEnemyTank[i].m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
-		fwrite(&pEnemyTank[i].m_bullet.m_dir, sizeof(int), 1, pFile);//方向
-		fwrite(&pEnemyTank[i].m_bullet.m_state, sizeof(int), 1, pFile);//状态
+		fwrite(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+		fwrite(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
+		fwrite(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
 	}
 	fclose(pFile);
 }
 
-void CGame::LoadGameFile(CTank* pMyTank, CTank* pEneMyTank, CMap& map, char* str)
+void CGame::LoadGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap& map, char* str)
 {
 	char* filename = (char*)malloc(40);
 	sprintf_s(filename, 40, "%s%s", "conf/game/", str);
@@ -216,36 +222,36 @@ void CGame::LoadGameFile(CTank* pMyTank, CTank* pEneMyTank, CMap& map, char* str
 		}
 	}
 	//读取我方
-	for (int i = 0; i < MY_TANK_AMOUNT; i++)
+	for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 	{
 		//读取我方坦克
-		fread(&pMyTank[i].m_core, sizeof(COORD), 1, pFile);//中心节点
+		fread(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
 		for (int i = 0; i < 5; i++)
-			fread(&pMyTank[i].m_body[i], sizeof(COORD), 1, pFile);//其他节点
-		fread(&pMyTank[i].m_dir, sizeof(int), 1, pFile);//方向
-		fread(&pMyTank[i].m_blood, sizeof(int), 1, pFile);//血量
-		fread(&pMyTank[i].m_isAlive, sizeof(bool), 1, pFile);//是否存活
-		fread(&pMyTank[i].m_who, sizeof(int), 1, pFile);//身份
+			fread(&it->m_body[i], sizeof(COORD), 1, pFile);//其他节点
+		fread(&it->m_dir, sizeof(int), 1, pFile);//方向
+		fread(&it->m_blood, sizeof(int), 1, pFile);//血量
+		fread(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
+		fread(&it->m_who, sizeof(int), 1, pFile);//身份
 		//读取我方子弹
-		fread(&pMyTank[i].m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
-		fread(&pMyTank[i].m_bullet.m_dir, sizeof(int), 1, pFile);//方向
-		fread(&pMyTank[i].m_bullet.m_state, sizeof(int), 1, pFile);//状态
+		fread(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+		fread(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
+		fread(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
 	}
-															//读取敌方
-	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+	//读取敌方
+	for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
 	{
 		//读取敌方坦克
-		fread(&pEneMyTank[i].m_core, sizeof(COORD), 1, pFile);//中心节点
+		fread(&it->m_core, sizeof(COORD), 1, pFile);//中心节点
 		for (int j = 0; j < 5; j++)
-			fread(&pEneMyTank[i].m_body[j], sizeof(COORD), 1, pFile);//其他节点
-		fread(&pEneMyTank[i].m_dir, sizeof(int), 1, pFile);//方向
-		fread(&pEneMyTank[i].m_blood, sizeof(int), 1, pFile);//血量
-		fread(&pEneMyTank[i].m_isAlive, sizeof(bool), 1, pFile);//是否存活
-		fread(&pEneMyTank[i].m_who, sizeof(int), 1, pFile);//身份
+			fread(&it->m_body[j], sizeof(COORD), 1, pFile);//其他节点
+		fread(&it->m_dir, sizeof(int), 1, pFile);//方向
+		fread(&it->m_blood, sizeof(int), 1, pFile);//血量
+		fread(&it->m_isAlive, sizeof(bool), 1, pFile);//是否存活
+		fread(&it->m_who, sizeof(int), 1, pFile);//身份
 		//读取敌方子弹
-		fread(&pEneMyTank[i].m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
-		fread(&pEneMyTank[i].m_bullet.m_dir, sizeof(int), 1, pFile);//方向
-		fread(&pEneMyTank[i].m_bullet.m_state, sizeof(int), 1, pFile);//状态
+		fread(&it->m_bullet.m_core, sizeof(COORD), 1, pFile);//坐标
+		fread(&it->m_bullet.m_dir, sizeof(int), 1, pFile);//方向
+		fread(&it->m_bullet.m_state, sizeof(int), 1, pFile);//状态
 	}
 	fclose(pFile);
 }
@@ -269,10 +275,10 @@ void CGame::DrawGameHelp()
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 30, "Q: 暂停游戏", 提示颜色);
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 32, "空格:  开火", 提示颜色);
 }
-void CGame::DrawGameInfo(CTank *pMyTank, CTank* pEnemyTank)
+void CGame::DrawGameInfo(vector<CTank>& myTank,vector<CTank> &enemyTank)
 {
 	//存活敌坦数量
-	int eneTankCount = GetLiveEnemyAmount(pEnemyTank);
+	int eneTankCount = enemyTank.size();
 	//当前难度
 	char level[10];
 	if (m_levelEneTank == 300) strcpy_s(level, 10, "简单\0");
@@ -282,16 +288,42 @@ void CGame::DrawGameInfo(CTank *pMyTank, CTank* pEnemyTank)
 	GotoxyAndPrint(MAP_X_WALL/2 + 1, 1, "RUNNING",提示颜色);
 	GotoxyAndPrint(MAP_X_WALL/2 + 1, 2, "Q: 暂停游戏", 提示颜色);
 	//游戏信息打印
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "", 提示颜色);
-	printf("A 生命值: %2d", pMyTank[0].m_blood);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "", 提示颜色);
-	printf("B 生命值: %2d", pMyTank[1].m_blood);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 3, "", 提示颜色);
+	printf("当前关卡: %2d", m_stage);
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "", 提示颜色);
 	printf("当前分数: %2d", ENEMY_TANK_AMOUNT - eneTankCount);
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 11, "", 提示颜色);
 	printf("敌坦个数: %2d", eneTankCount);
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 13, "", 提示颜色);
 	printf("当前难度: %s", level);
+	// 坦克生命值
+	if (myTank.size() == 2)
+	{
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "", 提示颜色);
+		printf("A 生命值: %2d", myTank[0].m_blood);
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "", 提示颜色);
+		printf("B 生命值: %2d", myTank[1].m_blood);
+	}
+	else if (myTank.size() == 1)
+	{
+		if (myTank[0].m_who == 我方坦克A)
+		{
+			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "", 提示颜色);
+			printf("A 生命值: %2d", myTank[0].m_blood);
+			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "B 生命值: 阵亡", 提示颜色);
+		}
+		else if (myTank[0].m_who == 我方坦克B)
+		{
+			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "A 生命值: 阵亡", 提示颜色);
+			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "", 提示颜色);
+			printf("B 生命值: %2d", myTank[0].m_blood);
+		}
+	}
+	else if (myTank.size() == 0)
+	{
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "A 生命值: 阵亡", 提示颜色);
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "B 生命值: 阵亡", 提示颜色);
+	}
 }
 void CGame::DrawMenu(const char** menu, int size, int index)
 {

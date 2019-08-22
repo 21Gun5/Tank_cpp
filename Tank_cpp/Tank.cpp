@@ -17,13 +17,15 @@ CTank::CTank(COORD core, enum direction dir, int blood, int who)
 
 void CTank::CleanTankTail(COORD oldCore, PCOORD oldBody)
 {
+	//if (this->m_isAlive == false) return;//不加在草丛里死亡后一直闪，加了后尸体不消失，综合，还是不加
 	GotoxyAndPrint(oldCore.X, oldCore.Y, "  ");//中心点
 	for (int i = 0; i < 5; i++)//其他点
 		GotoxyAndPrint(oldBody[i].X, oldBody[i].Y, "  ");
 }
 void CTank::SetTankShape()
 {
-	if (this->m_isAlive == false) return;
+	//if (this->m_isAlive == false) return;
+
 	if (this->m_dir == UP)
 	{
 		this->m_body[0] = { this->m_core.X, this->m_core.Y - 1 };
@@ -58,33 +60,33 @@ void CTank::SetTankShape()
 	}
 }
 
-void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& game)
+void CTank::ManipulateTank(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap map, CGame& game)
 {
-	if (this->m_isAlive == false) return;
+	//if (this->m_isAlive == false) return;
 	if (this->m_who == 我方坦克A)
 	{
 		if (KEYDOWN('W'))//小写不可，可大写和ASCII码
 		{
-			if (!this->IsTankMeetOther(UP, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(UP, myTank, enemyTank, map))
 				this->m_core.Y--;
 			this->m_dir = UP;
 		}
 		else if (KEYDOWN('S'))
 		{
-			if (!this->IsTankMeetOther(DOWN, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(DOWN, myTank, enemyTank, map))
 				this->m_core.Y++;
 			this->m_dir = DOWN;
 		}
 		else if (KEYDOWN('A'))
 		{
-			if (!this->IsTankMeetOther(LEFT, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(LEFT, myTank, enemyTank, map))
 
 				this->m_core.X--;
 			this->m_dir = LEFT;
 		}
 		else if (KEYDOWN('D'))
 		{
-			if (!this->IsTankMeetOther(RIGHT, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(RIGHT, myTank, enemyTank, map))
 
 				this->m_core.X++;
 			this->m_dir = RIGHT;
@@ -132,14 +134,14 @@ void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& g
 				char op = _getch();
 				if (op == '1')		//保存退出
 				{
-					game.SaveGameFile(pMyTank, pEnemyTank, map);
-					game.GameOver(pEnemyTank);
+					game.SaveGameFile(myTank, enemyTank, map);
+					game.GameOver(enemyTank);
 					game.m_isRunning = false;
 					break;
 				}
 				else if (op == '2')	//直接退出
 				{
-					game.GameOver(pEnemyTank);
+					game.GameOver(enemyTank);
 					game.m_isRunning = false;
 					break;
 				}
@@ -153,26 +155,26 @@ void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& g
 	{
 		if (KEYDOWN('I'))//小写不可，可大写和ASCII码
 		{
-			if (!this->IsTankMeetOther(UP, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(UP, myTank, enemyTank, map))
 				this->m_core.Y--;
 			this->m_dir = UP;
 		}
 		else if (KEYDOWN('K'))
 		{
-			if (!this->IsTankMeetOther(DOWN, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(DOWN, myTank, enemyTank, map))
 				this->m_core.Y++;
 			this->m_dir = DOWN;
 		}
 		else if (KEYDOWN('J'))
 		{
-			if (!this->IsTankMeetOther(LEFT, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(LEFT, myTank, enemyTank, map))
 
 				this->m_core.X--;
 			this->m_dir = LEFT;
 		}
 		else if (KEYDOWN('L'))
 		{
-			if (!this->IsTankMeetOther(RIGHT, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(RIGHT, myTank, enemyTank, map))
 
 				this->m_core.X++;
 			this->m_dir = RIGHT;
@@ -191,25 +193,26 @@ void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& g
 	}
 	else if (this->m_who == 敌方坦克)
 	{
-		switch (rand() % 5)
+		//switch (rand() % 5)
+		switch (4)
 		{
 		case UP:
-			if (!this->IsTankMeetOther(UP, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(UP, myTank, enemyTank, map))
 				this->m_core.Y--;
 			this->m_dir = UP;
 			break;
 		case DOWN:
-			if (!this->IsTankMeetOther(DOWN, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(DOWN, myTank, enemyTank, map))
 				this->m_core.Y++;
 			this->m_dir = DOWN;
 			break;
 		case LEFT:
-			if (!this->IsTankMeetOther(LEFT, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(LEFT, myTank, enemyTank, map))
 				this->m_core.X--;
 			this->m_dir = LEFT;
 			break;
 		case RIGHT:
-			if (!this->IsTankMeetOther(RIGHT, pMyTank, pEnemyTank, map))
+			if (!this->IsTankMeetOther(RIGHT, myTank, enemyTank, map))
 				this->m_core.X++;
 			this->m_dir = RIGHT;
 			break;
@@ -231,9 +234,8 @@ void CTank::ManipulateTank(CTank* pMyTank, CTank* pEnemyTank, CMap map, CGame& g
 	SetTankShape();//每次移动后都要重新设置形态
 }
 
-bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map)
+bool CTank::IsTankMeetOther(int dir, vector<CTank>& myTank, vector<CTank>& enemyTank, CMap map)
 {
-
 	switch (dir)
 	{
 	case UP:
@@ -263,44 +265,45 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 		}
 
 		//遇我方坦克
-		for (int i = 0; i < MY_TANK_AMOUNT; i++)
+		for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
+		//for (int i = 0; i < MY_TANK_AMOUNT; i++)
 		{
 			//若是我坦，则跳过自己
 			if (m_who != 敌方坦克)
 			{
-				if (this->m_core.X == pMyTank[i].m_core.X && this->m_core.Y == pMyTank[i].m_core.Y)//排除自己
+				if (this->m_core.X == it->m_core.X && this->m_core.Y == it->m_core.Y)//排除自己
 					continue;
 			}
 			// 若此坦克死亡，则不阻挡
-			if (pMyTank[i].m_isAlive == false) continue;
+			//if (it->m_isAlive == false) continue;
 			if (
-				((this->m_core.X == pMyTank[i].m_core.X - 0) && (this->m_core.Y - pMyTank[i].m_core.Y == 3)) ||
-				((this->m_core.X == pMyTank[i].m_core.X - 1) && (this->m_core.Y - pMyTank[i].m_core.Y == 3)) ||
-				((this->m_core.X == pMyTank[i].m_core.X - 2) && (this->m_core.Y - pMyTank[i].m_core.Y == 3)) ||
-				((this->m_core.X == pMyTank[i].m_core.X + 1) && (this->m_core.Y - pMyTank[i].m_core.Y == 3)) ||
-				((this->m_core.X == pMyTank[i].m_core.X + 2) && (this->m_core.Y - pMyTank[i].m_core.Y == 3))
+				((this->m_core.X == it->m_core.X - 0) && (this->m_core.Y - it->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X - 1) && (this->m_core.Y - it->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X - 2) && (this->m_core.Y - it->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X + 1) && (this->m_core.Y - it->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X + 2) && (this->m_core.Y - it->m_core.Y == 3))
 				)//要==3,而非<=，只有在挨着的时候可被当，如果小于，虽没挨着敌坦1，但距离却小于2，被2干扰
 			{
 				return true;
 			}
 		}
 		//遇敌方坦克
-		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
 		{
 			//若是敌坦，则跳过自己
 			if (m_who == 敌方坦克)
 			{
-				if (this->m_core.X == pEnemyTank[i].m_core.X && this->m_core.Y == pEnemyTank[i].m_core.Y)//排除自己
+				if (this->m_core.X == it->m_core.X && this->m_core.Y == it->m_core.Y)//排除自己
 					continue;
 			}
 			// 若此坦克死亡，则不阻挡
-			if (pEnemyTank[i].m_isAlive == false) continue;
+			//if (it->m_isAlive == false) continue;
 			if (
-				((this->m_core.X == pEnemyTank[i].m_core.X) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 3)) ||
-				((this->m_core.X == pEnemyTank[i].m_core.X - 1) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 3)) ||
-				((this->m_core.X == pEnemyTank[i].m_core.X - 2) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 3)) ||
-				((this->m_core.X == pEnemyTank[i].m_core.X + 1) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 3)) ||
-				((this->m_core.X == pEnemyTank[i].m_core.X + 2) && (this->m_core.Y - pEnemyTank[i].m_core.Y == 3))
+				((this->m_core.X == it->m_core.X) && (this->m_core.Y - it->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X - 1) && (this->m_core.Y - it->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X - 2) && (this->m_core.Y - it->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X + 1) && (this->m_core.Y - it->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X + 2) && (this->m_core.Y - it->m_core.Y == 3))
 				)//要==3,而非<=，只有在挨着的时候可被当，如果小于，虽没挨着敌坦1，但距离却小于2，被2干扰
 			{
 				return true;
@@ -340,44 +343,44 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 			return true;
 		}
 		//遇我方坦克
-		for (int i = 0; i < MY_TANK_AMOUNT; i++)
+		for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 		{
 			//若是我坦，则跳过自己
 			if (m_who != 敌方坦克)
 			{
-				if (this->m_core.X == pMyTank[i].m_core.X && this->m_core.Y == pMyTank[i].m_core.Y)//排除自己
+				if (this->m_core.X == it->m_core.X && this->m_core.Y == it->m_core.Y)//排除自己
 					continue;
 			}
 			// 若此坦克死亡，则不阻挡
-			if (pMyTank[i].m_isAlive == false) continue;
+			//if (it->m_isAlive == false) continue;
 			if (
-				((this->m_core.X == pMyTank[i].m_core.X - 0) && (pMyTank[i].m_core.Y - this->m_core.Y == 3)) ||
-				((this->m_core.X == pMyTank[i].m_core.X - 1) && (pMyTank[i].m_core.Y - this->m_core.Y == 3)) ||
-				((this->m_core.X == pMyTank[i].m_core.X - 2) && (pMyTank[i].m_core.Y - this->m_core.Y == 3)) ||
-				((this->m_core.X == pMyTank[i].m_core.X + 1) && (pMyTank[i].m_core.Y - this->m_core.Y == 3)) ||
-				((this->m_core.X == pMyTank[i].m_core.X + 2) && (pMyTank[i].m_core.Y - this->m_core.Y == 3))
+				((this->m_core.X == it->m_core.X - 0) && (it->m_core.Y - this->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X - 1) && (it->m_core.Y - this->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X - 2) && (it->m_core.Y - this->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X + 1) && (it->m_core.Y - this->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X + 2) && (it->m_core.Y - this->m_core.Y == 3))
 				)
 			{
 				return true;
 			}
 		}
 		//遇敌方坦克
-		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
 		{
 			//若是敌坦，则跳过自己
 			if (m_who == 敌方坦克)
 			{
-				if (this->m_core.X == pEnemyTank[i].m_core.X && this->m_core.Y == pEnemyTank[i].m_core.Y)//排除自己
+				if (this->m_core.X == it->m_core.X && this->m_core.Y == it->m_core.Y)//排除自己
 					continue;
 			}
 			// 若此坦克死亡，则不阻挡
-			if (pEnemyTank[i].m_isAlive == false) continue;
+			//if (it->m_isAlive == false) continue;
 			if (
-				((this->m_core.X == pEnemyTank[i].m_core.X) && (pEnemyTank[i].m_core.Y - this->m_core.Y == 3)) ||
-				((this->m_core.X == pEnemyTank[i].m_core.X - 1) && (pEnemyTank[i].m_core.Y - this->m_core.Y == 3)) ||
-				((this->m_core.X == pEnemyTank[i].m_core.X - 2) && (pEnemyTank[i].m_core.Y - this->m_core.Y == 3)) ||
-				((this->m_core.X == pEnemyTank[i].m_core.X + 1) && (pEnemyTank[i].m_core.Y - this->m_core.Y == 3)) ||
-				((this->m_core.X == pEnemyTank[i].m_core.X + 2) && (pEnemyTank[i].m_core.Y - this->m_core.Y == 3))
+				((this->m_core.X == it->m_core.X) && (it->m_core.Y - this->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X - 1) && (it->m_core.Y - this->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X - 2) && (it->m_core.Y - this->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X + 1) && (it->m_core.Y - this->m_core.Y == 3)) ||
+				((this->m_core.X == it->m_core.X + 2) && (it->m_core.Y - this->m_core.Y == 3))
 				)
 			{
 				return true;
@@ -416,44 +419,45 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 			return true;
 		}
 		//遇我方坦克
-		for (int i = 0; i < MY_TANK_AMOUNT; i++)
+		for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 		{
 			//若是我坦，则跳过自己
 			if (m_who != 敌方坦克)
 			{
-				if (this->m_core.X == pMyTank[i].m_core.X && this->m_core.Y == pMyTank[i].m_core.Y)//排除自己
+				if (this->m_core.X == it->m_core.X && this->m_core.Y == it->m_core.Y)//排除自己
 					continue;
 			}
 			// 若此坦克死亡，则不阻挡
-			if (pMyTank[i].m_isAlive == false) continue;
+			//if (it->m_isAlive == false) continue;
 			if (
-				((this->m_core.Y == pMyTank[i].m_core.Y - 0) && (this->m_core.X - pMyTank[i].m_core.X == 3)) ||
-				((this->m_core.Y == pMyTank[i].m_core.Y - 1) && (this->m_core.X - pMyTank[i].m_core.X == 3)) ||
-				((this->m_core.Y == pMyTank[i].m_core.Y - 2) && (this->m_core.X - pMyTank[i].m_core.X == 3)) ||
-				((this->m_core.Y == pMyTank[i].m_core.Y + 1) && (this->m_core.X - pMyTank[i].m_core.X == 3)) ||
-				((this->m_core.Y == pMyTank[i].m_core.Y + 2) && (this->m_core.X - pMyTank[i].m_core.X == 3))
+				((this->m_core.Y == it->m_core.Y - 0) && (this->m_core.X - it->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y - 1) && (this->m_core.X - it->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y - 2) && (this->m_core.X - it->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y + 1) && (this->m_core.X - it->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y + 2) && (this->m_core.X - it->m_core.X == 3))
 				)
 			{
 				return true;
 			}
 		}
 		//遇敌方坦克
-		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
+		//for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 		{
 			//若是敌坦，则跳过自己
 			if (m_who == 敌方坦克)
 			{
-				if (this->m_core.X == pEnemyTank[i].m_core.X && this->m_core.Y == pEnemyTank[i].m_core.Y)//排除自己
+				if (this->m_core.X == it->m_core.X && this->m_core.Y == it->m_core.Y)//排除自己
 					continue;
 			}
 			// 若此坦克死亡，则不阻挡
-			if (pEnemyTank[i].m_isAlive == false) continue;
+			//if (it->m_isAlive == false) continue;
 			if (
-				((this->m_core.Y == pEnemyTank[i].m_core.Y) && (this->m_core.X - pEnemyTank[i].m_core.X == 3)) ||
-				((this->m_core.Y == pEnemyTank[i].m_core.Y - 1) && (this->m_core.X - pEnemyTank[i].m_core.X == 3)) ||
-				((this->m_core.Y == pEnemyTank[i].m_core.Y - 2) && (this->m_core.X - pEnemyTank[i].m_core.X == 3)) ||
-				((this->m_core.Y == pEnemyTank[i].m_core.Y + 1) && (this->m_core.X - pEnemyTank[i].m_core.X == 3)) ||
-				((this->m_core.Y == pEnemyTank[i].m_core.Y + 2) && (this->m_core.X - pEnemyTank[i].m_core.X == 3))
+				((this->m_core.Y == it->m_core.Y) && (this->m_core.X - it->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y - 1) && (this->m_core.X - it->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y - 2) && (this->m_core.X - it->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y + 1) && (this->m_core.X - it->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y + 2) && (this->m_core.X - it->m_core.X == 3))
 				)
 			{
 				return true;
@@ -491,44 +495,45 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 			return true;
 		}
 		//遇我方坦克
-		for (int i = 0; i < MY_TANK_AMOUNT; i++)
+		for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 		{
 			//若是我坦，则跳过自己
 			if (m_who != 敌方坦克)
 			{
-				if (this->m_core.X == pMyTank[i].m_core.X && this->m_core.Y == pMyTank[i].m_core.Y)//排除自己
+				if (this->m_core.X == it->m_core.X && this->m_core.Y == it->m_core.Y)//排除自己
 					continue;
 			}
 			// 若此坦克死亡，则不阻挡
-			if (pMyTank[i].m_isAlive == false) continue;
+			//if (it->m_isAlive == false) continue;
 			if (
-				((this->m_core.Y == pMyTank[i].m_core.Y - 0) && (pMyTank[i].m_core.X - this->m_core.X == 3)) ||
-				((this->m_core.Y == pMyTank[i].m_core.Y - 1) && (pMyTank[i].m_core.X - this->m_core.X == 3)) ||
-				((this->m_core.Y == pMyTank[i].m_core.Y - 2) && (pMyTank[i].m_core.X - this->m_core.X == 3)) ||
-				((this->m_core.Y == pMyTank[i].m_core.Y + 1) && (pMyTank[i].m_core.X - this->m_core.X == 3)) ||
-				((this->m_core.Y == pMyTank[i].m_core.Y + 2) && (pMyTank[i].m_core.X - this->m_core.X == 3))
+				((this->m_core.Y == it->m_core.Y - 0) && (it->m_core.X - this->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y - 1) && (it->m_core.X - this->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y - 2) && (it->m_core.X - this->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y + 1) && (it->m_core.X - this->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y + 2) && (it->m_core.X - this->m_core.X == 3))
 				)
 			{
 				return true;
 			}
 		}
 		//遇敌方坦克
-		for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
+		for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
+		//for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
 		{
 			//若是敌坦，则跳过自己
 			if (m_who == 敌方坦克)
 			{
-				if (this->m_core.X == pEnemyTank[i].m_core.X && this->m_core.Y == pEnemyTank[i].m_core.Y)//排除自己
+				if (this->m_core.X == it->m_core.X && this->m_core.Y == it->m_core.Y)//排除自己
 					continue;
 			}
 			// 若此坦克死亡，则不阻挡
-			if (pEnemyTank[i].m_isAlive == false) continue;
+			//if (it->m_isAlive == false) continue;
 			if (
-				((this->m_core.Y == pEnemyTank[i].m_core.Y) && (pEnemyTank[i].m_core.X - this->m_core.X == 3)) ||
-				((this->m_core.Y == pEnemyTank[i].m_core.Y - 1) && (pEnemyTank[i].m_core.X - this->m_core.X == 3)) ||
-				((this->m_core.Y == pEnemyTank[i].m_core.Y - 2) && (pEnemyTank[i].m_core.X - this->m_core.X == 3)) ||
-				((this->m_core.Y == pEnemyTank[i].m_core.Y + 1) && (pEnemyTank[i].m_core.X - this->m_core.X == 3)) ||
-				((this->m_core.Y == pEnemyTank[i].m_core.Y + 2) && (pEnemyTank[i].m_core.X - this->m_core.X == 3))
+				((this->m_core.Y == it->m_core.Y) && (it->m_core.X - this->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y - 1) && (it->m_core.X - this->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y - 2) && (it->m_core.X - this->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y + 1) && (it->m_core.X - this->m_core.X == 3)) ||
+				((this->m_core.Y == it->m_core.Y + 2) && (it->m_core.X - this->m_core.X == 3))
 				)
 			{
 				return true;
@@ -543,9 +548,8 @@ bool CTank::IsTankMeetOther(int dir, CTank* pMyTank, CTank* pEnemyTank, CMap map
 
 void CTank::DrawTank()
 {
+	// 若死亡，则不画（否则我坦尸体仍存在
 	if (this->m_isAlive == false) return;
-	//if (m_isHided == true) return;
-
 	if (this->m_who != 敌方坦克)
 	{
 		if (m_who == 我方坦克A)
@@ -583,13 +587,13 @@ void CTank::DrawTank()
 	}
 }
 
-int GetLiveEnemyAmount(CTank* penemytank)
-{
-	int count = 0;
-	for (int i = 0; i < ENEMY_TANK_AMOUNT; i++)
-	{
-		if (penemytank[i].m_isAlive == true)
-			count++;
-	}
-	return count;
-}
+
+//int GetLiveEnemyAmount(vector<CTank>& enemyTank)
+//{
+//	int count = 0;
+//	for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
+//	{
+//		if (it->m_isAlive) count++;
+//	}
+//	return count;
+//}
