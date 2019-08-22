@@ -338,7 +338,7 @@ bool CTank::IsTankMeetOther(int dir, vector<CTank>& myTank, vector<CTank>& enemy
 		}
 
 		//��Ȫˮ
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == Ȫˮ)
+		if (map.m_nArrMap[this->m_core.X][this->m_core.Y+2] == Ȫˮ)
 		{
 			return true;
 		}
@@ -414,7 +414,7 @@ bool CTank::IsTankMeetOther(int dir, vector<CTank>& myTank, vector<CTank>& enemy
 		}
 
 		//��Ȫˮ
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == Ȫˮ)
+		if (map.m_nArrMap[this->m_core.X-2][this->m_core.Y] == Ȫˮ)
 		{
 			return true;
 		}
@@ -490,7 +490,7 @@ bool CTank::IsTankMeetOther(int dir, vector<CTank>& myTank, vector<CTank>& enemy
 		}
 
 		//��Ȫˮ
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y] == Ȫˮ)
+		if (map.m_nArrMap[this->m_core.X+2][this->m_core.Y] == Ȫˮ)
 		{
 			return true;
 		}

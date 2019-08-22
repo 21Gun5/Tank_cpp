@@ -48,6 +48,11 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 {
 	//tank 参数：为了获取奖励值
 
+	//如果坦克死亡，子弹也消失
+	//if (!tank.m_isAlive)
+	//{
+	//	m_state = 不存在;
+	//}
 	//遇边界
 	if (m_core.X <= 0 || m_core.X >= MAP_X_WALL / 2 || m_core.Y <= 0 || m_core.Y >= MAP_Y - 1)
 	{
@@ -66,7 +71,6 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 	}
 	//遇子弹
 
-	//int killCount = 0;
 	if (m_who != 敌方坦克)
 	{
 		//遇泉水
@@ -111,8 +115,11 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 				//减血后为0则死亡
 				if (it->m_blood == 0)
 				{
-					it->m_isAlive = false;
-					tank.m_killCount++;
+					it->m_isAlive = false;//死亡
+					tank.m_killCount++;//杀敌数+1
+					//GotoxyAndPrint(it->m_bullet.m_core.X, it->m_bullet.m_core.Y+1, " ");
+					//map.m_nArrMap[it->m_bullet.m_core.X][it->m_bullet.m_core.Y] = 空地;
+					//it->m_bullet.m_state = 不存在;//敌军死亡，则子弹也消失
 				}
 				// 每打死三个奖励一条生命值
 				if (tank.m_killCount == 3)
@@ -176,11 +183,11 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 				{
 					it->m_blood--;
 				}
-				//it->m_blood--;
 				//如果减血后为0
 				if (it->m_blood == 0)
 				{
 					it->m_isAlive = false;//声明为死亡
+					//it->m_bullet.m_state = 不存在;//坦克死亡，则子弹也消失
 				}
 					
 			}

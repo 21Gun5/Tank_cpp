@@ -117,6 +117,7 @@ void CGame::GameOver(vector<CTank>& enemyTank)
 void CGame::NextStage()
 {
 	m_stage++;
+	m_needLoadNewStage = true;
 }
 
 int  CGame::SelectMenu(int size, int* pindex)
@@ -277,9 +278,9 @@ void CGame::DrawGameHelp()
 }
 void CGame::DrawGameInfo(vector<CTank>& myTank,vector<CTank> &enemyTank)
 {
-	//存活敌坦数量
+	//获取存活敌坦数量
 	int eneTankCount = enemyTank.size();
-	//当前难度
+	//获取当前难度
 	char level[10];
 	if (m_levelEneTank == 300) strcpy_s(level, 10, "简单\0");
 	else if (m_levelEneTank == 200) strcpy_s(level, 10, "一般\0");
@@ -287,43 +288,51 @@ void CGame::DrawGameInfo(vector<CTank>& myTank,vector<CTank> &enemyTank)
 	//运行or暂停状态
 	GotoxyAndPrint(MAP_X_WALL/2 + 1, 1, "RUNNING",提示颜色);
 	GotoxyAndPrint(MAP_X_WALL/2 + 1, 2, "Q: 暂停游戏", 提示颜色);
-	//游戏信息打印
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 3, "", 提示颜色);
-	printf("当前关卡: %2d", m_stage);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "", 提示颜色);
-	printf("当前分数: %2d", ENEMY_TANK_AMOUNT - eneTankCount);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 11, "", 提示颜色);
-	printf("敌坦个数: %2d", eneTankCount);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 13, "", 提示颜色);
-	printf("当前难度: %s", level);
+	// 当前关卡
+	if (m_stage <= m_maxStage)
+	{
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "", 提示颜色);
+		printf("当前关卡: %2d", m_stage);
+	}
+	else
+	{
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "当前关卡: 全部通关", 提示颜色);
+	}
 	// 坦克生命值
 	if (myTank.size() == 2)
 	{
-		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "", 提示颜色);
-		printf("A 生命值: %2d", myTank[0].m_blood);
 		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "", 提示颜色);
+		printf("A 生命值: %2d", myTank[0].m_blood);
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "", 提示颜色);
 		printf("B 生命值: %2d", myTank[1].m_blood);
 	}
 	else if (myTank.size() == 1)
 	{
 		if (myTank[0].m_who == 我方坦克A)
 		{
-			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "", 提示颜色);
+			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "", 提示颜色);
 			printf("A 生命值: %2d", myTank[0].m_blood);
-			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "B 生命值: 阵亡", 提示颜色);
+			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "B 生命值: 阵亡", 提示颜色);
 		}
 		else if (myTank[0].m_who == 我方坦克B)
 		{
-			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "A 生命值: 阵亡", 提示颜色);
-			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "", 提示颜色);
+			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "A 生命值: 阵亡", 提示颜色);
+			GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "", 提示颜色);
 			printf("B 生命值: %2d", myTank[0].m_blood);
 		}
 	}
 	else if (myTank.size() == 0)
 	{
-		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 5, "A 生命值: 阵亡", 提示颜色);
-		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "B 生命值: 阵亡", 提示颜色);
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 7, "A 生命值: 阵亡", 提示颜色);
+		GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 9, "B 生命值: 阵亡", 提示颜色);
 	}
+	//游戏信息打印
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 11, "", 提示颜色);
+	printf("当前分数: %2d", ENEMY_TANK_AMOUNT - eneTankCount);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 13, "", 提示颜色);
+	printf("敌坦个数: %2d", eneTankCount);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 15, "", 提示颜色);
+	printf("当前难度: %s", level);
 }
 void CGame::DrawMenu(const char** menu, int size, int index)
 {
