@@ -2,7 +2,6 @@
 #include <iostream>
 #include <windows.h>
 
-//系统功能
 void SetCursorState(bool b)
 {
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -11,7 +10,6 @@ void SetCursorState(bool b)
 	CursorInfo.bVisible = b;					//显示/隐藏控制台光标
 	SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
 }
-
 void GotoxyAndPrint(unsigned x, unsigned y, const char* str, int ForeColor)
 {
 	COORD cur;

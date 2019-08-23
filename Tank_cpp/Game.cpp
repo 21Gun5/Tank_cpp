@@ -3,94 +3,88 @@
 #include <time.h>
 #include <conio.h>
 #include <io.h>
-
 #include "Game.h"
 #include "Func.h"
 #include "Map.h"
 #include "Tank.h"
 #pragma comment(lib,"winmm.lib")
 
-
-
-bool CGame::GetisRunning()
+// 获取私有成员
+bool CGame::GetIsRunning()
 {
 	return m_isRunning;
 }
-int CGame::GetlevelEneTank()
+int CGame::GetLevelEneTank()
 {
 	return m_levelEneTank;
 }
-int CGame::GetlevelEneBul()
+int CGame::GetLevelEneBul()
 {
 	return m_levelEneBul;
 }
-int CGame::Getstage()
+int CGame::GetStage()
 {
 	return m_stage;
 }
-bool CGame::GetisOver()
+bool CGame::GetIsOver()
 {
 	return m_isOver;
 }
-int CGame::GetmaxStage()
+int CGame::GetMaxStage()
 {
 	return m_maxStage;
 }
-bool CGame::GetneedLoadNewStage()
+bool CGame::GetNeedLoadNewStage()
 {
 	return m_needLoadNewStage;
 }
-int CGame::GetmyTankAmount()
+int CGame::GetMyTankAmount()
 {
 	return m_myTankAmount;
 }
-int CGame::GetenemyTankAmount()
+int CGame::GetEnemyTankAmount()
 {
 	return m_enemyTankAmount;
 }
-
-
-void CGame::SetisRunning(bool isRunning)
+// 修改私有成员
+void CGame::SetIsRunning(bool isRunning)
 {
 	m_isRunning = isRunning;
 }
-void CGame::SetlevelEneTank(int levelEneTank)
+void CGame::SetLevelEneTank(int levelEneTank)
 {
 	m_levelEneTank = levelEneTank;
 }
-void CGame::SetlevelEneBul(int levelEneBul)
+void CGame::SetLevelEneBul(int levelEneBul)
 {
 	m_levelEneBul = levelEneBul;
 }
-void CGame::Setstage(int stage)
+void CGame::SetStage(int stage)
 {
 	m_stage = stage;
 }
-void  CGame::SetisOver(bool isOver)
+void  CGame::SetIsOver(bool isOver)
 {
 	m_isOver = isOver;
 }
-void CGame::SetmaxStage(int maxStage)
+void CGame::SetMaxStage(int maxStage)
 {
 	m_maxStage = maxStage;
 }
-void  CGame::SetneedLoadNewStage(bool needLoadNewStage)
+void  CGame::SetNeedLoadNewStage(bool needLoadNewStage)
 {
 	m_needLoadNewStage = needLoadNewStage;
 }
-void CGame::SetmyTankAmount(int myTankAmount)
+void CGame::SetMyTankAmount(int myTankAmount)
 {
 	m_myTankAmount = myTankAmount;
 }
-void CGame::SetenemyTankAmount(int enemyTankAmount)
+void CGame::SetEnemyTankAmount(int enemyTankAmount)
 {
 	m_enemyTankAmount = enemyTankAmount;
 }
-
-
-
-//游戏相关
-void CGame::GameInit(CMap &map)
+// 功能函数
+void CGame::GameInit(CMap& map)
 {
 	//设置地图（静态的
 	for (int x = 0; x < MAP_X / 2; x++)
@@ -102,7 +96,7 @@ void CGame::GameInit(CMap &map)
 				y == 0 || y == MAP_Y - 1 ||							//两横边
 				(x > MAP_X_WALL / 2 && y == MAP_Y / 2))				//帮助信息与游戏信息分割线
 			{
-				map.SetArrMap(x,y, 边界);
+				map.SetArrMap(x, y, 边界);
 			}
 			//泉水
 			if (x >= MAP_X_WALL / 4 - 2 && x <= MAP_X_WALL / 4 + 3 && y >= MAP_Y - 2 - 3 && y <= MAP_Y - 2)
@@ -118,21 +112,19 @@ void CGame::GameInit(CMap &map)
 	// 控制台相关设置
 	SetCursorState(false);				//隐藏光标
 	system("title Tank");				//设置标题
-	//system("color fc");				//设置颜色	
 
 	// 窗口大小
 	char strCmd[50];
-	sprintf_s(strCmd,50,"mode con cols=%d lines=%d", MAP_X, MAP_Y);
+	sprintf_s(strCmd, 50, "mode con cols=%d lines=%d", MAP_X, MAP_Y);
 	system(strCmd);
 
 	//初始化随机数种子
-	srand((unsigned int)time(0));		
-	
-	//播放背景音乐(先不放，烦人
+	srand((unsigned int)time(0));
+
+	//播放背景音乐(先不放，烦的一批
 	//mciSendString("open conf/BGM.mp3 alias bgm", NULL, 0, NULL);//打开文件
 	//mciSendString("play bgm repeat", NULL, 0, NULL);			  // 循环播放
 }
-
 char* CGame::ShowGameFile()
 {
 	//遍历指定目录及后缀的文件名并存入数组
@@ -175,7 +167,6 @@ char* CGame::ShowGameFile()
 	strcpy_s(_file, 15, gameFiles[input - 1]);//数字始于1，而下标始于0	
 	return _file;
 }
-
 void CGame::GameOver(vector<CTank>& enemyTank)
 {
 	//存活敌坦数量
@@ -191,13 +182,11 @@ void CGame::GameOver(vector<CTank>& enemyTank)
 	GotoxyAndPrint(MAP_X_WALL / 4 - 2, MAP_Y / 2 - 3, "", 提示颜色);
 	printf("Scores: %d", ENEMY_TANK_AMOUNT - eneTankCount);
 }
-
 void CGame::NextStage()
 {
 	m_stage++;
 	m_needLoadNewStage = true;
 }
-
 int  CGame::SelectMenu(int size, int* pindex)
 {
 	int input = _getch();			//无回显接收
@@ -219,8 +208,7 @@ int  CGame::SelectMenu(int size, int* pindex)
 	}
 	return 0;
 }
-
-void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank,CMap map)
+void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap map)
 {
 	//提示信息
 	system("cls");
@@ -268,11 +256,11 @@ void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank,CMap ma
 			COORD body_coor_tmp = it->GetBody(i);
 			fwrite(&body_coor_tmp, sizeof(COORD), 1, pFile);//其他节点
 		}
-		int dir_tmp= it->GetDir();
+		int dir_tmp = it->GetDir();
 		fwrite(&dir_tmp, sizeof(int), 1, pFile);//方向
 		int blood_tmp = it->GetBlood();
 		fwrite(&blood_tmp, sizeof(int), 1, pFile);//血量
-		bool isAlve_tmp=it->GetIsAlive();
+		bool isAlve_tmp = it->GetIsAlive();
 		fwrite(&isAlve_tmp, sizeof(bool), 1, pFile);//是否存活
 		int who_tmp = it->GetWho();
 		fwrite(&who_tmp, sizeof(int), 1, pFile);//身份
@@ -321,7 +309,7 @@ void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank,CMap ma
 		fwrite(&power_tmp, sizeof(int), 1, pFile);//伤害
 
 		//写入敌方子弹
-		COORD bul_core_tmp= it->m_bullet.GetCore();
+		COORD bul_core_tmp = it->m_bullet.GetCore();
 		fwrite(&bul_core_tmp, sizeof(COORD), 1, pFile);//坐标
 		int bul_dir_tmp = it->m_bullet.GetDir();
 		fwrite(&bul_dir_tmp, sizeof(int), 1, pFile);//方向
@@ -331,10 +319,9 @@ void CGame::SaveGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank,CMap ma
 		fwrite(&bul_who_tmp, sizeof(int), 1, pFile);//哪一方的子弹
 
 	}
-	
+
 	fclose(pFile);
 }
-
 void CGame::LoadGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap& map, char* str)
 {
 	char* filename = (char*)malloc(40);
@@ -481,11 +468,10 @@ void CGame::LoadGameFile(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap& 
 		enemyTank.push_back(enemytankTmp);
 	}
 
-	
+
 	fclose(pFile);
 }
-
-// 打印相关
+// 各种打印
 void CGame::DrawLogo()
 {
 	GotoxyAndPrint(MAP_X / 4 - 9, MAP_Y / 2 - 15, "MMP\"\"MM\"\"YMM                      `7MM      ");
@@ -504,7 +490,7 @@ void CGame::DrawGameHelp()
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 30, "Q: 暂停游戏", 提示颜色);
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 32, "空格:  开火", 提示颜色);
 }
-void CGame::DrawGameInfo(vector<CTank>& myTank,vector<CTank> &enemyTank)
+void CGame::DrawGameInfo(vector<CTank>& myTank, vector<CTank>& enemyTank)
 {
 	//获取存活敌坦数量
 	int eneTankCount = enemyTank.size();
@@ -514,8 +500,8 @@ void CGame::DrawGameInfo(vector<CTank>& myTank,vector<CTank> &enemyTank)
 	else if (m_levelEneTank == 200) strcpy_s(level, 10, "一般\0");
 	else if (m_levelEneTank == 100)strcpy_s(level, 10, "困难\0");
 	//运行or暂停状态
-	GotoxyAndPrint(MAP_X_WALL/2 + 1, 1, "RUNNING",提示颜色);
-	GotoxyAndPrint(MAP_X_WALL/2 + 1, 2, "Q: 暂停游戏", 提示颜色);
+	GotoxyAndPrint(MAP_X_WALL / 2 + 1, 1, "RUNNING", 提示颜色);
+	GotoxyAndPrint(MAP_X_WALL / 2 + 1, 2, "Q: 暂停游戏", 提示颜色);
 	// 当前关卡
 	if (m_stage <= m_maxStage)
 	{
@@ -571,9 +557,9 @@ void CGame::DrawMenu(const char** menu, int size, int index)
 	{
 		if (i == index)
 		{
-			GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + 2 * i, menu[i],  提示颜色);
+			GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + 2 * i, menu[i], 提示颜色);
 		}
 		else
-			GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + 2 * i, menu[i],默认颜色);
+			GotoxyAndPrint(MAP_X / 4 - 5, MAP_Y / 2 - 6 + 2 * i, menu[i], 默认颜色);
 	}
 }

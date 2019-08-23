@@ -11,11 +11,12 @@ using namespace std;
 
 int main()
 {
-	//初始化
+	// 初始化
 	CGame game;
 	CMap map;
 	game.GameInit(map);
 
+	// 模拟多线程
 	int time4Tank = 0;
 	int time4Bullet = 0;
 	int time4EnemyTank = 0;
@@ -25,27 +26,16 @@ int main()
 	vector<CTank> myTank;
 	CTank myTankA = { { MAP_X_WALL / 4 - 4, MAP_Y - 3 }, UP, 30, 我方坦克A };
 	CTank myTankB = { { MAP_X_WALL / 4 + 5, MAP_Y - 3 }, UP, 3, 我方坦克B };
-	//myTank.push_back(myTankA);
-	//myTank.push_back(myTankB);
 
-	//敌方坦克
+	// 敌方坦克
 	vector<CTank> enemyTank;
 	CTank enemyTankA = { {2, 2} ,DOWN ,1,敌方坦克,2 };
 	CTank enemyTankB = { {MAP_X_WALL / 8 + 1, 2},DOWN,2,敌方坦克,1 };
 	CTank enemyTankC = { {MAP_X_WALL / 4, 2},DOWN,1,敌方坦克,1 };
 	CTank enemyTankD = { {MAP_X_WALL / 8 + MAP_X_WALL / 4 - 1, 2}, DOWN,1,敌方坦克,2 };
-	CTank enemyTankE = { {MAP_X_WALL / 2 - 2, 2}, DOWN,2,敌方坦克 ,1};
-	//CTank enemyTankT = { {MAP_X_WALL / 4 - 8, MAP_Y - 3}, LEFT,1,敌方坦克 };
+	CTank enemyTankE = { {MAP_X_WALL / 2 - 2, 2}, DOWN,2,敌方坦克 ,1 };
 
-	//enemyTank.push_back(enemyTankA);
-	//enemyTank.push_back(enemyTankB);
-	//enemyTank.push_back(enemyTankC);
-	//enemyTank.push_back(enemyTankD);
-	//enemyTank.push_back(enemyTankE);
-	//enemyTank.push_back(enemyTankT);
-	
-
-	//流程控制
+	// 流程控制
 	int indexForPlay = 0;		//菜单索引
 	bool IsSelectedPlay = 0;	//是否选择结束
 	while (true)
@@ -89,18 +79,18 @@ int main()
 									switch (indexForLevel)
 									{
 									case 简单:
-										game.SetlevelEneTank(300);
-										game.SetlevelEneBul(90);
+										game.SetLevelEneTank(300);
+										game.SetLevelEneBul(90);
 										IsSelectedLevel = 1;
 										break;
 									case 一般:
-										game.SetlevelEneTank(200);
-										game.SetlevelEneBul(70);
+										game.SetLevelEneTank(200);
+										game.SetLevelEneBul(70);
 										IsSelectedLevel = 1;
 										break;
 									case 困难:
-										game.SetlevelEneTank(100);
-										game.SetlevelEneBul(50);
+										game.SetLevelEneTank(100);
+										game.SetLevelEneBul(50);
 										IsSelectedLevel = 1;
 										break;
 									default:
@@ -113,7 +103,7 @@ int main()
 							map.LoadDefaultMap();//使用默认的
 							IsSelectedPlay = 1;
 							IsSelectedWhoMap = 1;
-							game.SetisRunning(true);//游戏运行
+							game.SetIsRunning(true);//游戏运行
 							break;
 						}
 						case 玩家提供:
@@ -132,7 +122,7 @@ int main()
 										IsSelectedPlay = 1;
 										IsSelectedWhoMap = 1;
 										IsSelectedWhenMap = 1;
-										game.SetisRunning(true);//游戏运行
+										game.SetIsRunning(true);//游戏运行
 										map.SaveMapFile(myTank, enemyTank);//手动设置并直接使用
 										break;
 									case 已有地图:
@@ -140,9 +130,9 @@ int main()
 										IsSelectedPlay = 1;
 										IsSelectedWhoMap = 1;
 										IsSelectedWhenMap = 1;
-										game.SetisRunning(true);//游戏运行
+										game.SetIsRunning(true);//游戏运行
 										char* mapFile = map.ShowMapFile();
-										map.LoadMapFile(mapFile,map);//导入已有地图
+										map.LoadMapFile(mapFile, map);//导入已有地图
 										break;
 									}
 									case 返回上页:
@@ -177,7 +167,7 @@ int main()
 			{
 				IsSelectedPlay = 1;
 				char* gameFile = game.ShowGameFile();
-				game.LoadGameFile(myTank, enemyTank, map,gameFile);
+				game.LoadGameFile(myTank, enemyTank, map, gameFile);
 				break;
 			}
 			case 退出游戏:
@@ -190,32 +180,28 @@ int main()
 			break;
 	}
 
-	//game.m_isRunning = 1;//要进入游戏了
-	//map.CustomizeMap(tank, enemyTank);//手动设置并直接使用
-	//map.LoadDefaultMap();//使用默认的
-
-	//静态信息
+	// 静态信息
 	map.DrawStaticMap();
 	game.DrawGameHelp();
 
-	//主循环
-	while (game.GetisRunning())
+	// 主循环
+	while (game.GetIsRunning())
 	{
 		// 进入相应关卡
-		if (game.Getstage() > 1 && game.GetneedLoadNewStage()&& game.Getstage() <= game.GetmaxStage())
+		if (game.GetStage() > 1 && game.GetNeedLoadNewStage() && game.GetStage() <= game.GetMaxStage())
 		{
 			// 导入地图文件、设置难度
-			switch (game.Getstage())
+			switch (game.GetStage())
 			{
 			case 2:
 				map.LoadMapFile(const_cast<char*>("Stage2.i"), map);
-				game.SetlevelEneTank(200);
-				game.SetlevelEneBul(70);
+				game.SetLevelEneTank(200);
+				game.SetLevelEneBul(70);
 				break;
 			case 3:
 				map.LoadMapFile(const_cast<char*>("Stage3.i"), map);
-				game.SetlevelEneTank(100);
-				game.SetlevelEneBul(50);
+				game.SetLevelEneTank(100);
+				game.SetLevelEneBul(50);
 				break;
 			default:
 				break;
@@ -232,12 +218,12 @@ int main()
 			enemyTank.push_back(enemyTankD);
 			enemyTank.push_back(enemyTankE);
 			// 标记关卡导入完成
-			game.SetneedLoadNewStage(false);
+			game.SetNeedLoadNewStage(false);
 		}
-		//动态实时显示
+		// 动态实时显示
 		game.DrawGameInfo(myTank, enemyTank);
 		map.DrawDynamicMap();
-		//我方坦克线程
+		// 我方坦克线程
 		if (clock() - time4Tank >= 100)
 		{
 			for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end();)
@@ -252,7 +238,7 @@ int main()
 				if (!it->GetIsAlive())
 				{
 					// 删除坦克前先抹掉子弹，并防止边界被抹掉（不用管障碍，其是动态的，而边界是静态的）
-					if (map.GetArrMap(it->m_bullet.GetCore().X,it->m_bullet.GetCore().Y) != 边界)
+					if (map.GetArrMap(it->m_bullet.GetCore().X, it->m_bullet.GetCore().Y) != 边界)
 					{
 						GotoxyAndPrint(it->m_bullet.GetCore().X, it->m_bullet.GetCore().Y, " ");// 抹除其子弹
 					}
@@ -264,7 +250,7 @@ int main()
 				}
 			}
 		}
-		//我方子弹线程
+		// 我方子弹线程
 		if (clock() - time4Bullet >= 50)
 		{
 			for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
@@ -288,8 +274,8 @@ int main()
 				}
 			}
 		}
-		//敌方坦克线程
-		if (clock() - time4EnemyTank >= game.GetlevelEneTank())
+		// 敌方坦克线程
+		if (clock() - time4EnemyTank >= game.GetLevelEneTank())
 		{
 			for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end();)
 			{
@@ -303,7 +289,7 @@ int main()
 				if (!it->GetIsAlive())
 				{
 					// 删除坦克前先抹掉子弹，并防止边界被抹掉
-					if (map.GetArrMap(it->m_bullet.GetCore().X,it->m_bullet.GetCore().Y) != 边界)
+					if (map.GetArrMap(it->m_bullet.GetCore().X, it->m_bullet.GetCore().Y) != 边界)
 					{
 						GotoxyAndPrint(it->m_bullet.GetCore().X, it->m_bullet.GetCore().Y, " ");// 抹除其子弹
 					}
@@ -316,8 +302,8 @@ int main()
 				}
 			}
 		}
-		//敌方子弹线程
-		if (clock() - time4EnemyBullet >= game.GetlevelEneBul())
+		// 敌方子弹线程
+		if (clock() - time4EnemyBullet >= game.GetLevelEneBul())
 		{
 			for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
 			{
@@ -339,8 +325,8 @@ int main()
 				}
 			}
 		}
-		//判断游戏结束（我方全阵亡或全部通关
-		if (game.GetisOver() || game.Getstage() > game.GetmaxStage())
+		// 判断游戏结束（我方全阵亡或全部通关
+		if (game.GetIsOver() || game.GetStage() > game.GetMaxStage())
 		{
 			game.GameOver(enemyTank);
 			break;
@@ -348,12 +334,12 @@ int main()
 		// 判断是否过关
 		if (enemyTank.size() == 0)
 		{
-			game.NextStage();	
+			game.NextStage();
 			continue;
 		}
 	}
 
-	//消耗多余字符
+	// 消耗多余字符
 	char ch = _getch();
 	ch = _getch();
 

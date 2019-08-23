@@ -7,20 +7,14 @@
 #include "Map.h"
 #include "Tank.h"
 
-
-int CMap::GetArrMap(int x,int y)
+int CMap::GetArrMap(int x, int y)
 {
 	return m_nArrMap[x][y];
 }
-
 void CMap::SetArrMap(int x, int y, int i)
 {
 	m_nArrMap[x][y] = i;
 }
-
-
-
-
 char* CMap::ShowMapFile()
 {
 	//遍历指定目录及后缀的文件名并存入数组
@@ -63,11 +57,9 @@ char* CMap::ShowMapFile()
 	strcpy_s(_file, 15, mapFiles[input - 1]);//数字始于1，而下标始于0	
 	return _file;
 }
-
 void CMap::LoadDefaultMap()
 {
 	std::string filename = "conf/map/default.i";
-	//std::string filename = "conf/map/Stage2.i";
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, filename.c_str(), "rb");
 	for (int x = 0; x < MAP_X_WALL; x++)
@@ -79,8 +71,51 @@ void CMap::LoadDefaultMap()
 	}
 	fclose(pFile);
 }
-
-void CMap::LoadMapFile(char* str,CMap &map)
+void CMap::DrawDynamicMap()
+{
+	for (int x = 0; x < MAP_X_WALL; x++)
+	{
+		for (int y = 0; y < MAP_Y; y++)
+		{
+			switch (m_nArrMap[x][y])
+			{
+			case 土块:
+				GotoxyAndPrint(x, y, "■", 土块颜色);
+				break;
+			case 石块:
+				GotoxyAndPrint(x, y, "■", 石块颜色);
+				break;
+			case 草丛:
+				GotoxyAndPrint(x, y, "■", 草丛颜色);
+				break;
+			case 河流:
+				GotoxyAndPrint(x, y, "■", 河流颜色);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+void CMap::DrawStaticMap()
+{
+	system("cls");						//换页则清屏
+	for (int x = 0; x < MAP_X; x++)
+	{
+		for (int y = 0; y < MAP_Y; y++)
+		{
+			if (m_nArrMap[x][y] == 边界)
+			{
+				GotoxyAndPrint(x, y, "■", 默认颜色);
+			}
+			else if (m_nArrMap[x][y] == 泉水)
+			{
+				GotoxyAndPrint(x, y, "★", 泉水颜色);
+			}
+		}
+	}
+}
+void CMap::LoadMapFile(char* str, CMap& map)
 {
 	char* filename = (char*)malloc(40);
 	sprintf_s(filename, 40, "%s%s", "conf/map/", str);
@@ -95,20 +130,19 @@ void CMap::LoadMapFile(char* str,CMap &map)
 	}
 	fclose(pFile);
 }
-
 void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 {
 	DrawStaticMap();		//地图边界
 	//提示信息
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 5, "左键单击：绘制地图",提示颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 7, "滚轮单击：选择种类",提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 5, "左键单击：绘制地图", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 7, "滚轮单击：选择种类", 提示颜色);
 	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 9, "右键单击：消除种类", 提示颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 11, "界外双击：退出编辑",提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 11, "界外双击：退出编辑", 提示颜色);
 
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 26, "点我选择土块: ■",土块颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 28, "点我选择石块: ■",石块颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 30, "点我选择草丛: ■",草丛颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 32, "点我选择河流: ■",河流颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 26, "点我选择土块: ■", 土块颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 28, "点我选择石块: ■", 石块颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 30, "点我选择草丛: ■", 草丛颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 5, 32, "点我选择河流: ■", 河流颜色);
 
 	//鼠标事件相关
 	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
@@ -151,10 +185,10 @@ void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 			}
 
 			//左键绘制各种障碍（种类选择完成才可绘制
-			if (isSelectedType  && ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+			if (isSelectedType && ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 			{
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
-				
+
 				//不可在我方坦克处绘制
 				int flagMy = 0;
 				for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
@@ -162,7 +196,7 @@ void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 					if (pos.X / 2 >= it->GetCore().X - 1 && pos.X / 2 <= it->GetCore().X + 1 && pos.Y >= it->GetCore().Y - 1 && pos.Y <= it->GetCore().Y + 1)
 						flagMy = 1;
 				}
-				if(flagMy == 1) continue;
+				if (flagMy == 1) continue;
 				//不可在敌方坦克绘制
 				int flagEne = 0;
 				for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
@@ -191,7 +225,7 @@ void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 						GotoxyAndPrint(pos.X / 2, pos.Y, "■", 土块颜色);
 						break;
 					case 石块:
-						GotoxyAndPrint(pos.X / 2, pos.Y, "■",石块颜色);
+						GotoxyAndPrint(pos.X / 2, pos.Y, "■", 石块颜色);
 						break;
 					case 草丛:
 						GotoxyAndPrint(pos.X / 2, pos.Y, "■", 草丛颜色);
@@ -232,7 +266,7 @@ void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 
 	//提示信息
 	system("cls");
-	GotoxyAndPrint(MAP_X / 2 - 12, 12, "请输入地图名字:",提示颜色);
+	GotoxyAndPrint(MAP_X / 2 - 12, 12, "请输入地图名字:", 提示颜色);
 	GotoxyAndPrint(MAP_X - 24, 14, "");
 	//输入文件名
 	char str[15];
@@ -252,50 +286,4 @@ void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 		}
 	}
 	fclose(pFile);
-}
-
-void CMap::DrawDynamicMap()
-{
-	for (int x = 0; x < MAP_X_WALL; x++)
-	{
-		for (int y = 0; y < MAP_Y; y++)
-		{
-			switch (m_nArrMap[x][y])
-			{
-			case 土块:
-				GotoxyAndPrint(x, y, "■", 土块颜色);
-				break;
-			case 石块:
-				GotoxyAndPrint(x, y, "■", 石块颜色);
-				break;
-			case 草丛:
-				GotoxyAndPrint(x, y, "■", 草丛颜色);
-				break;
-			case 河流:
-				GotoxyAndPrint(x, y, "■", 河流颜色);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-}
-
-void CMap::DrawStaticMap()
-{
-	system("cls");						//换页则清屏
-	for (int x = 0; x < MAP_X; x++)
-	{
-		for (int y = 0; y < MAP_Y; y++)
-		{
-			if (m_nArrMap[x][y] == 边界)
-			{
-				GotoxyAndPrint(x, y, "■",默认颜色);
-			}
-			else if(m_nArrMap[x][y] == 泉水)
-			{
-				GotoxyAndPrint(x, y, "★", 泉水颜色);
-			}
-		}
-	}
 }
