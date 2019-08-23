@@ -5,6 +5,90 @@
 
 //坦克相关
 
+
+COORD CTank::GetCore()
+{
+	return m_core;
+}
+COORD CTank::GetBody(int i)
+{
+	return m_body[i];
+}
+
+int CTank::GetDir()
+{
+	return m_dir;
+}
+unsigned CTank::GetBlood()
+{
+	return m_blood;
+}
+bool CTank::GetIsAlive()
+{
+	return m_isAlive;
+}
+int CTank::GetWho()
+{
+	return m_who;
+}
+bool CTank::GetIsHidden()
+{
+	return m_isHidden;
+}
+int CTank::GetKillCount()
+{
+	return m_killCount;
+}
+
+int CTank::GetPower()
+{
+	return m_power;
+}
+
+void CTank::SetCore(COORD core)
+{
+	m_core = core;
+}
+void CTank::SetBody(int i,COORD coor)
+{
+	m_body[i] = coor;
+}
+void CTank::SetDir(int dir)
+{
+	m_dir = dir;
+}
+void CTank::SetBlood(int blood)
+{
+	m_blood = blood;
+}
+void CTank::SetIsAlive(bool isAlive)
+{
+	m_isAlive = isAlive;
+}
+void CTank::SetWho(int who)
+{
+	m_who = who;
+}
+void CTank::SetIsHidden(bool isHidden)
+{
+	m_isHidden = isHidden;
+}
+void CTank::SetKillCount(int killCount)
+{
+	m_killCount = killCount;
+}
+
+
+void CTank::SetPower(int power)
+{
+	m_power = power;
+}
+
+
+
+
+
+
 CTank::CTank()
 {
 
@@ -16,7 +100,7 @@ CTank::CTank(COORD core, enum direction dir, int blood, int who,int power)
 	m_blood = blood;
 	m_isAlive = true;
 	m_who = who;
-	m_isHided = false;//默认非隐藏的
+	m_isHidden = false;//默认非隐藏的
 	m_power = power;
 	SetTankShape();
 }
@@ -97,14 +181,15 @@ void CTank::ManipulateTank(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap
 				this->m_core.X++;
 			this->m_dir = RIGHT;
 		}
+
 		else if (KEYDOWN(' '))
 		{
 			// 非隐藏状态才可开火
-			if (!m_isHided)
+			if (!m_isHidden)
 			{
-				if (this->m_bullet.m_state != 已赋值)
+				if (this->m_bullet.GetState() != 已赋值)
 				{
-					this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+					this->m_bullet.SetState(未赋值) ;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
 				}
 			}
 		}
@@ -142,13 +227,13 @@ void CTank::ManipulateTank(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap
 				{
 					game.SaveGameFile(myTank, enemyTank, map);
 					game.GameOver(enemyTank);
-					game.m_isRunning = false;
+					game.SetisRunning(false);
 					break;
 				}
 				else if (op == '2')	//直接退出
 				{
 					game.GameOver(enemyTank);
-					game.m_isRunning = false;
+					game.SetisRunning(false);
 					break;
 				}
 			}
@@ -188,19 +273,19 @@ void CTank::ManipulateTank(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap
 		else if (KEYDOWN('H'))
 		{
 			// 非隐藏状态才可开火
-			if (!m_isHided)
+			if (!m_isHidden)
 			{
-				if (this->m_bullet.m_state != 已赋值)
+				if (this->m_bullet.GetState() != 已赋值)
 				{
-					this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+					this->m_bullet.SetState(未赋值);//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
 				}
 			}
 		}
 	}
 	else if (this->m_who == 敌方坦克)
 	{
-		switch (rand() % 5)
-		//switch (4)
+		//switch (rand() % 5)
+		switch (4)
 		{
 		case UP:
 			if (!this->IsTankMeetOther(UP, myTank, enemyTank, map))
@@ -224,11 +309,11 @@ void CTank::ManipulateTank(vector<CTank>& myTank, vector<CTank>& enemyTank, CMap
 			break;
 		case 4:
 			// 非隐藏状态才可开火
-			if (!m_isHided)
+			if (!m_isHidden)
 			{
-				if (this->m_bullet.m_state != 已赋值)
+				if (this->m_bullet.GetState() != 已赋值)
 				{
-					this->m_bullet.m_state = 未赋值;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
+					this->m_bullet.SetState(未赋值) ;//已赋值即在跑时，再开火，不可赋值为1，应该消失为0时，按键才生效
 				}
 			}
 			break;
@@ -251,23 +336,23 @@ bool CTank::IsTankMeetOther(int dir, vector<CTank>& myTank, vector<CTank>& enemy
 			return true;
 		}
 		//遇河流等不可通过障碍
-		if ((map.m_nArrMap[m_core.X][m_core.Y - 2] == 土块 || map.m_nArrMap[m_core.X - 1][m_core.Y - 2] == 土块 || map.m_nArrMap[m_core.X + 1][m_core.Y - 2] == 土块) ||
-			(map.m_nArrMap[m_core.X][m_core.Y - 2] == 石块 || map.m_nArrMap[m_core.X - 1][m_core.Y - 2] == 石块 || map.m_nArrMap[m_core.X + 1][m_core.Y - 2] == 石块) ||
-			(map.m_nArrMap[m_core.X][m_core.Y - 2] == 河流 || map.m_nArrMap[m_core.X - 1][m_core.Y - 2] == 河流 || map.m_nArrMap[m_core.X + 1][m_core.Y - 2] == 河流))
+		if ((map.GetArrMap(m_core.X,m_core.Y - 2) == 土块 || map.GetArrMap(m_core.X - 1,m_core.Y - 2) == 土块 || map.GetArrMap(m_core.X + 1,m_core.Y - 2) == 土块) ||
+			(map.GetArrMap(m_core.X,m_core.Y - 2) == 石块 || map.GetArrMap(m_core.X - 1,m_core.Y - 2) == 石块 || map.GetArrMap(m_core.X + 1,m_core.Y - 2) == 石块) ||
+			(map.GetArrMap(m_core.X,m_core.Y - 2) == 河流 || map.GetArrMap(m_core.X - 1,m_core.Y - 2) == 河流 || map.GetArrMap(m_core.X + 1,m_core.Y - 2) == 河流))
 		{
 			return true;
 		}
 		//进草丛可隐藏
-		if (map.m_nArrMap[m_core.X][m_core.Y ] == 草丛 || map.m_nArrMap[m_core.X - 1][m_core.Y ] == 草丛 || map.m_nArrMap[m_core.X + 1][m_core.Y ] == 草丛)
+		if (map.GetArrMap(m_core.X,m_core.Y ) == 草丛 || map.GetArrMap(m_core.X - 1,m_core.Y) == 草丛 || map.GetArrMap(m_core.X + 1,m_core.Y) == 草丛)
 		{
 			
-			m_isHided = true;
+			m_isHidden = true;
 		}
 		// 出草丛则显示（if 与else if 还是有区别的，被坑了
-		if (map.m_nArrMap[m_core.X][m_core.Y -2] == 空地 || map.m_nArrMap[m_core.X - 1][m_core.Y -2] == 空地 || map.m_nArrMap[m_core.X + 1][m_core.Y -2] == 空地)
+		if (map.GetArrMap(m_core.X,m_core.Y -2) == 空地 || map.GetArrMap(m_core.X - 1,m_core.Y -2) == 空地 || map.GetArrMap(m_core.X + 1,m_core.Y -2) == 空地)
 		{
 			
-			m_isHided = false;
+			m_isHidden = false;
 		}
 
 		//遇我方坦克
@@ -323,28 +408,28 @@ bool CTank::IsTankMeetOther(int dir, vector<CTank>& myTank, vector<CTank>& enemy
 			return true;
 		}
 		//遇河流等不可通过障碍
-		if ((map.m_nArrMap[m_core.X][m_core.Y + 2] == 土块 || map.m_nArrMap[m_core.X - 1][m_core.Y + 2] == 土块 || map.m_nArrMap[m_core.X + 1][m_core.Y + 2] == 土块) ||
-			(map.m_nArrMap[m_core.X][m_core.Y + 2] == 石块 || map.m_nArrMap[m_core.X - 1][m_core.Y + 2] == 石块 || map.m_nArrMap[m_core.X + 1][m_core.Y + 2] == 石块) ||
-			(map.m_nArrMap[m_core.X][m_core.Y + 2] == 河流 || map.m_nArrMap[m_core.X - 1][m_core.Y + 2] == 河流 || map.m_nArrMap[m_core.X + 1][m_core.Y + 2] == 河流))
+		if ((map.GetArrMap(m_core.X,m_core.Y + 2) == 土块 || map.GetArrMap(m_core.X - 1,m_core.Y + 2) == 土块 || map.GetArrMap(m_core.X + 1,m_core.Y + 2) == 土块) ||
+			(map.GetArrMap(m_core.X,m_core.Y + 2) == 石块 || map.GetArrMap(m_core.X - 1,m_core.Y + 2) == 石块 || map.GetArrMap(m_core.X + 1,m_core.Y + 2) == 石块) ||
+			(map.GetArrMap(m_core.X,m_core.Y + 2) == 河流 || map.GetArrMap(m_core.X - 1,m_core.Y + 2) == 河流 || map.GetArrMap(m_core.X + 1,m_core.Y + 2) == 河流))
 		{
 			return true;
 		}
 		
 		// 进草丛可隐藏
-		if (map.m_nArrMap[m_core.X][m_core.Y ] == 草丛 || map.m_nArrMap[m_core.X - 1][m_core.Y ] == 草丛 || map.m_nArrMap[m_core.X + 1][m_core.Y ] == 草丛)
+		if (map.GetArrMap(m_core.X,m_core.Y) == 草丛 || map.GetArrMap(m_core.X - 1,m_core.Y) == 草丛 || map.GetArrMap(m_core.X + 1,m_core.Y) == 草丛)
 		{
 			
-			m_isHided = true;
+			m_isHidden = true;
 		}
 		// 出草丛则显示
-		if (map.m_nArrMap[m_core.X][m_core.Y + 2] == 空地 || map.m_nArrMap[m_core.X - 1][m_core.Y + 2] == 空地 || map.m_nArrMap[m_core.X + 1][m_core.Y + 2] == 空地)
+		if (map.GetArrMap(m_core.X,m_core.Y + 2) == 空地 || map.GetArrMap(m_core.X - 1,m_core.Y + 2) == 空地 || map.GetArrMap(m_core.X + 1,m_core.Y + 2) == 空地)
 		{
 			
-			m_isHided = false;
+			m_isHidden = false;
 		}
 
 		//遇泉水
-		if (map.m_nArrMap[this->m_core.X][this->m_core.Y+2] == 泉水)
+		if (map.GetArrMap(this->m_core.X,this->m_core.Y+2) == 泉水)
 		{
 			return true;
 		}
@@ -400,27 +485,27 @@ bool CTank::IsTankMeetOther(int dir, vector<CTank>& myTank, vector<CTank>& enemy
 			return true;
 		}
 		//遇河流等不可通过障碍
-		if ((map.m_nArrMap[m_core.X - 2][m_core.Y] == 土块 || map.m_nArrMap[m_core.X - 2][m_core.Y - 1] == 土块 || map.m_nArrMap[m_core.X - 2][m_core.Y + 1] == 土块) ||
-			(map.m_nArrMap[m_core.X - 2][m_core.Y] == 石块 || map.m_nArrMap[m_core.X - 2][m_core.Y - 1] == 石块 || map.m_nArrMap[m_core.X - 2][m_core.Y + 1] == 石块) ||
-			(map.m_nArrMap[m_core.X - 2][m_core.Y] == 河流 || map.m_nArrMap[m_core.X - 2][m_core.Y - 1] == 河流 || map.m_nArrMap[m_core.X - 2][m_core.Y + 1] == 河流))
+		if ((map.GetArrMap(m_core.X - 2,m_core.Y) == 土块 || map.GetArrMap(m_core.X - 2,m_core.Y - 1) == 土块 || map.GetArrMap(m_core.X - 2,m_core.Y + 1) == 土块) ||
+			(map.GetArrMap(m_core.X - 2,m_core.Y) == 石块 || map.GetArrMap(m_core.X - 2,m_core.Y - 1) == 石块 || map.GetArrMap(m_core.X - 2,m_core.Y + 1) == 石块) ||
+			(map.GetArrMap(m_core.X - 2,m_core.Y) == 河流 || map.GetArrMap(m_core.X - 2,m_core.Y - 1) == 河流 || map.GetArrMap(m_core.X - 2,m_core.Y + 1) == 河流))
 		{
 			return true;
 		}
 
 		// 进草丛可隐藏
-		if (map.m_nArrMap[m_core.X ][m_core.Y] == 草丛 || map.m_nArrMap[m_core.X ][m_core.Y - 1] == 草丛 || map.m_nArrMap[m_core.X ][m_core.Y + 1] == 草丛)
+		if (map.GetArrMap(m_core.X ,m_core.Y) == 草丛 || map.GetArrMap(m_core.X ,m_core.Y - 1) == 草丛 || map.GetArrMap(m_core.X ,m_core.Y + 1) == 草丛)
 		{
 			
-			m_isHided = true;
+			m_isHidden = true;
 		}
 		// 出草丛则显示
-		if (map.m_nArrMap[m_core.X - 2][m_core.Y] == 空地 || map.m_nArrMap[m_core.X - 2][m_core.Y - 1] == 空地 || map.m_nArrMap[m_core.X - 2][m_core.Y + 1] == 空地)
+		if (map.GetArrMap(m_core.X - 2,m_core.Y) == 空地 || map.GetArrMap(m_core.X - 2,m_core.Y - 1) == 空地 || map.GetArrMap(m_core.X - 2,m_core.Y + 1) == 空地)
 		{
-			m_isHided = false;
+			m_isHidden = false;
 		}
 
 		//遇泉水
-		if (map.m_nArrMap[this->m_core.X-2][this->m_core.Y] == 泉水)
+		if (map.GetArrMap(this->m_core.X-2,this->m_core.Y) == 泉水)
 		{
 			return true;
 		}
@@ -477,26 +562,26 @@ bool CTank::IsTankMeetOther(int dir, vector<CTank>& myTank, vector<CTank>& enemy
 			return true;
 		}
 		//遇河流等不可通过障碍
-		if ((map.m_nArrMap[m_core.X + 2][m_core.Y] == 土块 || map.m_nArrMap[m_core.X + 2][m_core.Y - 1] == 土块 || map.m_nArrMap[m_core.X + 2][m_core.Y + 1] == 土块) ||
-			(map.m_nArrMap[m_core.X + 2][m_core.Y] == 石块 || map.m_nArrMap[m_core.X + 2][m_core.Y - 1] == 石块 || map.m_nArrMap[m_core.X + 2][m_core.Y + 1] == 石块) ||
-			(map.m_nArrMap[m_core.X + 2][m_core.Y] == 河流 || map.m_nArrMap[m_core.X + 2][m_core.Y - 1] == 河流 || map.m_nArrMap[m_core.X + 2][m_core.Y + 1] == 河流))
+		if ((map.GetArrMap(m_core.X + 2,m_core.Y) == 土块 || map.GetArrMap(m_core.X + 2,m_core.Y - 1) == 土块 || map.GetArrMap(m_core.X + 2,m_core.Y + 1) == 土块) ||
+			(map.GetArrMap(m_core.X + 2,m_core.Y) == 石块 || map.GetArrMap(m_core.X + 2,m_core.Y - 1) == 石块 || map.GetArrMap(m_core.X + 2,m_core.Y + 1) == 石块) ||
+			(map.GetArrMap(m_core.X + 2,m_core.Y) == 河流 || map.GetArrMap(m_core.X + 2,m_core.Y - 1) == 河流 || map.GetArrMap(m_core.X + 2,m_core.Y + 1) == 河流))
 		{
 			return true;
 		}
 
 		// 进草丛可隐藏
-		if (map.m_nArrMap[m_core.X ][m_core.Y] == 草丛 || map.m_nArrMap[m_core.X ][m_core.Y - 1] == 草丛 || map.m_nArrMap[m_core.X][m_core.Y + 1] == 草丛)
+		if (map.GetArrMap(m_core.X ,m_core.Y) == 草丛 || map.GetArrMap(m_core.X ,m_core.Y - 1) == 草丛 || map.GetArrMap(m_core.X,m_core.Y + 1) == 草丛)
 		{
-			m_isHided = true;
+			m_isHidden = true;
 		}
 		// 出草丛则显示
-		if (map.m_nArrMap[m_core.X + 2][m_core.Y] == 空地 || map.m_nArrMap[m_core.X + 2][m_core.Y - 1] == 空地 || map.m_nArrMap[m_core.X +2][m_core.Y + 1] == 空地)
+		if (map.GetArrMap(m_core.X + 2,m_core.Y) == 空地 || map.GetArrMap(m_core.X + 2,m_core.Y - 1) == 空地 || map.GetArrMap(m_core.X +2,m_core.Y + 1) == 空地)
 		{
-			m_isHided = false;
+			m_isHidden = false;
 		}
 
 		//遇泉水
-		if (map.m_nArrMap[this->m_core.X+2][this->m_core.Y] == 泉水)
+		if (map.GetArrMap(this->m_core.X+2,this->m_core.Y) == 泉水)
 		{
 			return true;
 		}

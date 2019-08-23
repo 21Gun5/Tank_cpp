@@ -8,9 +8,16 @@ class CMap;
 
 class CMap
 {
-public:
+//public:
+	
+private:
 	int m_nArrMap[MAP_X][MAP_Y] = { 空地 };
 public:
+
+	int GetArrMap(int x,int y);
+	void SetArrMap(int x,int y,int i);
+
+
 	char* ShowMapFile();			//显示地图文件
 	void LoadDefaultMap();			//系统默认地图
 	void LoadMapFile(char* str, CMap &map);	//导入地图文件

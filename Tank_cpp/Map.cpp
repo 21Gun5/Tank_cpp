@@ -7,6 +7,20 @@
 #include "Map.h"
 #include "Tank.h"
 
+
+int CMap::GetArrMap(int x,int y)
+{
+	return m_nArrMap[x][y];
+}
+
+void CMap::SetArrMap(int x, int y, int i)
+{
+	m_nArrMap[x][y] = i;
+}
+
+
+
+
 char* CMap::ShowMapFile()
 {
 	//遍历指定目录及后缀的文件名并存入数组
@@ -145,7 +159,7 @@ void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 				int flagMy = 0;
 				for (vector<CTank>::iterator it = myTank.begin(); it != myTank.end(); it++)
 				{
-					if (pos.X / 2 >= it->m_core.X - 1 && pos.X / 2 <= it->m_core.X + 1 && pos.Y >= it->m_core.Y - 1 && pos.Y <= it->m_core.Y + 1)
+					if (pos.X / 2 >= it->GetCore().X - 1 && pos.X / 2 <= it->GetCore().X + 1 && pos.Y >= it->GetCore().Y - 1 && pos.Y <= it->GetCore().Y + 1)
 						flagMy = 1;
 				}
 				if(flagMy == 1) continue;
@@ -153,10 +167,10 @@ void CMap::SaveMapFile(vector<CTank>& myTank, vector<CTank>& enemyTank)
 				int flagEne = 0;
 				for (vector<CTank>::iterator it = enemyTank.begin(); it != enemyTank.end(); it++)
 				{
-					if (pos.X / 2 >= it->m_core.X - 1 &&
-						pos.X / 2 <= it->m_core.X + 1 &&
-						pos.Y >= it->m_core.Y - 1 &&
-						pos.Y <= it->m_core.Y + 1)
+					if (pos.X / 2 >= it->GetCore().X - 1 &&
+						pos.X / 2 <= it->GetCore().X + 1 &&
+						pos.Y >= it->GetCore().Y - 1 &&
+						pos.Y <= it->GetCore().Y + 1)
 						flagEne = 1;
 				}
 				if (flagEne == 1) continue;

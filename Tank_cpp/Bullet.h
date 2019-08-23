@@ -11,20 +11,27 @@ class CGame;
 class CBullet
 {
 public:
+	//COORD m_core;			//坐标
+	//int m_dir;	//方向
+	//int m_state;			//子弹状态
+	//int m_who;				//哪一方的子弹
+private:
 	COORD m_core;			//坐标
-	enum  direction m_dir;	//方向
+	int m_dir;	//方向
 	int m_state;			//子弹状态
 	int m_who;				//哪一方的子弹
-//private:
-	//COORD m_core;			//坐标
 public:
 	CBullet();
 
 	COORD GetCore();
+	int GetDir();
+	int GetState();
+	int GetWho();
 
 	void SetCore(COORD core);
-
-
+	void SetDir(int dir);
+	void SetState(int state);
+	void SetWho(int who);
 
 
 
