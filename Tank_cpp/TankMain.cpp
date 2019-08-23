@@ -31,9 +31,9 @@ int main()
 	//敌方坦克
 	vector<CTank> enemyTank;
 	CTank enemyTankA = { {2, 2} ,DOWN ,1,敌方坦克,2 };
-	CTank enemyTankB = { {MAP_X_WALL / 8 + 1, 2},DOWN,2,敌方坦克,1 };
+	CTank enemyTankB = { {MAP_X_WALL / 8 + 1, 2},LEFT,2,敌方坦克,1 };
 	CTank enemyTankC = { {MAP_X_WALL / 4, 2},DOWN,1,敌方坦克,1 };
-	CTank enemyTankD = { {MAP_X_WALL / 8 + MAP_X_WALL / 4 - 1, 2}, DOWN,1,敌方坦克,2 };
+	CTank enemyTankD = { {MAP_X_WALL / 8 + MAP_X_WALL / 4 - 1, 2}, RIGHT,1,敌方坦克,2 };
 	CTank enemyTankE = { {MAP_X_WALL / 2 - 2, 2}, DOWN,2,敌方坦克 ,1};
 	//CTank enemyTankT = { {MAP_X_WALL / 4 - 8, MAP_Y - 3}, LEFT,1,敌方坦克 };
 
@@ -231,11 +231,9 @@ int main()
 			enemyTank.push_back(enemyTankC);
 			enemyTank.push_back(enemyTankD);
 			enemyTank.push_back(enemyTankE);
-
 			// 标记关卡导入完成
 			game.m_needLoadNewStage = false;
 		}
-
 		//动态实时显示
 		game.DrawGameInfo(myTank, enemyTank);
 		map.DrawDynamicMap();
@@ -250,14 +248,15 @@ int main()
 				it->ManipulateTank(myTank, enemyTank, map, game);
 				it->CleanTankTail(oldCore, oldBody);
 				it->DrawTank();
-
 				// 若死亡则删除，否则正常迭代
 				if (!it->m_isAlive)
 				{
-					// 删除后迭代器指向下一个
-					GotoxyAndPrint(it->m_bullet.GetCore().X, it->m_bullet.GetCore().Y, " ");// 抹除其子弹
-					it = myTank.erase(it);//删除
-					
+					// 删除坦克前先抹掉子弹，并防止边界被抹掉（不用管障碍，其是动态的，而边界是静态的）
+					if (map.m_nArrMap[it->m_bullet.GetCore().X][it->m_bullet.GetCore().Y] != 边界)
+					{
+						GotoxyAndPrint(it->m_bullet.GetCore().X, it->m_bullet.GetCore().Y, " ");// 抹除其子弹
+					}
+					it = myTank.erase(it);//删除后迭代器自动指向下一个
 				}
 				else
 				{
@@ -287,7 +286,6 @@ int main()
 					it->m_bullet.IsBulMeetOther(*it, myTank, enemyTank, map, game);
 				}
 			}
-
 		}
 		//敌方坦克线程
 		if (clock() - time4EnemyTank >= game.m_levelEneTank)
@@ -300,13 +298,15 @@ int main()
 				it->ManipulateTank(myTank, enemyTank, map, game);
 				it->CleanTankTail(oldCore, oldBody);
 				it->DrawTank();
-
 				// 坦克死亡与否
 				if (!it->m_isAlive)
 				{
-					// 删除后迭代器指向下一个
-					GotoxyAndPrint(it->m_bullet.GetCore().X, it->m_bullet.GetCore().Y , " ");// 抹除其子弹
-					it = enemyTank.erase(it);//删除
+					// 删除坦克前先抹掉子弹，并防止边界被抹掉
+					if (map.m_nArrMap[it->m_bullet.GetCore().X][it->m_bullet.GetCore().Y] != 边界)
+					{
+						GotoxyAndPrint(it->m_bullet.GetCore().X, it->m_bullet.GetCore().Y, " ");// 抹除其子弹
+					}
+					it = enemyTank.erase(it);//删除后迭代器指向下一个
 				}
 				else
 				{
@@ -350,7 +350,6 @@ int main()
 			game.NextStage();	
 			continue;
 		}
-
 	}
 
 	//消耗多余字符

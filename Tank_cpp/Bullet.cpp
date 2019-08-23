@@ -141,9 +141,9 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 				// 抹除子弹
 				GotoxyAndPrint(m_core.X, m_core.Y, " ");
 				GotoxyAndPrint(it->m_bullet.m_core.X, it->m_bullet.m_core.Y, " ");
-				// 破坏相等的条件
-				m_core = { 0 };
-				it->m_bullet.m_core = { -1 };
+				// 破坏相等的条件(设其坐标为界面某空白处，若设负数，因线程时间不一样，可能会出现在(0,0）
+				m_core = { MAP_X_WALL / 2 + 1, MAP_Y / 2 + 1 };
+				it->m_bullet.m_core = { MAP_X_WALL / 2 + 1, MAP_Y / 2 + 2 };
 			}
 		}
 	}
@@ -201,9 +201,9 @@ void CBullet::IsBulMeetOther(CTank &tank, vector<CTank>& myTank, vector<CTank>& 
 				// 抹除子弹
 				GotoxyAndPrint(m_core.X, m_core.Y, " ");// 抹除其子弹
 				GotoxyAndPrint(it->m_bullet.m_core.X, it->m_bullet.m_core.Y, " ");// 抹除其子弹
-				// 破坏相等的条件
-				m_core = { 0 };
-				it->m_bullet.m_core = { -1 };
+				// 破坏相等的条件(设其坐标为界面某空白处，若设负数，因线程时间不一样，可能会出现在(0,0）
+				m_core = { MAP_X_WALL / 2 + 1, MAP_Y / 2 - 1 };
+				it->m_bullet.m_core = { MAP_X_WALL / 2 + 1, MAP_Y / 2 - 2 };
 			}
 
 		}

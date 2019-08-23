@@ -53,6 +53,7 @@ char* CMap::ShowMapFile()
 void CMap::LoadDefaultMap()
 {
 	std::string filename = "conf/map/default.i";
+	//std::string filename = "conf/map/Stage2.i";
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, filename.c_str(), "rb");
 	for (int x = 0; x < MAP_X_WALL; x++)
