@@ -24,7 +24,7 @@ int main()
 
 	// 我方坦克
 	vector<CTank> myTank;
-	CTank myTankA = { { MAP_X_WALL / 4 - 4, MAP_Y - 3 }, UP, 30, 我方坦克A };
+	CTank myTankA = { { MAP_X_WALL / 4 - 4, MAP_Y - 3 }, UP, 3, 我方坦克A };
 	CTank myTankB = { { MAP_X_WALL / 4 + 5, MAP_Y - 3 }, UP, 3, 我方坦克B };
 
 	// 敌方坦克
@@ -247,6 +247,10 @@ int main()
 				else
 				{
 					it++;
+				}
+				if (myTank.size() == 0)
+				{
+					game.SetIsOver(true);
 				}
 			}
 		}

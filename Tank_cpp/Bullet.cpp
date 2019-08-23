@@ -142,7 +142,7 @@ void CBullet::IsBulMeetOther(CTank& tank, vector<CTank>& myTank, vector<CTank>& 
 				int blood = it->GetBlood() - 1;
 				it->SetBlood(blood);
 				//减血后为0则死亡
-				if (it->GetBlood() == 0)
+				if (it->GetBlood() <= 0)
 				{
 					it->SetIsAlive(false);//死亡
 					int killCount = tank.GetKillCount() + 1;
@@ -215,7 +215,7 @@ void CBullet::IsBulMeetOther(CTank& tank, vector<CTank>& myTank, vector<CTank>& 
 
 				}
 				//如果减血后为0
-				if (it->GetBlood() == 0)
+				if (it->GetBlood() <= 0)
 				{
 					it->SetIsAlive(false);//声明为死亡
 				}

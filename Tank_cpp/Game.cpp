@@ -122,8 +122,8 @@ void CGame::GameInit(CMap& map)
 	srand((unsigned int)time(0));
 
 	//播放背景音乐(先不放，烦的一批
-	//mciSendString("open conf/BGM.mp3 alias bgm", NULL, 0, NULL);//打开文件
-	//mciSendString("play bgm repeat", NULL, 0, NULL);			  // 循环播放
+	mciSendString("open conf/BGM.mp3 alias bgm", NULL, 0, NULL);//打开文件
+	mciSendString("play bgm repeat", NULL, 0, NULL);			  // 循环播放
 }
 char* CGame::ShowGameFile()
 {
@@ -484,11 +484,11 @@ void CGame::DrawLogo()
 }
 void CGame::DrawGameHelp()
 {
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 24, "操 作 说 明", 提示颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 26, "W: 上 S: 下", 提示颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 28, "A: 左 D: 右", 提示颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 30, "Q: 暂停游戏", 提示颜色);
-	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 32, "空格:  开火", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 24, " 操  作  说  明", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 26, "W/I: 上  S/K: 下", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 28, "A/J: 左  D/L: 右", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 30, "Q:  暂停游戏", 提示颜色);
+	GotoxyAndPrint((MAP_X + MAP_X_WALL) / 4 - 3, 32, "空格/H: 开火", 提示颜色);
 }
 void CGame::DrawGameInfo(vector<CTank>& myTank, vector<CTank>& enemyTank)
 {
